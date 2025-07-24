@@ -119,18 +119,33 @@ class StockServiceTest {
     }
 
     @Test
-    @DisplayName("Deve listar todos os itens de estoque ativos")
-    void shouldListAllActiveStockItems() {
+    @DisplayName("Deve listar todos os itens de estoque")
+    void shouldListAllStockItems() {
         when(stockRepository.findAll()).thenReturn(Arrays.asList(activeStockItem));
 
         List<StockResponseDTO> result = stockService.getAllStockItems();
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(activeStockItem.getToolName(), result.get(0).getToolName());
-        assertTrue(result.get(0).getActive());
+        assertEquals(activeStockItem.getToolName(), result.getFirst().getToolName());
+        assertTrue(result.getFirst().getActive());
 
         verify(stockRepository, times(1)).findAll();
+    }
+
+    @Test
+    @DisplayName("Deve listar todos os itens de estoque ativos")
+    void shouldListAllActiveStockItems() {
+        when(stockRepository.findByActiveTrue()).thenReturn(Arrays.asList(activeStockItem));
+
+        List<StockResponseDTO> result = stockService.getAllStockItemsActive();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(activeStockItem.getToolName(), result.getFirst().getToolName());
+        assertTrue(result.getFirst().getActive());
+
+        verify(stockRepository, times(1)).findByActiveTrue();
     }
 
     @Test

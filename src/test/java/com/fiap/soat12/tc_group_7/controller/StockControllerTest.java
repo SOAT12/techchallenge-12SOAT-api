@@ -22,7 +22,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Classe de testes unitários para StockController.
@@ -40,7 +41,7 @@ class StockControllerTest {
     @MockitoBean
     private StockService stockService;
 
-    private ToolCategoryResponseDTO categoryResponseDTO = new ToolCategoryResponseDTO(1L, "Pecas", true);
+    private final ToolCategoryResponseDTO categoryResponseDTO = new ToolCategoryResponseDTO(1L, "Pecas", true);
 
     @Test
     @DisplayName("POST /api/stock - Deve criar um novo item de estoque com sucesso")
@@ -72,8 +73,8 @@ class StockControllerTest {
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Bad Request"))
-                .andExpect(jsonPath("$.message").value("Categoria da ferramenta não encontrada com ID: 99"));
+                .andExpect(jsonPath("$.title").value("Bad Request"))
+                .andExpect(jsonPath("$.detail").value("Categoria da ferramenta não encontrada com ID: 99"));
     }
 
     @Test
@@ -102,7 +103,7 @@ class StockControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/stock - Deve listar todos os itens de estoque ativos")
+    @DisplayName("GET /api/stock/all - Deve listar todos os itens de estoque")
     void shouldGetAllStockItems() throws Exception {
         List<StockResponseDTO> responseList = Arrays.asList(
                 new StockResponseDTO(101L, "Chave de Fenda", new BigDecimal("15.50"), true, 100, categoryResponseDTO),
@@ -110,6 +111,24 @@ class StockControllerTest {
         );
 
         when(stockService.getAllStockItems()).thenReturn(responseList);
+
+        mockMvc.perform(get("/api/stock/all")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].toolName").value("Chave de Fenda"))
+                .andExpect(jsonPath("$[1].toolName").value("Parafuso"))
+                .andExpect(jsonPath("$.length()").value(2));
+    }
+
+    @Test
+    @DisplayName("GET /api/stock - Deve listar todos os itens de estoque ativos")
+    void shouldGetAllStockItemsActive() throws Exception {
+        List<StockResponseDTO> responseList = Arrays.asList(
+                new StockResponseDTO(101L, "Chave de Fenda", new BigDecimal("15.50"), true, 100, categoryResponseDTO),
+                new StockResponseDTO(102L, "Parafuso", new BigDecimal("0.75"), true, 5000, categoryResponseDTO)
+        );
+
+        when(stockService.getAllStockItemsActive()).thenReturn(responseList);
 
         mockMvc.perform(get("/api/stock")
                         .accept(MediaType.APPLICATION_JSON))
@@ -162,8 +181,8 @@ class StockControllerTest {
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Bad Request"))
-                .andExpect(jsonPath("$.message").value("Categoria da ferramenta não encontrada com ID: 99"));
+                .andExpect(jsonPath("$.title").value("Bad Request"))
+                .andExpect(jsonPath("$.detail").value("Categoria da ferramenta não encontrada com ID: 99"));
     }
 
     @Test

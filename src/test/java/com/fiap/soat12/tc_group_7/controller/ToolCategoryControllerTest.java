@@ -93,7 +93,7 @@ class ToolCategoryControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/tool-categories - Deve listar todas as categorias ativas")
+    @DisplayName("GET /api/tool-categories/all - Deve listar todas as categorias")
     void shouldGetAllToolCategories() throws Exception {
         List<ToolCategoryResponseDTO> responseList = Arrays.asList(
                 new ToolCategoryResponseDTO(1L, "Pecas", true),
@@ -101,6 +101,24 @@ class ToolCategoryControllerTest {
         );
 
         when(toolCategoryService.getAllToolCategories()).thenReturn(responseList);
+
+        mockMvc.perform(get("/api/tool-categories/all")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].toolCategoryName").value("Pecas"))
+                .andExpect(jsonPath("$[1].toolCategoryName").value("Insumos"))
+                .andExpect(jsonPath("$.length()").value(2));
+    }
+
+    @Test
+    @DisplayName("GET /api/tool-categories - Deve listar todas as categorias ativas")
+    void shouldGetAllToolCategoriesActive() throws Exception {
+        List<ToolCategoryResponseDTO> responseList = Arrays.asList(
+                new ToolCategoryResponseDTO(1L, "Pecas", true),
+                new ToolCategoryResponseDTO(2L, "Insumos", true)
+        );
+
+        when(toolCategoryService.getAllToolCategoriesActive()).thenReturn(responseList);
 
         mockMvc.perform(get("/api/tool-categories")
                         .accept(MediaType.APPLICATION_JSON))

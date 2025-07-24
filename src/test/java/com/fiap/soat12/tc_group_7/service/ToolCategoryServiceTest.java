@@ -98,8 +98,8 @@ class ToolCategoryServiceTest {
     }
 
     @Test
-    @DisplayName("Deve listar todas as categorias ativas")
-    void shouldListAllActiveToolCategories() {
+    @DisplayName("Deve listar todas as categorias")
+    void shouldListAllToolCategories() {
         when(toolCategoryRepository.findAll()).thenReturn(Arrays.asList(activeCategory));
 
         List<ToolCategoryResponseDTO> result = toolCategoryService.getAllToolCategories();
@@ -110,6 +110,21 @@ class ToolCategoryServiceTest {
         assertTrue(result.get(0).getActive());
 
         verify(toolCategoryRepository, times(1)).findAll();
+    }
+
+    @Test
+    @DisplayName("Deve listar todas as categorias ativas")
+    void shouldListAllActiveToolCategories() {
+        when(toolCategoryRepository.findByActiveTrue()).thenReturn(Arrays.asList(activeCategory));
+
+        List<ToolCategoryResponseDTO> result = toolCategoryService.getAllToolCategoriesActive();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(activeCategory.getToolCategoryName(), result.get(0).getToolCategoryName());
+        assertTrue(result.get(0).getActive());
+
+        verify(toolCategoryRepository, times(1)).findByActiveTrue();
     }
 
     @Test
