@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +48,7 @@ class StockControllerTest {
     @DisplayName("POST /api/stock - Deve criar um novo item de estoque com sucesso")
     void shouldCreateStockItem() throws Exception {
         StockRequestDTO requestDTO = new StockRequestDTO("Chave de Fenda", new BigDecimal("15.50"), true, 100, 1L);
-        StockResponseDTO responseDTO = new StockResponseDTO(101L, "Chave de Fenda", new BigDecimal("15.50"), true, 100, categoryResponseDTO);
+        StockResponseDTO responseDTO = new StockResponseDTO(101L, "Chave de Fenda", new BigDecimal("15.50"), true, 100, new Date(), new Date(), categoryResponseDTO);
 
         when(stockService.createStock(any(StockRequestDTO.class))).thenReturn(responseDTO);
 
@@ -80,7 +81,7 @@ class StockControllerTest {
     @Test
     @DisplayName("GET /api/stock/{id} - Deve retornar item de estoque pelo ID")
     void shouldGetStockItemById() throws Exception {
-        StockResponseDTO responseDTO = new StockResponseDTO(101L, "Chave de Fenda", new BigDecimal("15.50"), true, 100, categoryResponseDTO);
+        StockResponseDTO responseDTO = new StockResponseDTO(101L, "Chave de Fenda", new BigDecimal("15.50"), true, 100, new Date(), new Date(), categoryResponseDTO);
 
         when(stockService.getStockById(101L)).thenReturn(Optional.of(responseDTO));
 
@@ -106,8 +107,8 @@ class StockControllerTest {
     @DisplayName("GET /api/stock/all - Deve listar todos os itens de estoque")
     void shouldGetAllStockItems() throws Exception {
         List<StockResponseDTO> responseList = Arrays.asList(
-                new StockResponseDTO(101L, "Chave de Fenda", new BigDecimal("15.50"), true, 100, categoryResponseDTO),
-                new StockResponseDTO(102L, "Parafuso", new BigDecimal("0.75"), true, 5000, categoryResponseDTO)
+                new StockResponseDTO(101L, "Chave de Fenda", new BigDecimal("15.50"), true, 100, new Date(), new Date(), categoryResponseDTO),
+                new StockResponseDTO(102L, "Parafuso", new BigDecimal("0.75"), true, 5000, new Date(), new Date(), categoryResponseDTO)
         );
 
         when(stockService.getAllStockItems()).thenReturn(responseList);
@@ -124,8 +125,8 @@ class StockControllerTest {
     @DisplayName("GET /api/stock - Deve listar todos os itens de estoque ativos")
     void shouldGetAllStockItemsActive() throws Exception {
         List<StockResponseDTO> responseList = Arrays.asList(
-                new StockResponseDTO(101L, "Chave de Fenda", new BigDecimal("15.50"), true, 100, categoryResponseDTO),
-                new StockResponseDTO(102L, "Parafuso", new BigDecimal("0.75"), true, 5000, categoryResponseDTO)
+                new StockResponseDTO(101L, "Chave de Fenda", new BigDecimal("15.50"), true, 100, new Date(), new Date(), categoryResponseDTO),
+                new StockResponseDTO(102L, "Parafuso", new BigDecimal("0.75"), true, 5000, new Date(), new Date(), categoryResponseDTO)
         );
 
         when(stockService.getAllStockItemsActive()).thenReturn(responseList);
@@ -142,7 +143,7 @@ class StockControllerTest {
     @DisplayName("PUT /api/stock/{id} - Deve atualizar um item de estoque com sucesso")
     void shouldUpdateStockItem() throws Exception {
         StockRequestDTO requestDTO = new StockRequestDTO("Martelo de Borracha", new BigDecimal("35.00"), false, 60, 1L);
-        StockResponseDTO responseDTO = new StockResponseDTO(101L, "Martelo de Borracha", new BigDecimal("35.00"), false, 60, categoryResponseDTO);
+        StockResponseDTO responseDTO = new StockResponseDTO(101L, "Martelo de Borracha", new BigDecimal("35.00"), false, 60, new Date(), new Date(), categoryResponseDTO);
 
         when(stockService.updateStock(eq(101L), any(StockRequestDTO.class))).thenReturn(Optional.of(responseDTO));
 
@@ -206,7 +207,7 @@ class StockControllerTest {
     @Test
     @DisplayName("PATCH /api/stock/{id}/reactivate - Deve reativar um item de estoque com sucesso")
     void shouldReactivateStockItem() throws Exception {
-        StockResponseDTO responseDTO = new StockResponseDTO(102L, "Parafuso", new BigDecimal("0.75"), true, 5000, categoryResponseDTO);
+        StockResponseDTO responseDTO = new StockResponseDTO(102L, "Parafuso", new BigDecimal("0.75"), true, 5000, new Date(), new Date(), categoryResponseDTO);
 
         when(stockService.reactivateStock(102L)).thenReturn(Optional.of(responseDTO));
 

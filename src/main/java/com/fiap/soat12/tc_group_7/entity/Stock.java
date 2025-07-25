@@ -2,16 +2,18 @@ package com.fiap.soat12.tc_group_7.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "stock")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Stock {
+public class Stock extends Audit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,11 +35,4 @@ public class Stock {
     @JoinColumn(name = "tool_category_id", nullable = false)
     private ToolCategory toolCategory;
 
-    public Stock(String toolName, BigDecimal value, Boolean active, Integer quantity, ToolCategory toolCategory) {
-        this.toolName = toolName;
-        this.value = value;
-        this.active = active;
-        this.quantity = quantity;
-        this.toolCategory = toolCategory;
-    }
 }
