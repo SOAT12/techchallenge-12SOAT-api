@@ -1,5 +1,6 @@
 package com.fiap.soat12.tc_group_7.mapper;
 
+import com.fiap.soat12.tc_group_7.dto.customer.CustomerRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.customer.CustomerResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.Customer;
 import org.junit.jupiter.api.DisplayName;
@@ -12,8 +13,7 @@ public class CustomerMapperTest {
     private final CustomerMapper mapper = new CustomerMapper();
 
     @Test
-    @DisplayName("Deve mapear Customer para CustomerResponseDTO corretamente")
-    void toCustomerResponseDTO_DeveMapearCorretamente() {
+    void toCustomerResponseDTO_withSuccess() {
         // Arrange
         Customer customer = Customer.builder()
                 .id(1L)
@@ -32,16 +32,46 @@ public class CustomerMapperTest {
         CustomerResponseDTO dto = mapper.toCustomerResponseDTO(customer);
 
         // Assert
-        assertEquals(1L, dto.getId());
-        assertEquals("123.456.789-00", dto.getCpf());
-        assertEquals("João da Silva", dto.getName());
-        assertEquals("99999-9999", dto.getPhone());
-        assertEquals("joao@email.com", dto.getEmail());
-        assertEquals("São Paulo", dto.getCity());
-        assertEquals("SP", dto.getState());
-        assertEquals("Centro", dto.getDistrict());
-        assertEquals("Rua das Flores", dto.getStreet());
-        assertEquals("100", dto.getNumber());
+        assertEquals(customer.getId(), dto.getId());
+        assertEquals(customer.getCpf(), dto.getCpf());
+        assertEquals(customer.getName(), dto.getName());
+        assertEquals(customer.getPhone(), dto.getPhone());
+        assertEquals(customer.getEmail(), dto.getEmail());
+        assertEquals(customer.getCity(), dto.getCity());
+        assertEquals(customer.getState(), dto.getState());
+        assertEquals(customer.getDistrict(), dto.getDistrict());
+        assertEquals(customer.getStreet(), dto.getStreet());
+        assertEquals(customer.getNumber(), dto.getNumber());
+    }
+
+    @Test
+    void toCustomer_withSuccess() {
+        // Arrange
+        CustomerRequestDTO dto = CustomerRequestDTO.builder()
+                .cpf("12345678900")
+                .name("João")
+                .phone("11999999999")
+                .email("joao@email.com")
+                .city("São Paulo")
+                .state("SP")
+                .district("Centro")
+                .street("Rua A")
+                .number("100")
+                .build();
+
+        // Act
+        Customer customer = mapper.toCustomer(dto);
+
+        // Assert
+        assertEquals(dto.getCpf(), customer.getCpf());
+        assertEquals(dto.getName(), customer.getName());
+        assertEquals(dto.getPhone(), customer.getPhone());
+        assertEquals(dto.getEmail(), customer.getEmail());
+        assertEquals(dto.getCity(), customer.getCity());
+        assertEquals(dto.getState(), customer.getState());
+        assertEquals(dto.getDistrict(), customer.getDistrict());
+        assertEquals(dto.getStreet(), customer.getStreet());
+        assertEquals(dto.getNumber(), customer.getNumber());
     }
 
 }
