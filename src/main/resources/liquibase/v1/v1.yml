@@ -1,0 +1,8 @@
+databaseChangeLog:
+    - changeSet:
+        id: create-table-customer
+        author: vinicius.filho
+        changes:
+            - sqlFile:
+                path: customer/create-table-customer.sql
+                relativeToChangelogFile: true
