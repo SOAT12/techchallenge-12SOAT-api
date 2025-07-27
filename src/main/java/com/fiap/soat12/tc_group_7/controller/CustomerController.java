@@ -21,9 +21,9 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping
-    @Operation(summary = "Lista todos os itens de estoque",
-            description = "Retorna uma lista de todos os itens em estoque cadastrados.")
-    @ApiResponse(responseCode = "200", description = "Lista de itens de estoque retornada com sucesso")
+    @Operation(summary = "Lista todos os clientes",
+            description = "Retorna uma lista de todos os clientes cadastrados.")
+    @ApiResponse(responseCode = "200", description = "Lista de clientes retornada com sucesso")
     public List<CustomerResponseDTO> getAllCustomers() {
         return customerService.getAllCustomers();
     }
