@@ -1,0 +1,15 @@
+databaseChangeLog:
+    - changeSet:
+          id: create-table-employee-function
+          author: henrique.souza
+          changes:
+              - sqlFile:
+                    path: employee/create-table-employee-function.sql
+                    relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-employee
+        author: henrique.souza
+        changes:
+            - sqlFile:
+                path: employee/create-table-employee.sql
+                relativeToChangelogFile: true
