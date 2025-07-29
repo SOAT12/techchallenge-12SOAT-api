@@ -6,3 +6,10 @@ databaseChangeLog:
             - sqlFile:
                 path: customer/create-table-customer.sql
                 relativeToChangelogFile: true
+    - changeSet:
+          id: alter-table-customer-add-column-deleted
+          author: vinicius.filho
+          changes:
+              - sqlFile:
+                    path: customer/alter-table-customer-add-column-deleted.sql
+                    relativeToChangelogFile: true

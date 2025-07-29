@@ -13,9 +13,16 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -112,6 +119,62 @@ public class CustomerControllerTest {
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.cpf").value("111.444.777-35"))
                 .andExpect(jsonPath("$.name").value("João da Silva"));
+    }
+
+    @Test
+    void updateCustomerById_withSuccess() throws Exception {
+        // Arrange
+        Long id = 1L;
+        CustomerRequestDTO requestDTO = CustomerRequestDTO.builder()
+                .cpf("111.444.777-35")
+                .name("João da Silva")
+                .phone("11999999999")
+                .email("joao@email.com")
+                .city("São Paulo")
+                .state("SP")
+                .district("Centro")
+                .street("Rua das Flores")
+                .number("100")
+                .build();
+        CustomerResponseDTO responseDTO = CustomerResponseDTO.builder()
+                .id(id)
+                .cpf(requestDTO.getCpf())
+                .name(requestDTO.getName())
+                .phone(requestDTO.getPhone())
+                .email(requestDTO.getEmail())
+                .city(requestDTO.getCity())
+                .state(requestDTO.getState())
+                .district(requestDTO.getDistrict())
+                .street(requestDTO.getStreet())
+                .number(requestDTO.getNumber())
+                .build();
+
+        when(customerService.updateCustomerById(eq(id), any(CustomerRequestDTO.class)))
+                .thenReturn(responseDTO);
+
+        // Act & Assert
+        mockMvc.perform(put("/v1/customers/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.name").value("João da Silva"));
+
+        verify(customerService).updateCustomerById(eq(id), any(CustomerRequestDTO.class));
+    }
+
+    @Test
+    void deleteCustomerById_withSuccess() throws Exception {
+        // Arrange
+        Long id = 1L;
+
+        doNothing().when(customerService).deleteCustomerById(id);
+
+        // Act & Assert
+        mockMvc.perform(delete("/v1/customers/{id}", id))
+                .andExpect(status().isNoContent())
+                .andDo(print());
+        verify(customerService).deleteCustomerById(id);
     }
 
 }

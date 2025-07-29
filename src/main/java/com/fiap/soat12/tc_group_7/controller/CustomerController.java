@@ -9,8 +9,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,6 +54,30 @@ public class CustomerController {
     @ApiResponse(responseCode = "400", description = "Dados inválidos")
     public CustomerResponseDTO createCustomer(@RequestBody @Valid CustomerRequestDTO requestDTO) {
         return customerService.createCustomer(requestDTO);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Atualiza um cliente pelo ID",
+            description = "Atualiza os dados do cliente correspondente ao ID informado.")
+    @ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso")
+    @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    public CustomerResponseDTO updateCustomerById(
+            @PathVariable Long id,
+            @RequestBody @Valid CustomerRequestDTO requestDTO) {
+        return customerService.updateCustomerById(id, requestDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(
+            summary = "Deleta um cliente pelo ID",
+            description = "Marca o cliente como deletado no banco de dados."
+    )
+    @ApiResponse(responseCode = "204", description = "Cliente deletado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    public void deleteCustomerById(@PathVariable Long id) {
+        customerService.deleteCustomerById(id);
     }
 
 }

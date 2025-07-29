@@ -21,25 +21,50 @@ public class CustomerService {
     private final CustomerMapper customerMapper;
 
     public List<CustomerResponseDTO> getAllCustomers() {
-        return customerRepository.findAll().stream()
+        return customerRepository.findAllByDeletedFalse().stream()
                 .map(customerMapper::toCustomerResponseDTO)
                 .collect(Collectors.toList());
     }
 
     public CustomerResponseDTO getCustomerByCpf(String cpf) {
-        return customerRepository.findByCpf(cpf)
+        return customerRepository.findByCpfAndDeletedFalse(cpf)
                 .map(customerMapper::toCustomerResponseDTO)
                 .orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
     }
 
     public CustomerResponseDTO createCustomer(CustomerRequestDTO requestDTO) {
-        if (customerRepository.findByCpf(requestDTO.getCpf()).isPresent()) {
+        if (customerRepository.findByCpfAndDeletedFalse(requestDTO.getCpf()).isPresent()) {
             throw new BusinessException("CPF já cadastrado.");
         }
 
         Customer customer = customerMapper.toCustomer(requestDTO);
         Customer savedCustomer = customerRepository.save(customer);
         return customerMapper.toCustomerResponseDTO(savedCustomer);
+    }
+
+    public CustomerResponseDTO updateCustomerById(Long id, CustomerRequestDTO requestDTO) {
+        Customer existingCustomer = customerRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
+
+        existingCustomer.setCpf(requestDTO.getCpf());
+        existingCustomer.setName(requestDTO.getName());
+        existingCustomer.setPhone(requestDTO.getPhone());
+        existingCustomer.setEmail(requestDTO.getEmail());
+        existingCustomer.setCity(requestDTO.getCity());
+        existingCustomer.setState(requestDTO.getState());
+        existingCustomer.setDistrict(requestDTO.getDistrict());
+        existingCustomer.setStreet(requestDTO.getStreet());
+        existingCustomer.setNumber(requestDTO.getNumber());
+
+        Customer updatedCustomer = customerRepository.save(existingCustomer);
+        return customerMapper.toCustomerResponseDTO(updatedCustomer);
+    }
+
+    public void deleteCustomerById(Long id) {
+        Customer customer = customerRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
+        customer.setDeleted(true);
+        customerRepository.save(customer);
     }
 
 }

@@ -52,4 +52,6 @@ public class Customer extends Audit {
     @Column(length = 20)
     private String number;
 
+    private Boolean deleted;
+
 }
