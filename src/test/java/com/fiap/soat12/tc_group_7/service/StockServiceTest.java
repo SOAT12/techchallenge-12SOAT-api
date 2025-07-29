@@ -47,8 +47,7 @@ class StockServiceTest {
         categoryPecas = new ToolCategory(1L, "Pecas", true);
         activeStockItem = new Stock(101L, "Chave de Fenda", new BigDecimal("15.50"), true, 100, categoryPecas);
         inactiveStockItem = new Stock(102L, "Parafuso", new BigDecimal("0.75"), false, 5000, categoryPecas);
-        stockRequestDTO = new StockRequestDTO("Martelo", new BigDecimal("30.00"), true, 50, 1L
-        );
+        stockRequestDTO = new StockRequestDTO("Martelo", new BigDecimal("30.00"), true, 50, 1L);
     }
 
     @Test
@@ -121,12 +120,12 @@ class StockServiceTest {
     @Test
     @DisplayName("Deve listar todos os itens de estoque")
     void shouldListAllStockItems() {
-        when(stockRepository.findAll()).thenReturn(Arrays.asList(activeStockItem));
+        when(stockRepository.findAll()).thenReturn(Arrays.asList(activeStockItem, inactiveStockItem));
 
         List<StockResponseDTO> result = stockService.getAllStockItems();
 
         assertNotNull(result);
-        assertEquals(1, result.size());
+        assertEquals(2, result.size());
         assertEquals(activeStockItem.getToolName(), result.getFirst().getToolName());
         assertTrue(result.getFirst().getActive());
 
