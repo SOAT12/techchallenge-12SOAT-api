@@ -52,7 +52,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Deve criar um novo item de estoque com sucesso")
-    void shouldCreateStockSuccessfully() {
+    void createStock_Success() {
         when(toolCategoryService.getToolCategoryEntityById(1L)).thenReturn(Optional.of(categoryPecas));
         when(stockRepository.save(any(Stock.class))).thenReturn(activeStockItem);
 
@@ -69,7 +69,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Deve lançar exceção ao criar estoque com categoria inexistente")
-    void shouldThrowExceptionWhenCreatingStockWithNonExistentCategory() {
+    void createStock_IllegalArgumentException() {
         when(toolCategoryService.getToolCategoryEntityById(99L)).thenReturn(Optional.empty());
         stockRequestDTO.setToolCategoryId(99L);
 
@@ -80,7 +80,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Deve retornar um item de estoque ativo pelo ID")
-    void shouldReturnActiveStockById() {
+    void getStockById_Success() {
         when(stockRepository.findById(101L)).thenReturn(Optional.of(activeStockItem));
 
         Optional<StockResponseDTO> result = stockService.getStockById(101L);
@@ -95,7 +95,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Não deve retornar um item de estoque inativo pelo ID")
-    void shouldNotReturnInactiveStockById() {
+    void getStockById_NotActive() {
         when(stockRepository.findById(102L)).thenReturn(Optional.of(inactiveStockItem));
 
         Optional<StockResponseDTO> result = stockService.getStockById(102L);
@@ -107,7 +107,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Deve retornar Optional.empty se o item de estoque não for encontrado pelo ID")
-    void shouldReturnEmptyOptionalWhenStockNotFoundById() {
+    void getStockById_NotFound() {
         when(stockRepository.findById(999L)).thenReturn(Optional.empty());
 
         Optional<StockResponseDTO> result = stockService.getStockById(999L);
@@ -119,7 +119,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Deve listar todos os itens de estoque")
-    void shouldListAllStockItems() {
+    void getAllStockItems_Success() {
         when(stockRepository.findAll()).thenReturn(Arrays.asList(activeStockItem, inactiveStockItem));
 
         List<StockResponseDTO> result = stockService.getAllStockItems();
@@ -134,7 +134,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Deve listar todos os itens de estoque ativos")
-    void shouldListAllActiveStockItems() {
+    void getAllStockItemsActive_Success() {
         when(stockRepository.findByActiveTrue()).thenReturn(Arrays.asList(activeStockItem));
 
         List<StockResponseDTO> result = stockService.getAllStockItemsActive();
@@ -149,7 +149,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Deve atualizar um item de estoque existente com sucesso")
-    void shouldUpdateStockSuccessfully() {
+    void updateStock_Success() {
         StockRequestDTO updateRequest = new StockRequestDTO(
                 "Martelo de Borracha", new BigDecimal("35.00"), false, 60, 1L
         );
@@ -175,7 +175,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Não deve atualizar item de estoque se não for encontrado")
-    void shouldNotUpdateStockIfNotFound() {
+    void updateStock_NotFoundItem() {
         when(stockRepository.findById(999L)).thenReturn(Optional.empty());
 
         Optional<StockResponseDTO> result = stockService.updateStock(999L, stockRequestDTO);
@@ -189,7 +189,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Deve lançar exceção ao atualizar estoque com categoria inexistente")
-    void shouldThrowExceptionWhenUpdatingStockWithNonExistentCategory() {
+    void updateStock_NotFoundToolCategory() {
         when(stockRepository.findById(101L)).thenReturn(Optional.of(activeStockItem));
         when(toolCategoryService.getToolCategoryEntityById(99L)).thenReturn(Optional.empty());
 
@@ -204,7 +204,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Deve deletar logicamente um item de estoque com sucesso")
-    void shouldLogicallyDeleteStockSuccessfully() {
+    void logicallyDeleteStock_Success() {
         when(stockRepository.findById(101L)).thenReturn(Optional.of(activeStockItem));
         when(stockRepository.save(any(Stock.class))).thenReturn(activeStockItem);
 
@@ -219,7 +219,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Não deve deletar logicamente um item de estoque se não for encontrado")
-    void shouldNotLogicallyDeleteStockIfNotFound() {
+    void logicallyDeleteStock_NotFound() {
         when(stockRepository.findById(999L)).thenReturn(Optional.empty());
 
         boolean result = stockService.logicallyDeleteStock(999L);
@@ -232,7 +232,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Deve reativar um item de estoque com sucesso")
-    void shouldReactivateStockSuccessfully() {
+    void reactivateStock_Success() {
         when(stockRepository.findById(102L)).thenReturn(Optional.of(inactiveStockItem));
         when(stockRepository.save(any(Stock.class))).thenReturn(inactiveStockItem);
 
@@ -247,7 +247,7 @@ class StockServiceTest {
 
     @Test
     @DisplayName("Não deve reativar item de estoque se não for encontrado")
-    void shouldNotReactivateStockIfNotFound() {
+    void reactivateStock_NotFound() {
         when(stockRepository.findById(999L)).thenReturn(Optional.empty());
 
         Optional<StockResponseDTO> result = stockService.reactivateStock(999L);
