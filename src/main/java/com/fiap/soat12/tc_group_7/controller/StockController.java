@@ -18,7 +18,7 @@ import java.util.List;
  * Controlador dos endpoints para CRUD de itens de estoque.
  */
 @RestController
-@RequestMapping("/api/stock") // Base URL para este controlador
+@RequestMapping("/api/stock")
 @Tag(name = "Estoque", description = "API para gerenciar itens em estoque")
 public class StockController {
 

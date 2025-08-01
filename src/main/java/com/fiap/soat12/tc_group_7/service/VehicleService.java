@@ -38,6 +38,12 @@ public class VehicleService {
                 .map(this::convertToResponseDTO);
     }
 
+    public Optional<VehicleResponseDTO> findByLicensePlate(String licensePlate) {
+        return Optional.ofNullable(vehicleRepository.findByLicensePlate(licensePlate).filter(Vehicle::getActive)
+                .map(this::convertToResponseDTO)
+                .orElseThrow(() -> new NotFoundException("Veículo não encontrado")));
+    }
+
     @Transactional(readOnly = true)
     public List<VehicleResponseDTO> findAll() {
         return vehicleRepository.findAll().stream()
@@ -50,12 +56,6 @@ public class VehicleService {
         return vehicleRepository.findAllByActiveTrue().stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
-    }
-
-    public Optional<VehicleResponseDTO> findByLicensePlate(String licensePlate) {
-        return Optional.ofNullable(vehicleRepository.findByLicensePlate(licensePlate).filter(Vehicle::getActive)
-                .map(this::convertToResponseDTO)
-                .orElseThrow(() -> new NotFoundException("Veículo não encontrado")));
     }
 
     @Transactional
@@ -71,13 +71,14 @@ public class VehicleService {
     }
 
     @Transactional
-    public void logicallyDeleteVehicle(Long id) {
+    public boolean logicallyDeleteVehicle(Long id) {
         vehicleRepository.findById(id)
                 .map(vehicle -> {
                     vehicle.setActive(false);
                     vehicleRepository.save(vehicle);
                     return true;
                 }).orElseThrow(() -> new NotFoundException("Veículo não encontrado"));
+        return false;
     }
 
     @Transactional
