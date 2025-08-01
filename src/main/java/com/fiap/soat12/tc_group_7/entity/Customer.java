@@ -1,0 +1,57 @@
+package com.fiap.soat12.tc_group_7.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+@EqualsAndHashCode(callSuper = true)
+@Entity
+@Table(name = "customer")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Customer extends Audit {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(length = 14, nullable = false, unique = true)
+    private String cpf;
+
+    @Column(length = 100, nullable = false)
+    private String name;
+
+    @Column(length = 20)
+    private String phone;
+
+    @Column(length = 100)
+    private String email;
+
+    @Column(length = 100)
+    private String city;
+
+    @Column(length = 2)
+    private String state;
+
+    @Column(length = 100)
+    private String district;
+
+    @Column(length = 100)
+    private String street;
+
+    @Column(length = 20)
+    private String number;
+
+    private Boolean deleted;
+
+}
