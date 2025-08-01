@@ -1,9 +1,6 @@
 package com.fiap.soat12.tc_group_7.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VehicleRequestDTO {
 
+    @Pattern(regexp = "^([A-Z]{3}-[0-9]{4}|[A-Z]{3}[0-9][A-Z][0-9]{2})$", message = "Formato de placa inserido inválido, favor usar o padrão: 'AAA-9999' ou 'AAA9A99'.")
     @NotBlank(message = "A placa do veículo não pode estar em branco.")
     @Size(max = 20, message = "A placa do veículo não pode exceder 20 caracteres.")
     private String licensePlate;
