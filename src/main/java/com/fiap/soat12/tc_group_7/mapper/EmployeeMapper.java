@@ -12,22 +12,22 @@ public class EmployeeMapper {
     @Autowired
     private EmployeeFunctionMapper employeeFunctionMapper;
 
-    public EmployeeResponseDTO toResponseDTO(Employee entity) {
-        if (entity == null) return null;
-        EmployeeResponseDTO dto = new EmployeeResponseDTO();
-        dto.setId(entity.getId());
-        dto.setCpf(entity.getCpf());
-        dto.setName(entity.getName());
-        dto.setPhone(entity.getPhone());
-        dto.setEmail(entity.getEmail());
-        dto.setActive(entity.getActive());
-        dto.setCreatedAt(entity.getCreatedAt() != null ? entity.getCreatedAt().toString() : null);
-        dto.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().toString() : null);
-        dto.setEmployeeFunction(employeeFunctionMapper.toResponseDTO(entity.getEmployeeFunction()));
-        return dto;
+    public EmployeeResponseDTO toEmployeeResponseDTO(Employee employee) {
+        if (employee == null) return null;
+        return EmployeeResponseDTO.builder()
+                .id(employee.getId())
+                .cpf(employee.getCpf())
+                .name(employee.getName())
+                .phone(employee.getPhone())
+                .email(employee.getEmail())
+                .active(employee.getActive())
+                .created_at(employee.getCreatedAt())
+                .updated_at(employee.getUpdatedAt())
+                .employeeFunction(employeeFunctionMapper.toEmployeeFunctionResponseDTO(employee.getEmployeeFunction()))
+                .build();
     }
 
-    public Employee toEntity(EmployeeRequestDTO dto, EmployeeFunction employeeFunction) {
+    public Employee toEmployee(EmployeeRequestDTO dto, EmployeeFunction employeeFunction) {
         if (dto == null) return null;
         return Employee.builder()
                 .cpf(dto.getCpf())
@@ -40,4 +40,3 @@ public class EmployeeMapper {
                 .build();
     }
 }
-

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -25,36 +26,52 @@ public class EmployeeFunctionService {
     }
 
     public EmployeeFunctionResponseDTO createEmployeeFunction(EmployeeFunctionRequestDTO requestDTO) {
-        EmployeeFunction entity = employeeFunctionMapper.toEntity(requestDTO);
-        entity.setCreatedAt(java.time.LocalDateTime.now());
-        entity.setUpdatedAt(java.time.LocalDateTime.now());
+        EmployeeFunction entity = employeeFunctionMapper.toEmployeeFunction(requestDTO);
+        entity.setActive(true);
         EmployeeFunction saved = employeeFunctionRepository.save(entity);
-        return employeeFunctionMapper.toResponseDTO(saved);
+        return employeeFunctionMapper.toEmployeeFunctionResponseDTO(saved);
     }
 
     public Optional<EmployeeFunctionResponseDTO> getEmployeeFunctionById(Long id) {
         return employeeFunctionRepository.findById(id)
-                .map(employeeFunctionMapper::toResponseDTO);
+                .map(employeeFunctionMapper::toEmployeeFunctionResponseDTO);
     }
 
     public List<EmployeeFunctionResponseDTO> getAllEmployeeFunctions() {
         return employeeFunctionRepository.findAll().stream()
-                .map(employeeFunctionMapper::toResponseDTO)
-                .collect(java.util.stream.Collectors.toList());
+                .filter(EmployeeFunction::getActive)
+                .map(employeeFunctionMapper::toEmployeeFunctionResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<EmployeeFunctionResponseDTO> getAllEmployeeFunctionsIncludingInactive() {
+        return employeeFunctionRepository.findAll().stream()
+                .map(employeeFunctionMapper::toEmployeeFunctionResponseDTO)
+                .collect(Collectors.toList());
     }
 
     public Optional<EmployeeFunctionResponseDTO> updateEmployeeFunction(Long id, EmployeeFunctionRequestDTO requestDTO) {
         return employeeFunctionRepository.findById(id).map(existing -> {
             existing.setDescription(requestDTO.getDescription());
-            existing.setUpdatedAt(java.time.LocalDateTime.now());
+            existing.setActive(requestDTO.getActive());
             EmployeeFunction updated = employeeFunctionRepository.save(existing);
-            return employeeFunctionMapper.toResponseDTO(updated);
+            return employeeFunctionMapper.toEmployeeFunctionResponseDTO(updated);
         });
     }
 
-    public boolean deleteEmployeeFunction(Long id) {
-        if (!employeeFunctionRepository.existsById(id)) return false;
-        employeeFunctionRepository.deleteById(id);
-        return true;
+    public boolean inactivateEmployeeFunction(Long id) {
+        return employeeFunctionRepository.findById(id).map(employeeFunction -> {
+            employeeFunction.setActive(false);
+            employeeFunctionRepository.save(employeeFunction);
+            return true;
+        }).orElse(false);
+    }
+
+    public boolean activateEmployeeFunction(Long id) {
+        return employeeFunctionRepository.findById(id).map(employeeFunction -> {
+            employeeFunction.setActive(true);
+            employeeFunctionRepository.save(employeeFunction);
+            return true;
+        }).orElse(false);
     }
 }

@@ -7,20 +7,20 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class EmployeeFunctionMapper {
-    public EmployeeFunctionResponseDTO toResponseDTO(EmployeeFunction entity) {
-        if (entity == null) return null;
-        EmployeeFunctionResponseDTO dto = new EmployeeFunctionResponseDTO();
-        dto.setId(entity.getId());
-        dto.setDescription(entity.getDescription());
-        dto.setCreatedAt(entity.getCreatedAt() != null ? entity.getCreatedAt().toString() : null);
-        dto.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().toString() : null);
-        return dto;
+    public EmployeeFunctionResponseDTO toEmployeeFunctionResponseDTO(EmployeeFunction employeeFunction) {
+        if (employeeFunction == null) return null;
+        return EmployeeFunctionResponseDTO.builder()
+                .id(employeeFunction.getId())
+                .description(employeeFunction.getDescription())
+                .active(employeeFunction.getActive())
+                .build();
     }
 
-    public EmployeeFunction toEntity(EmployeeFunctionRequestDTO dto) {
+    public EmployeeFunction toEmployeeFunction(EmployeeFunctionRequestDTO dto) {
         if (dto == null) return null;
-        EmployeeFunction entity = new EmployeeFunction();
-        entity.setDescription(dto.getDescription());
-        return entity;
+        return EmployeeFunction.builder()
+                .description(dto.getDescription())
+                .active(dto.getActive())
+                .build();
     }
 }

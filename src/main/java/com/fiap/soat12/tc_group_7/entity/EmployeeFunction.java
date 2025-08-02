@@ -7,19 +7,17 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "employee_function")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeFunction {
+public class EmployeeFunction extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
     @Column(length = 100, nullable = false, unique = true)
     private String description;
+
+    @Column(nullable = false)
+    private Boolean active;
 }

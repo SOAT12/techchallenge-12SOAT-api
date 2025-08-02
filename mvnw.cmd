@@ -1,4 +1,6 @@
 <# : batch portion
+@SET "JAVA_HOME=C:\Users\Darkh\.jdks\ms-21.0.7"
+
 @REM ----------------------------------------------------------------------------
 @REM Licensed to the Apache Software Foundation (ASF) under one
 @REM or more contributor license agreements.  See the NOTICE file

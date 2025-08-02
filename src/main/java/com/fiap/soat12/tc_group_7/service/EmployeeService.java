@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,32 +25,31 @@ public class EmployeeService {
 
     public List<EmployeeResponseDTO> getAllEmployees() {
         return employeeRepository.findAll().stream()
-                .map(employeeMapper::toResponseDTO)
+                .map(employeeMapper::toEmployeeResponseDTO)
                 .collect(Collectors.toList());
     }
 
     public List<EmployeeResponseDTO> getAllActiveEmployees() {
-        return employeeRepository.findAll().stream()
-                .filter(Employee::getActive)
-                .map(employeeMapper::toResponseDTO)
+        return employeeRepository.findAllByActiveTrue().stream()
+                .map(employeeMapper::toEmployeeResponseDTO)
                 .collect(Collectors.toList());
     }
 
     public Optional<EmployeeResponseDTO> getEmployeeById(Long id) {
         return employeeRepository.findById(id)
-                .map(employeeMapper::toResponseDTO);
+                .map(employeeMapper::toEmployeeResponseDTO);
     }
 
     @Transactional
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO requestDTO) {
         EmployeeFunction function = employeeFunctionRepository.findById(requestDTO.getEmployeeFunctionId())
                 .orElseThrow(() -> new IllegalArgumentException("Função não encontrada"));
-        Employee employee = employeeMapper.toEntity(requestDTO, function);
-        employee.setCreatedAt(LocalDateTime.now());
-        employee.setUpdatedAt(LocalDateTime.now());
+        Employee employee = employeeMapper.toEmployee(requestDTO, function);
+        employee.setCreatedAt(new Date());
+        employee.setUpdatedAt(new Date());
         employee.setActive(true);
         Employee saved = employeeRepository.save(employee);
-        return employeeMapper.toResponseDTO(saved);
+        return employeeMapper.toEmployeeResponseDTO(saved);
     }
 
     @Transactional
@@ -65,9 +64,9 @@ public class EmployeeService {
             existing.setEmail(requestDTO.getEmail());
             existing.setActive(requestDTO.getActive());
             existing.setEmployeeFunction(function);
-            existing.setUpdatedAt(LocalDateTime.now());
+            existing.setUpdatedAt(new Date());
             Employee updated = employeeRepository.save(existing);
-            return employeeMapper.toResponseDTO(updated);
+            return employeeMapper.toEmployeeResponseDTO(updated);
         });
     }
 
@@ -75,7 +74,7 @@ public class EmployeeService {
     public boolean inactivateEmployee(Long id) {
         return employeeRepository.findById(id).map(employee -> {
             employee.setActive(false);
-            employee.setUpdatedAt(LocalDateTime.now());
+            employee.setUpdatedAt(new Date());
             employeeRepository.save(employee);
             return true;
         }).orElse(false);
@@ -85,7 +84,7 @@ public class EmployeeService {
     public boolean activateEmployee(Long id) {
         return employeeRepository.findById(id).map(employee -> {
             employee.setActive(true);
-            employee.setUpdatedAt(LocalDateTime.now());
+            employee.setUpdatedAt(new Date());
             employeeRepository.save(employee);
             return true;
         }).orElse(false);

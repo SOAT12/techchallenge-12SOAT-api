@@ -6,6 +6,6 @@ CREATE TABLE vehicle (
     brand         VARCHAR(50)        NOT NULL,
     model         VARCHAR(50)        NOT NULL,
     year          INT CHECK (year > 1900) ,
-    color VARCHAR(30)
-	active BOOLEAN NOT NULL DEFAULT TRUE,
+    color VARCHAR(30),
+	active BOOLEAN NOT NULL DEFAULT TRUE
 );

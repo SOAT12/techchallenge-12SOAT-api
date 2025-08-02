@@ -11,19 +11,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/employee-functions")
+@RequiredArgsConstructor
 @Tag(name = "Função de Funcionário", description = "API para gerenciar funções de funcionários")
 public class EmployeeFunctionController {
     private final EmployeeFunctionService employeeFunctionService;
-
-    public EmployeeFunctionController(EmployeeFunctionService employeeFunctionService) {
-        this.employeeFunctionService = employeeFunctionService;
-    }
 
     @Operation(summary = "Cria uma nova função de funcionário",
             description = "Cria uma nova função de funcionário com base nos dados fornecidos.")
@@ -45,12 +41,21 @@ public class EmployeeFunctionController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @Operation(summary = "Lista todas as funções de funcionário",
-            description = "Retorna uma lista de todas as funções de funcionário cadastradas.")
-    @ApiResponse(responseCode = "200", description = "Lista de funções retornada com sucesso")
+    @Operation(summary = "Lista todas as funções de funcionário ativas",
+            description = "Retorna uma lista de todas as funções de funcionário cadastradas e com status ativo.")
+    @ApiResponse(responseCode = "200", description = "Lista de funções ativas retornada com sucesso")
     @GetMapping
     public ResponseEntity<List<EmployeeFunctionResponseDTO>> getAll() {
         List<EmployeeFunctionResponseDTO> list = employeeFunctionService.getAllEmployeeFunctions();
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Lista todas as funções de funcionário, incluindo inativas",
+            description = "Retorna uma lista de todas as funções de funcionário cadastradas, independentemente do status.")
+    @ApiResponse(responseCode = "200", description = "Lista de funções retornada com sucesso")
+    @GetMapping("/all")
+    public ResponseEntity<List<EmployeeFunctionResponseDTO>> getAllIncludingInactive() {
+        List<EmployeeFunctionResponseDTO> list = employeeFunctionService.getAllEmployeeFunctionsIncludingInactive();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
@@ -66,13 +71,25 @@ public class EmployeeFunctionController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @Operation(summary = "Deleta uma função de funcionário",
-            description = "Remove uma função de funcionário do banco de dados pelo seu ID.")
-    @ApiResponse(responseCode = "204", description = "Função removida com sucesso")
+    @Operation(summary = "Deleta logicamente uma função de funcionário",
+            description = "Inativa uma função de funcionário pelo seu ID.")
+    @ApiResponse(responseCode = "204", description = "Função inativada com sucesso")
     @ApiResponse(responseCode = "404", description = "Função não encontrada")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (employeeFunctionService.deleteEmployeeFunction(id)) {
+        if (employeeFunctionService.inactivateEmployeeFunction(id)) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @Operation(summary = "Reativa uma função de funcionário",
+            description = "Reativa uma função de funcionário que foi inativada.")
+    @ApiResponse(responseCode = "204", description = "Função reativada com sucesso")
+    @ApiResponse(responseCode = "404", description = "Função não encontrada")
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<Void> activate(@PathVariable Long id) {
+        if (employeeFunctionService.activateEmployeeFunction(id)) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

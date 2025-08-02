@@ -1,9 +1,15 @@
 package com.fiap.soat12.tc_group_7.dto.employee;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmployeeRequestDTO {
     @NotNull(message = "O ID da função do funcionário não pode ser nulo.")
     private Long employeeFunctionId;
