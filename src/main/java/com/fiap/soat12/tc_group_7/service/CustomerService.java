@@ -1,6 +1,10 @@
 package com.fiap.soat12.tc_group_7.service;
 
+import com.fiap.soat12.tc_group_7.dto.customer.CustomerRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.customer.CustomerResponseDTO;
+import com.fiap.soat12.tc_group_7.entity.Customer;
+import com.fiap.soat12.tc_group_7.exception.BusinessException;
+import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.mapper.CustomerMapper;
 import com.fiap.soat12.tc_group_7.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +21,50 @@ public class CustomerService {
     private final CustomerMapper customerMapper;
 
     public List<CustomerResponseDTO> getAllCustomers() {
-        return customerRepository.findAll().stream()
+        return customerRepository.findAllByDeletedFalse().stream()
                 .map(customerMapper::toCustomerResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    public CustomerResponseDTO getCustomerByCpf(String cpf) {
+        return customerRepository.findByCpfAndDeletedFalse(cpf)
+                .map(customerMapper::toCustomerResponseDTO)
+                .orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
+    }
+
+    public CustomerResponseDTO createCustomer(CustomerRequestDTO requestDTO) {
+        if (customerRepository.findByCpfAndDeletedFalse(requestDTO.getCpf()).isPresent()) {
+            throw new BusinessException("CPF já cadastrado.");
+        }
+
+        Customer customer = customerMapper.toCustomer(requestDTO);
+        Customer savedCustomer = customerRepository.save(customer);
+        return customerMapper.toCustomerResponseDTO(savedCustomer);
+    }
+
+    public CustomerResponseDTO updateCustomerById(Long id, CustomerRequestDTO requestDTO) {
+        Customer existingCustomer = customerRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
+
+        existingCustomer.setCpf(requestDTO.getCpf());
+        existingCustomer.setName(requestDTO.getName());
+        existingCustomer.setPhone(requestDTO.getPhone());
+        existingCustomer.setEmail(requestDTO.getEmail());
+        existingCustomer.setCity(requestDTO.getCity());
+        existingCustomer.setState(requestDTO.getState());
+        existingCustomer.setDistrict(requestDTO.getDistrict());
+        existingCustomer.setStreet(requestDTO.getStreet());
+        existingCustomer.setNumber(requestDTO.getNumber());
+
+        Customer updatedCustomer = customerRepository.save(existingCustomer);
+        return customerMapper.toCustomerResponseDTO(updatedCustomer);
+    }
+
+    public void deleteCustomerById(Long id) {
+        Customer customer = customerRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
+        customer.setDeleted(true);
+        customerRepository.save(customer);
     }
 
 }
