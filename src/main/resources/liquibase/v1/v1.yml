@@ -14,6 +14,13 @@ databaseChangeLog:
                     path: customer/alter-table-customer-add-column-deleted.sql
                     relativeToChangelogFile: true
     - changeSet:
+        id: create-table-tool-category
+        author: caiohnrq
+        changes:
+          - sqlFile:
+              path: toolCategory/create-table-tool-category.sql
+              relativeToChangelogFile: true
+    - changeSet:
           id: create-table-stock
           author: caiohnrq
           changes:
@@ -21,16 +28,23 @@ databaseChangeLog:
                   path: stock/create-table-stock.sql
                   relativeToChangelogFile: true
     - changeSet:
-        id: create-table-tool-category
-        author: caiohnrq
-        changes:
-          - sqlFile:
-              path: stock/create-table-tool-category.sql
-              relativeToChangelogFile: true
-    - changeSet:
         id: create-table-vehicle
         author: caiohnrq
         changes:
           - sqlFile:
-              path: stock/create-table-vehicle.sql
+              path: vehicle/create-table-vehicle.sql
+              relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-employee-function
+        author: henrique.souza
+        changes:
+          - sqlFile:
+              path: employee/create-table-employee-function.sql
+              relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-employee
+        author: henrique.souza
+        changes:
+          - sqlFile:
+              path: employee/create-table-employee.sql
               relativeToChangelogFile: true

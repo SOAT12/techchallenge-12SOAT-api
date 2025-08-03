@@ -1,0 +1,15 @@
+CREATE TABLE employee (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    employee_function_id BIGINT NOT NULL,
+    cpf VARCHAR(14) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    phone VARCHAR(20),
+    email VARCHAR(100) UNIQUE,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT fk_employee_function
+        FOREIGN KEY(employee_function_id)
+        REFERENCES employee_function(id)
+);
