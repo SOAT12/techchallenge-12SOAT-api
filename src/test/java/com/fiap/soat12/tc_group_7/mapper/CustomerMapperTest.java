@@ -3,7 +3,6 @@ package com.fiap.soat12.tc_group_7.mapper;
 import com.fiap.soat12.tc_group_7.dto.customer.CustomerRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.customer.CustomerResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.Customer;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
