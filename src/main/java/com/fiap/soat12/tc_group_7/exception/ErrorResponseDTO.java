@@ -1,9 +1,9 @@
 package com.fiap.soat12.tc_group_7.exception;
 
+import java.time.LocalDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
