@@ -96,5 +96,4 @@ public class VehicleService {
         BeanUtils.copyProperties(savedVehicle, dto);
         return dto;
     }
-
 }
