@@ -3,20 +3,55 @@ databaseChangeLog:
         id: create-table-customer
         author: vinicius.filho
         changes:
-            - sqlFile:
-                path: customer/create-table-customer.sql
-                relativeToChangelogFile: true
+          - sqlFile:
+              path: customer/create-table-customer.sql
+              relativeToChangelogFile: true
     - changeSet:
-          id: alter-table-customer-add-column-deleted
-          author: vinicius.filho
-          changes:
-              - sqlFile:
-                    path: customer/alter-table-customer-add-column-deleted.sql
-                    relativeToChangelogFile: true
+        id: alter-table-customer-add-column-deleted
+        author: vinicius.filho
+        changes:
+          - sqlFile:
+              path: customer/alter-table-customer-add-column-deleted.sql
+              relativeToChangelogFile: true
     - changeSet:
-        id: create-table-vehicle_service
+      id: create-table-vehicle_service
         author: vinicius.filho
         changes:
           - sqlFile:
               path: vehicleservice/create-table-vehicle_service.sql
+              relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-tool-category
+        author: caiohnrq
+        changes:
+          - sqlFile:
+              path: toolCategory/create-table-tool-category.sql
+              relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-stock
+        author: caiohnrq
+        changes:
+          - sqlFile:
+              path: stock/create-table-stock.sql
+              relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-vehicle
+        author: caiohnrq
+        changes:
+          - sqlFile:
+              path: vehicle/create-table-vehicle.sql
+              relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-employee-function
+        author: henrique.souza
+        changes:
+          - sqlFile:
+              path: employee/create-table-employee-function.sql
+              relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-employee
+        author: henrique.souza
+        changes:
+          - sqlFile:
+              path: employee/create-table-employee.sql
               relativeToChangelogFile: true
