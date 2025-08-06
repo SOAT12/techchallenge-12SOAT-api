@@ -48,3 +48,10 @@ databaseChangeLog:
           - sqlFile:
               path: employee/create-table-employee.sql
               relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-service-order
+        author: caiohnrq
+        changes:
+          - sqlFile:
+              path: serviceOrder/create-table-service-order.sql
+              relativeToChangelogFile: true

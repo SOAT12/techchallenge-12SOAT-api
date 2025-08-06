@@ -84,32 +84,31 @@ public class ServiceOrderController {
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-
     }
 
     @Operation(summary = "Atualiza o status da ordem de serviço",
-            description = "Atualiza a ordem de serviço para: : Em diagnóstico.")
+            description = "Atualiza a ordem de serviço para: Em diagnóstico.")
     @PostMapping("/{id}/diagnose")
     public ResponseEntity<ServiceOrderResponseDTO> diagnose(@PathVariable Long id) {
         return ResponseEntity.ok(service.diagnose(id));
     }
 
     @Operation(summary = "Atualiza o status da ordem de serviço",
-            description = "Atualiza a ordem de serviço para: : Aguardando aprovação.")
+            description = "Atualiza a ordem de serviço para: Aguardando aprovação.")
     @PostMapping("/{id}/wait-for-approval")
     public ResponseEntity<ServiceOrderResponseDTO> waitForApproval(@PathVariable Long id) {
         return ResponseEntity.ok(service.waitForApproval(id));
     }
 
     @Operation(summary = "Atualiza o status da ordem de serviço",
-            description = "Atualiza a ordem de serviço para: : Aprovada.")
+            description = "Atualiza a ordem de serviço para: Aprovada.")
     @PostMapping("/{id}/approve")
     public ResponseEntity<ServiceOrderResponseDTO> approve(@PathVariable Long id) {
         return ResponseEntity.ok(service.approve(id));
     }
 
     @Operation(summary = "Atualiza o status da ordem de serviço",
-            description = "Atualiza a ordem de serviço para: : Rejeitada.")
+            description = "Atualiza a ordem de serviço para: Rejeitada.")
     @PostMapping("/{id}/reject")
     public ResponseEntity<ServiceOrderResponseDTO> reject(@PathVariable Long id) {
         return ResponseEntity.ok(service.reject(id));
