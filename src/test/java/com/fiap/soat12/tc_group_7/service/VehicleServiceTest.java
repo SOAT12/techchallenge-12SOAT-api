@@ -38,7 +38,7 @@ public class VehicleServiceTest {
     void setUp(){
         vehicleActive = new Vehicle(99L, "QFV-8487", "Chevrolet", "Onix", 2017, "Black", true);
         vehicleInactive = new Vehicle(100L, "ABC-0001", "Volve", "XC40", 2020, "White", false);
-        vehicleRequestDTO = new VehicleRequestDTO("RIO2A18", "Honda", "HRV", 2025, "Gray", true);
+        vehicleRequestDTO = new VehicleRequestDTO("RIO2A18", "Honda", "HRV", 2025, "Gray");
     }
 
     @Test

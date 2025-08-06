@@ -29,7 +29,8 @@ public class ServiceOrderService {
         ServiceOrder order = new ServiceOrder();
         BeanUtils.copyProperties(request, order);
 
-        order.setStatus(Status.OPENED); // Initial state
+        order.setStatus(Status.OPENED);
+        order.
         ServiceOrder savedOrder = serviceOrderRepository.save(order);
         return convertToResponseDTO(savedOrder);
     }

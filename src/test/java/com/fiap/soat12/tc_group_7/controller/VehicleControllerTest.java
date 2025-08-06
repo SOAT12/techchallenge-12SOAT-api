@@ -42,7 +42,7 @@ public class VehicleControllerTest {
 
     @BeforeEach
     void setUp() {
-        vehicleRequestDTO = new VehicleRequestDTO("RIO2A18", "Honda", "HRV", 2025, "Gray", true);
+        vehicleRequestDTO = new VehicleRequestDTO("RIO2A18", "Honda", "HRV", 2025, "Gray");
         vehicleResponseDTO = new VehicleResponseDTO(1L, "RIO2A18", "Honda", "HRV", 2025, "Gray", true);
     }
 
