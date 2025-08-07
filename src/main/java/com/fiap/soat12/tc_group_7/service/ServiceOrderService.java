@@ -143,29 +143,23 @@ public class ServiceOrderService {
             return null;
         }
 
-        // Create Customer DTO
         ServiceOrderResponseDTO.CustomerDTO customerDTO = new ServiceOrderResponseDTO.CustomerDTO(
                 order.getCustomer().getId(),
                 order.getCustomer().getName(),
-                order.getCustomer().getCpf() // Assuming 'cpf' is the document
+                order.getCustomer().getCpf()
         );
 
-        // Create Vehicle DTO
         ServiceOrderResponseDTO.VehicleDTO vehicleDTO = new ServiceOrderResponseDTO.VehicleDTO(
                 order.getVehicle().getId(),
                 order.getVehicle().getLicensePlate(),
                 order.getVehicle().getModel()
         );
 
-        // Create Attendant Employee DTO
         ServiceOrderResponseDTO.EmployeeDTO attendantDTO = new ServiceOrderResponseDTO.EmployeeDTO(
                 order.getEmployee().getId(),
                 order.getEmployee().getName()
         );
 
-        // --- Map Collections to Maps ---
-
-        // Create Services Map: Key is serviceId, Value is the detail DTO
         Map<Long, ServiceOrderResponseDTO.ServiceItemDetailDTO> servicesMap = order.getServices().stream()
                 .collect(Collectors.toMap(
                         serviceItem -> serviceItem.getVehicleService().getId(),
@@ -175,7 +169,6 @@ public class ServiceOrderService {
                         )
                 ));
 
-        // Create Stock Items Map: Key is stockId, Value is the detail DTO
         Map<Long, ServiceOrderResponseDTO.StockItemDetailDTO> stockItemsMap = order.getStockItems().stream()
                 .collect(Collectors.toMap(
                         stockItem -> stockItem.getStock().getId(),
@@ -186,8 +179,6 @@ public class ServiceOrderService {
                         )
                 ));
 
-        // --- Assemble the Main DTO ---
-
         ServiceOrderResponseDTO dto = new ServiceOrderResponseDTO();
         dto.setId(order.getId());
         dto.setStatus(order.getStatus());
@@ -196,10 +187,8 @@ public class ServiceOrderService {
         dto.setUpdatedAt(order.getUpdatedAt());
         dto.setFinishedAt(order.getFinishedAt());
 
-        // Set the calculated total value
         dto.setTotalValue(order.getTotalValue());
 
-        // Set the nested objects and maps
         dto.setCustomer(customerDTO);
         dto.setVehicle(vehicleDTO);
         dto.setEmployee(attendantDTO);
