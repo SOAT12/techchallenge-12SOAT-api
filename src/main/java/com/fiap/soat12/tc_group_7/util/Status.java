@@ -67,7 +67,8 @@ public enum Status {
             order.setStatus(DELIVERED);
         }
     },
-    DELIVERED;
+    DELIVERED,
+    CANCELED;
 
     public void diagnose(ServiceOrder order) throws InvalidTransitionException {
         throw new InvalidTransitionException("Cannot start diagnosis from state " + this.name());

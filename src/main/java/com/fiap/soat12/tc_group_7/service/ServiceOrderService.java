@@ -87,6 +87,7 @@ public class ServiceOrderService {
     public boolean deleteOrderLogically(Long id) {
         serviceOrderRepository.findById(id)
                 .map(order -> {
+                    order.setStatus(Status.CANCELED);
                     serviceOrderRepository.save(order);
                     return true;
                 }).orElseThrow(() -> new NotFoundException("Veículo não encontrado"));
