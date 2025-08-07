@@ -1,4 +1,4 @@
-package com.fiap.soat12.tc_group_7.dto;
+package com.fiap.soat12.tc_group_7.dto.vehicle;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

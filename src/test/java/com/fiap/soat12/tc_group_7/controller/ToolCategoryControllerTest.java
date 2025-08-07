@@ -1,8 +1,8 @@
 package com.fiap.soat12.tc_group_7.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiap.soat12.tc_group_7.dto.ToolCategoryRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.ToolCategoryResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryResponseDTO;
 import com.fiap.soat12.tc_group_7.service.ToolCategoryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

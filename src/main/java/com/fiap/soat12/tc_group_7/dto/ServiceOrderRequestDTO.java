@@ -1,36 +1,64 @@
 package com.fiap.soat12.tc_group_7.dto;
 
-import com.fiap.soat12.tc_group_7.entity.Stock;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServiceOrderRequestDTO {
-        
-        @NotNull(message = "Customer ID cannot be null")
-        private Integer customerId;
 
-        @NotNull(message = "Vehicle ID cannot be null")
-        private Integer vehicleId;
+    @NotNull
+    private Long customerId;
 
-        @NotNull(message = "Employee ID cannot be null")
-        private Integer employeeId;
+    @NotNull
+    private Long vehicleId;
 
-//        private List<Object> vehicleServices;
+    @NotNull
+    private Long employeeId;
 
-        private List<Stock> stockItems;
+//        private Long mechanicId;
 
-//        @NotNull(message = "O valor não pode ser nulo.")
-//        @Positive(message = "O valor deve ser maior que zero.")
+//        @NotNull
 //        private BigDecimal totalValue;
 
-        private String notes;
+    private String notes;
+
+    private List<VehicleServiceItemDTO> services;
+
+    private List<StockItemDTO> stockItems;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class VehicleServiceItemDTO {
+        @NotNull
+        private Long serviceId;
+
+        @NotNull
+        private Integer quantity;
+
+        @NotNull
+        private BigDecimal priceAtTime;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class StockItemDTO {
+        @NotNull
+        private Long stockId;
+
+        @NotNull
+        private Integer requiredQuantity;
+    }
 }

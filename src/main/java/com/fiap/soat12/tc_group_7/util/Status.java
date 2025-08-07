@@ -3,7 +3,7 @@ package com.fiap.soat12.tc_group_7.util;
 import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
 import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
 
-import java.time.OffsetDateTime;
+import java.util.Date;
 
 public enum Status {
 
@@ -45,7 +45,7 @@ public enum Status {
         @Override
         public void finish(ServiceOrder order) {
             order.setStatus(FINISHED);
-            order.setFinishedAt(OffsetDateTime.now());
+            order.setFinishedAt(new Date());
         }
     },
     WAITING_ON_STOCK {
@@ -58,7 +58,7 @@ public enum Status {
         @Override
         public void finish(ServiceOrder order) {
             order.setStatus(FINISHED);
-            order.setFinishedAt(OffsetDateTime.now());
+            order.setFinishedAt(new Date());
         }
     },
     FINISHED {

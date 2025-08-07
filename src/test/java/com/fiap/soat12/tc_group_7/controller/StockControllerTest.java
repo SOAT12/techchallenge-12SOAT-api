@@ -1,9 +1,9 @@
 package com.fiap.soat12.tc_group_7.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiap.soat12.tc_group_7.dto.StockRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.StockResponseDTO;
-import com.fiap.soat12.tc_group_7.dto.ToolCategoryResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.stock.StockRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.stock.StockResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryResponseDTO;
 import com.fiap.soat12.tc_group_7.service.StockService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

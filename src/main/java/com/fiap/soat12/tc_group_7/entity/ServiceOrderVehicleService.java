@@ -1,7 +1,6 @@
 package com.fiap.soat12.tc_group_7.entity;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,11 +21,11 @@ public class ServiceOrderVehicleService {
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("vehicleServiceId")
     @JoinColumn(name = "vehicle_service_id")
-    private Service service;
+    private VehicleService vehicleService;
 
-    @Column(nullable = false)
-    private Integer quantity;
-
-    @Column(name = "price_at_time", nullable = false, precision = 10, scale = 2)
-    private BigDecimal priceAtTime;
+//    @Column(nullable = false)
+//    private Integer quantity;
+//
+//    @Column(name = "price_at_time", nullable = false, precision = 10, scale = 2)
+//    private BigDecimal priceAtTime;
 }

@@ -35,7 +35,7 @@ public class ServiceOrderController {
     @PostMapping
     public ResponseEntity<ServiceOrderResponseDTO> createOrder(@Valid @RequestBody ServiceOrderRequestDTO request) {
         try {
-            return new ResponseEntity<>(service.createOrder(request), HttpStatus.CREATED);
+            return new ResponseEntity<>(service.createServiceOrder(request), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

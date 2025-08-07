@@ -1,7 +1,7 @@
 package com.fiap.soat12.tc_group_7.controller;
 
-import com.fiap.soat12.tc_group_7.dto.VehicleRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.VehicleResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.vehicle.VehicleRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.vehicle.VehicleResponseDTO;
 import com.fiap.soat12.tc_group_7.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
