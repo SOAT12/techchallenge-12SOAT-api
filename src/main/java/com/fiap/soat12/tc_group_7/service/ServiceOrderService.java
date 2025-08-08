@@ -10,7 +10,6 @@ import com.fiap.soat12.tc_group_7.repository.*;
 import com.fiap.soat12.tc_group_7.util.Status;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +42,6 @@ public class ServiceOrderService {
     public ServiceOrderResponseDTO createServiceOrder(ServiceOrderRequestDTO request) {
         ServiceOrder order = new ServiceOrder();
 
-        /** SET UP TABLE RELATION*/
         assert customerRepository != null;
         assert vehicleRepository != null;
         assert employeeRepository != null;
