@@ -2,8 +2,7 @@ package com.fiap.soat12.tc_group_7.entity;
 
 import com.fiap.soat12.tc_group_7.util.Status;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -13,6 +12,9 @@ import java.util.Set;
 @Table(name = "service_order")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ServiceOrder extends Audit {
 
     @Id
@@ -53,7 +55,6 @@ public class ServiceOrder extends Audit {
     private Set<ServiceOrderStock> stockItems;
 
     public BigDecimal calculateTotalValue(Set<ServiceOrderVehicleService> services, Set<ServiceOrderStock> stockItems) {
-        // Calculate total from services (price * quantity)
         BigDecimal servicesTotal = services.stream()
                 .map(service -> service.getVehicleService().getValue())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

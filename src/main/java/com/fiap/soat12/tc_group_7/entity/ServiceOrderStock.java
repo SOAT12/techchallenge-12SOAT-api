@@ -23,6 +23,4 @@ public class ServiceOrderStock {
     @JoinColumn(name = "stock_id")
     private Stock stock;
 
-//    @Column(name = "required_quantity", nullable = false)
-//    private Integer requiredQuantity;
 }

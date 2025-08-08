@@ -23,9 +23,4 @@ public class ServiceOrderVehicleService {
     @JoinColumn(name = "vehicle_service_id")
     private VehicleService vehicleService;
 
-//    @Column(nullable = false)
-//    private Integer quantity;
-//
-//    @Column(name = "price_at_time", nullable = false, precision = 10, scale = 2)
-//    private BigDecimal priceAtTime;
 }

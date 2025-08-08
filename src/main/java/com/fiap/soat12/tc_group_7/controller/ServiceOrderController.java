@@ -58,9 +58,9 @@ public class ServiceOrderController {
         return ResponseEntity.ok(service.findAllOrders());
     }
 
-    @Operation(summary = "Deleta uma ordem de serviço",
-            description = "Remove uma ordem de serviço pelo seu ID.")
-    @ApiResponse(responseCode = "204", description = "Ordem de serviço deletada com sucesso")
+    @Operation(summary = "Cancela uma ordem de serviço",
+            description = "Altera o status de uma ordem de serviço pelo seu ID para cancelada.")
+    @ApiResponse(responseCode = "204", description = "Ordem de serviço cancelada com sucesso")
     @ApiResponse(responseCode = "404", description = "Ordem de serviço não encontrada")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
@@ -76,9 +76,9 @@ public class ServiceOrderController {
     @ApiResponse(responseCode = "400", description = "Requisição inválida ou categoria não encontrada")
     @ApiResponse(responseCode = "404", description = "Ordem de serviço não encontrada")
     @PutMapping("/{id}")
-    public void updateOrder(@PathVariable Long id, @Valid @RequestBody ServiceOrderRequestDTO request) {
+    public ResponseEntity<ServiceOrderResponseDTO> updateOrder(@PathVariable Long id, @Valid @RequestBody ServiceOrderRequestDTO request) {
         try {
-            service.updateOrder(id, request)
+            return service.updateOrder(id, request)
                     .map(updatedOrder -> new ResponseEntity<>(updatedOrder, HttpStatus.OK))
                     .orElseGet(()-> new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (IllegalArgumentException e) {
@@ -110,8 +110,8 @@ public class ServiceOrderController {
     @Operation(summary = "Atualiza o status da ordem de serviço",
             description = "Atualiza a ordem de serviço para: Rejeitada.")
     @PostMapping("/{id}/reject")
-    public ResponseEntity<ServiceOrderResponseDTO> reject(@PathVariable Long id) {
-        return ResponseEntity.ok(service.reject(id));
+    public ResponseEntity<ServiceOrderResponseDTO> reject(@PathVariable Long id, @RequestParam String reason) {
+        return ResponseEntity.ok(service.reject(id, reason));
     }
 
 }

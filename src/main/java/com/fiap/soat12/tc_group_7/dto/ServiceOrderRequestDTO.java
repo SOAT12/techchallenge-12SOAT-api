@@ -24,11 +24,6 @@ public class ServiceOrderRequestDTO {
     @NotNull
     private Long employeeId;
 
-//        private Long mechanicId;
-
-//        @NotNull
-//        private BigDecimal totalValue;
-
     private String notes;
 
     private List<VehicleServiceItemDTO> services;
@@ -43,11 +38,9 @@ public class ServiceOrderRequestDTO {
         @NotNull
         private Long serviceId;
 
-        @NotNull
-        private Integer quantity;
+//        @NotNull
+//        private Integer quantity;
 
-        @NotNull
-        private BigDecimal priceAtTime;
     }
 
     @Getter

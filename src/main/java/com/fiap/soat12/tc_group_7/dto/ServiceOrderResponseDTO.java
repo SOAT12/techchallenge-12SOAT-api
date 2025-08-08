@@ -1,17 +1,16 @@
 package com.fiap.soat12.tc_group_7.dto;
 
 import com.fiap.soat12.tc_group_7.util.Status;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServiceOrderResponseDTO {
@@ -27,9 +26,9 @@ public class ServiceOrderResponseDTO {
         private VehicleDTO vehicle;
         private EmployeeDTO employee;
 
-        private Map<Long, ServiceItemDetailDTO> services;
+        private List<ServiceItemDetailDTO> services;
 
-        private Map<Long, StockItemDetailDTO> stockItems;
+        private List<StockItemDetailDTO> stockItems;
 
         @Getter
         @Setter
