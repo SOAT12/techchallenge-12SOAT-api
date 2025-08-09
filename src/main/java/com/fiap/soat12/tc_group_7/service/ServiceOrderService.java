@@ -2,6 +2,7 @@ package com.fiap.soat12.tc_group_7.service;
 
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.*;
 import com.fiap.soat12.tc_group_7.entity.VehicleService;
 import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
@@ -39,6 +40,8 @@ public class ServiceOrderService {
     private final VehicleServiceRepository serviceRepository;
     @Autowired
     private final StockRepository stockRepository;
+    @Autowired
+    private StockService stockService;
 
     @Transactional
     public ServiceOrderResponseDTO createServiceOrder(ServiceOrderRequestDTO request) {
@@ -73,7 +76,7 @@ public class ServiceOrderService {
     @Transactional(readOnly = true)
     public ServiceOrderResponseDTO findById(Long id) {
         return serviceOrderRepository.findById(id).map(this::toResponseDTO)
-                .orElseThrow(() -> new NotFoundException("Ordem de Serviço não encontrada com o id: " + id));
+                .orElseThrow(() -> new NotFoundException("Ordem de Serviço não encontrada: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -203,6 +206,7 @@ public class ServiceOrderService {
     public Optional<ServiceOrderResponseDTO> finish(Long id) throws InvalidTransitionException {
         ServiceOrder order = getOrderById(id);
         order.getStatus().finish(order);
+        //todo chamar serviço de envio de email ao cliente
         return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
     }
 
@@ -211,6 +215,22 @@ public class ServiceOrderService {
         ServiceOrder order = getOrderById(id);
         order.getStatus().deliver(order);
         return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
+    }
+
+    @Transactional
+    public void startOrderExecution(Long serviceOrderId) {
+        ServiceOrder order = serviceOrderRepository.findById(serviceOrderId)
+                .orElseThrow(() -> new NotFoundException("Ordem de Serviço não encontrada: " + serviceOrderId));
+
+        StockAvailabilityResponseDTO availability = stockService.checkStockAvailability(order);
+
+        if (!availability.isAvailable()) {
+             order.getStatus().waitForStock(order);
+        } else {
+            order.getStatus().execute(order);
+        }
+
+        serviceOrderRepository.save(order);
     }
 
     private void mapServicesDetail(ServiceOrderRequestDTO request, ServiceOrder order) {

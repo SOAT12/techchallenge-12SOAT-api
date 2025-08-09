@@ -88,9 +88,9 @@ public class ServiceOrderController {
     }
 
     //todo implementar lógica da busca automática do mecânico. Enquanto não tem, informar o ID, nos serviços de diagnostico e aprovação
-    @Operation(summary = "Atualiza o status da ordem de serviço",
+    @Operation(summary = "Atualiza a ordem de serviço para: Em diagnóstico.",
             description = "Atualiza a ordem de serviço para: Em diagnóstico.")
-    @PostMapping("/{id}/diagnose")
+    @PatchMapping("/{id}/diagnose")
     public ResponseEntity<ServiceOrderResponseDTO> diagnose(@PathVariable Long id, @RequestParam Long employeeId) {
         try {
             return service.diagnose(id, employeeId)
@@ -101,9 +101,9 @@ public class ServiceOrderController {
         }
     }
 
-    @Operation(summary = "Atualiza o status da ordem de serviço",
+    @Operation(summary = "Atualiza a ordem de serviço para: Aguardando aprovação.",
             description = "Atualiza a ordem de serviço para: Aguardando aprovação.")
-    @PostMapping("/{id}/wait-for-approval")
+    @PatchMapping("/{id}/wait-for-approval")
     public ResponseEntity<ServiceOrderResponseDTO> waitForApproval(@PathVariable Long id) {
         try {
             return service.waitForApproval(id)
@@ -115,9 +115,9 @@ public class ServiceOrderController {
     }
 
     //todo implementar lógica da busca automática do mecânico. Enquanto não tem, informar o ID, nos serviços de diagnostico e aprovação
-    @Operation(summary = "Atualiza o status da ordem de serviço",
+    @Operation(summary = "Atualiza a ordem de serviço para: Aprovada.",
             description = "Atualiza a ordem de serviço para: Aprovada.")
-    @PostMapping("/{id}/approve")
+    @PatchMapping("/{id}/approve")
     public ResponseEntity<ServiceOrderResponseDTO> approve(@PathVariable Long id, @RequestParam(required = false) Long employeeId) {
         try {
             return service.approve(id, employeeId)
@@ -128,13 +128,39 @@ public class ServiceOrderController {
         }
     }
 
-    @Operation(summary = "Atualiza o status da ordem de serviço",
+    @Operation(summary = "Atualiza a ordem de serviço para: Rejeitada.",
             description = "Atualiza a ordem de serviço para: Rejeitada.")
-    @PostMapping("/{id}/reject")
+    @PatchMapping("/{id}/reject")
     public ResponseEntity<ServiceOrderResponseDTO> reject(@PathVariable Long id, @RequestParam(required = false) String reason) {
         try {
             return service.reject(id, reason)
-                    .map(approvedOrder -> new ResponseEntity<>(approvedOrder, HttpStatus.OK))
+                    .map(rejectedOrder -> new ResponseEntity<>(rejectedOrder, HttpStatus.OK))
+                    .orElseThrow();
+        } catch (InvalidTransitionException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Atualiza a ordem de serviço para: Finalizada.",
+            description = "Atualiza a ordem de serviço para: Finalizada.")
+    @PatchMapping("/{id}/finish")
+    public ResponseEntity<ServiceOrderResponseDTO> finish(@PathVariable Long id) {
+        try {
+            return service.finish(id)
+                    .map(finishedOrder -> new ResponseEntity<>(finishedOrder, HttpStatus.OK))
+                    .orElseThrow();
+        } catch (InvalidTransitionException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Atualiza a ordem de serviço para: Entregue.",
+            description = "Atualiza a ordem de serviço para: Entregue.")
+    @PatchMapping("/{id}/deliver")
+    public ResponseEntity<ServiceOrderResponseDTO> deliver(@PathVariable Long id) {
+        try {
+            return service.deliver(id)
+                    .map(finishedOrder -> new ResponseEntity<>(finishedOrder, HttpStatus.OK))
                     .orElseThrow();
         } catch (InvalidTransitionException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

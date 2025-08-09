@@ -35,10 +35,6 @@ public class ServiceOrderRequestDTO {
     public static class VehicleServiceItemDTO {
         @NotNull
         private Long serviceId;
-
-//        @NotNull
-//        private Integer quantity;
-
     }
 
     @Getter
