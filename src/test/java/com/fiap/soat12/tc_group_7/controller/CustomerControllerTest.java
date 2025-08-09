@@ -97,7 +97,7 @@ public class CustomerControllerTest {
 
         when(customerService.getCustomerByCpf(cpf)).thenReturn(dto);
 
-        mockMvc.perform(get("/api/customers/cpf")
+        mockMvc.perform(get("/api/customers/by-cpf")
                         .param("cpf", cpf))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(dto.getId()))

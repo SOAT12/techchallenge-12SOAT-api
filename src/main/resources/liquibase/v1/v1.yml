@@ -62,3 +62,17 @@ databaseChangeLog:
           - sqlFile:
               path: serviceOrder/create-table-service-order.sql
               relativeToChangelogFile: true
+    - changeSet:
+          id: create-table-notification
+          author: vinicius.filho
+          changes:
+              - sqlFile:
+                    path: notification/create-table-notification.sql
+                    relativeToChangelogFile: true
+    - changeSet:
+          id: create-table-notification_employee
+          author: vinicius.filho
+          changes:
+              - sqlFile:
+                    path: notification/create-table-notification_employee.sql
+                    relativeToChangelogFile: true
