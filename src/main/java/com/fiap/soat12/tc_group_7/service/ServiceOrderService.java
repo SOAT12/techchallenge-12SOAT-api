@@ -217,22 +217,6 @@ public class ServiceOrderService {
         return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
     }
 
-    @Transactional
-    public void startOrderExecution(Long serviceOrderId) {
-        ServiceOrder order = serviceOrderRepository.findById(serviceOrderId)
-                .orElseThrow(() -> new NotFoundException("Ordem de Serviço não encontrada: " + serviceOrderId));
-
-        StockAvailabilityResponseDTO availability = stockService.checkStockAvailability(order);
-
-        if (!availability.isAvailable()) {
-             order.getStatus().waitForStock(order);
-        } else {
-            order.getStatus().execute(order);
-        }
-
-        serviceOrderRepository.save(order);
-    }
-
     private void mapServicesDetail(ServiceOrderRequestDTO request, ServiceOrder order) {
         if (request.getServices() != null) {
             order.setServices(request.getServices().stream().map(dto -> {
