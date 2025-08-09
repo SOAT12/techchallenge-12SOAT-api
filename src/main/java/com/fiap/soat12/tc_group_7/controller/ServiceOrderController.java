@@ -2,6 +2,7 @@ package com.fiap.soat12.tc_group_7.controller;
 
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
+import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
 import com.fiap.soat12.tc_group_7.service.ServiceOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -86,32 +87,58 @@ public class ServiceOrderController {
         }
     }
 
+    //todo implementar lógica da busca automática do mecânico. Enquanto não tem, informar o ID, nos serviços de diagnostico e aprovação
     @Operation(summary = "Atualiza o status da ordem de serviço",
             description = "Atualiza a ordem de serviço para: Em diagnóstico.")
     @PostMapping("/{id}/diagnose")
-    public ResponseEntity<ServiceOrderResponseDTO> diagnose(@PathVariable Long id) {
-        return ResponseEntity.ok(service.diagnose(id));
+    public ResponseEntity<ServiceOrderResponseDTO> diagnose(@PathVariable Long id, @RequestParam Long employeeId) {
+        try {
+            return service.diagnose(id, employeeId)
+                    .map(order -> new ResponseEntity<>(order, HttpStatus.OK))
+                    .orElseThrow();
+        }catch (InvalidTransitionException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @Operation(summary = "Atualiza o status da ordem de serviço",
             description = "Atualiza a ordem de serviço para: Aguardando aprovação.")
     @PostMapping("/{id}/wait-for-approval")
     public ResponseEntity<ServiceOrderResponseDTO> waitForApproval(@PathVariable Long id) {
-        return ResponseEntity.ok(service.waitForApproval(id));
+        try {
+            return service.waitForApproval(id)
+                    .map(order -> new ResponseEntity<>(order, HttpStatus.OK))
+                    .orElseThrow();
+        }catch (InvalidTransitionException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
+    //todo implementar lógica da busca automática do mecânico. Enquanto não tem, informar o ID, nos serviços de diagnostico e aprovação
     @Operation(summary = "Atualiza o status da ordem de serviço",
             description = "Atualiza a ordem de serviço para: Aprovada.")
     @PostMapping("/{id}/approve")
-    public ResponseEntity<ServiceOrderResponseDTO> approve(@PathVariable Long id) {
-        return ResponseEntity.ok(service.approve(id));
+    public ResponseEntity<ServiceOrderResponseDTO> approve(@PathVariable Long id, @RequestParam(required = false) Long employeeId) {
+        try {
+            return service.approve(id, employeeId)
+                    .map(approvedOrder -> new ResponseEntity<>(approvedOrder, HttpStatus.OK))
+                    .orElseThrow();
+        } catch (InvalidTransitionException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @Operation(summary = "Atualiza o status da ordem de serviço",
             description = "Atualiza a ordem de serviço para: Rejeitada.")
     @PostMapping("/{id}/reject")
-    public ResponseEntity<ServiceOrderResponseDTO> reject(@PathVariable Long id, @RequestParam String reason) {
-        return ResponseEntity.ok(service.reject(id, reason));
+    public ResponseEntity<ServiceOrderResponseDTO> reject(@PathVariable Long id, @RequestParam(required = false) String reason) {
+        try {
+            return service.reject(id, reason)
+                    .map(approvedOrder -> new ResponseEntity<>(approvedOrder, HttpStatus.OK))
+                    .orElseThrow();
+        } catch (InvalidTransitionException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
 }

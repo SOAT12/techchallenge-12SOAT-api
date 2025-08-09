@@ -20,7 +20,6 @@ public class ServiceOrderRequestDTO {
     @NotNull
     private Long vehicleId;
 
-    @NotNull
     private Long employeeId;
 
     private String notes;

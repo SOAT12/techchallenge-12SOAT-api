@@ -62,3 +62,10 @@ databaseChangeLog:
           - sqlFile:
               path: serviceOrder/create-table-service-order.sql
               relativeToChangelogFile: true
+    - changeSet:
+        id: alter-table-service-order-column-employee-id.sql
+        author: caiohnrq
+        changes:
+          - sqlFile:
+              path: serviceOrder/alter-table-service-order-column-employee-id.sql
+              relativeToChangelogFile: true
