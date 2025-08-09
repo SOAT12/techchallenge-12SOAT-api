@@ -20,20 +20,26 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
-    public List<CustomerResponseDTO> getAllCustomers() {
+    public List<CustomerResponseDTO> getAllActiveCustomers() {
         return customerRepository.findAllByDeletedFalse().stream()
                 .map(customerMapper::toCustomerResponseDTO)
                 .collect(Collectors.toList());
     }
 
+    public List<CustomerResponseDTO> getAllCustomers() {
+        return customerRepository.findAll().stream()
+                .map(customerMapper::toCustomerResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     public CustomerResponseDTO getCustomerByCpf(String cpf) {
-        return customerRepository.findByCpfAndDeletedFalse(cpf)
+        return customerRepository.findByCpf(cpf)
                 .map(customerMapper::toCustomerResponseDTO)
                 .orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
     }
 
     public CustomerResponseDTO createCustomer(CustomerRequestDTO requestDTO) {
-        if (customerRepository.findByCpfAndDeletedFalse(requestDTO.getCpf()).isPresent()) {
+        if (customerRepository.findByCpf(requestDTO.getCpf()).isPresent()) {
             throw new BusinessException("CPF já cadastrado.");
         }
 
@@ -64,6 +70,13 @@ public class CustomerService {
         Customer customer = customerRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
         customer.setDeleted(true);
+        customerRepository.save(customer);
+    }
+
+    public void activateCustomer(Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
+        customer.setDeleted(false);
         customerRepository.save(customer);
     }
 

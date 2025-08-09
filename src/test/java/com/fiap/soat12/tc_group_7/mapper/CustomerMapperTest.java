@@ -25,6 +25,7 @@ public class CustomerMapperTest {
                 .district("Centro")
                 .street("Rua das Flores")
                 .number("100")
+                .deleted(false)
                 .build();
 
         // Act
@@ -41,6 +42,7 @@ public class CustomerMapperTest {
         assertEquals(customer.getDistrict(), dto.getDistrict());
         assertEquals(customer.getStreet(), dto.getStreet());
         assertEquals(customer.getNumber(), dto.getNumber());
+        assertEquals(customer.getDeleted(), dto.getDeleted());
     }
 
     @Test

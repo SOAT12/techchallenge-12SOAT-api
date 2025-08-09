@@ -37,7 +37,7 @@ public class CustomerServiceTest {
     }
 
     @Test
-    void getAllCustomers_withSuccess() {
+    void getAllActiveCustomers_withSuccess() {
         // Arrange
         Customer customer = Customer.builder()
                 .id(1L)
@@ -54,13 +54,41 @@ public class CustomerServiceTest {
         when(customerMapper.toCustomerResponseDTO(customer)).thenReturn(dto);
 
         // Act
-        List<CustomerResponseDTO> result = customerService.getAllCustomers();
+        List<CustomerResponseDTO> result = customerService.getAllActiveCustomers();
 
         // Assert
         assertEquals(1, result.size());
         assertEquals("João Silva", result.get(0).getName());
         assertEquals("123.456.789-00", result.get(0).getCpf());
         verify(customerRepository, times(1)).findAllByDeletedFalse();
+        verify(customerMapper, times(1)).toCustomerResponseDTO(customer);
+    }
+
+    @Test
+    void getAllCustomers_withSuccess() {
+        // Arrange
+        Customer customer = Customer.builder()
+                .id(1L)
+                .name("João Silva")
+                .cpf("123.456.789-00")
+                .build();
+        CustomerResponseDTO dto = CustomerResponseDTO.builder()
+                .id(1L)
+                .name("João Silva")
+                .cpf("123.456.789-00")
+                .build();
+
+        when(customerRepository.findAll()).thenReturn(List.of(customer));
+        when(customerMapper.toCustomerResponseDTO(customer)).thenReturn(dto);
+
+        // Act
+        List<CustomerResponseDTO> result = customerService.getAllCustomers();
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("João Silva", result.get(0).getName());
+        assertEquals("123.456.789-00", result.get(0).getCpf());
+        verify(customerRepository, times(1)).findAll();
         verify(customerMapper, times(1)).toCustomerResponseDTO(customer);
     }
 
@@ -80,7 +108,7 @@ public class CustomerServiceTest {
                 .name("João")
                 .build();
 
-        when(customerRepository.findByCpfAndDeletedFalse(cpf)).thenReturn(Optional.of(customer));
+        when(customerRepository.findByCpf(cpf)).thenReturn(Optional.of(customer));
         when(customerMapper.toCustomerResponseDTO(customer)).thenReturn(dto);
 
         // Act
@@ -97,7 +125,7 @@ public class CustomerServiceTest {
     void getCustomerByCpf_withNotFoundException() {
         // Arrange
         String cpf = "000.000.000-00";
-        when(customerRepository.findByCpfAndDeletedFalse(cpf)).thenReturn(Optional.empty());
+        when(customerRepository.findByCpf(cpf)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(NotFoundException.class, () -> customerService.getCustomerByCpf(cpf));
@@ -139,7 +167,7 @@ public class CustomerServiceTest {
                 .name(requestDTO.getName())
                 .build();
 
-        when(customerRepository.findByCpfAndDeletedFalse(requestDTO.getCpf())).thenReturn(Optional.empty());
+        when(customerRepository.findByCpf(requestDTO.getCpf())).thenReturn(Optional.empty());
         when(customerMapper.toCustomer(requestDTO)).thenReturn(customer);
         when(customerRepository.save(customer)).thenReturn(savedCustomer);
         when(customerMapper.toCustomerResponseDTO(savedCustomer)).thenReturn(expectedResponse);
@@ -152,7 +180,7 @@ public class CustomerServiceTest {
         assertEquals(1L, result.getId());
         assertEquals("12345678900", result.getCpf());
         assertEquals("João da Silva", result.getName());
-        verify(customerRepository).findByCpfAndDeletedFalse(requestDTO.getCpf());
+        verify(customerRepository).findByCpf(requestDTO.getCpf());
         verify(customerRepository).save(customer);
     }
 
@@ -170,7 +198,7 @@ public class CustomerServiceTest {
                 .cpf(cpfDuplicado)
                 .build();
 
-        when(customerRepository.findByCpfAndDeletedFalse(cpfDuplicado))
+        when(customerRepository.findByCpf(cpfDuplicado))
                 .thenReturn(Optional.of(existingCustomer));
 
         // Act
@@ -181,7 +209,7 @@ public class CustomerServiceTest {
 
         // Assert
         assertEquals("CPF já cadastrado.", exception.getMessage());
-        verify(customerRepository).findByCpfAndDeletedFalse(cpfDuplicado);
+        verify(customerRepository).findByCpf(cpfDuplicado);
         verifyNoMoreInteractions(customerRepository);
     }
 
@@ -283,6 +311,24 @@ public class CustomerServiceTest {
 
         assertEquals("Cliente não encontrado.", ex.getMessage());
         verify(customerRepository, never()).save(any());
+    }
+
+    @Test
+    void activateCustomer_withSuccess() {
+        // Assert
+        Long id = 1L;
+        Customer customer = new Customer();
+        customer.setId(id);
+        customer.setDeleted(false);
+
+        when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
+
+        // Act
+        customerService.activateCustomer(id);
+
+        // Assert
+        assertFalse(customer.getDeleted());
+        verify(customerRepository).save(customer);
     }
 
 }
