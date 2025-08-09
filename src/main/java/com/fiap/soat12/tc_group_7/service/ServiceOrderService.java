@@ -2,11 +2,24 @@ package com.fiap.soat12.tc_group_7.service;
 
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
-import com.fiap.soat12.tc_group_7.entity.*;
+import com.fiap.soat12.tc_group_7.entity.Customer;
+import com.fiap.soat12.tc_group_7.entity.Employee;
+import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
+import com.fiap.soat12.tc_group_7.entity.ServiceOrderStock;
+import com.fiap.soat12.tc_group_7.entity.ServiceOrderStockId;
+import com.fiap.soat12.tc_group_7.entity.ServiceOrderVehicleService;
+import com.fiap.soat12.tc_group_7.entity.ServiceOrderVehicleServiceId;
+import com.fiap.soat12.tc_group_7.entity.Stock;
+import com.fiap.soat12.tc_group_7.entity.Vehicle;
 import com.fiap.soat12.tc_group_7.entity.VehicleService;
 import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
-import com.fiap.soat12.tc_group_7.repository.*;
+import com.fiap.soat12.tc_group_7.repository.CustomerRepository;
+import com.fiap.soat12.tc_group_7.repository.EmployeeRepository;
+import com.fiap.soat12.tc_group_7.repository.ServiceOrderRepository;
+import com.fiap.soat12.tc_group_7.repository.StockRepository;
+import com.fiap.soat12.tc_group_7.repository.VehicleRepository;
+import com.fiap.soat12.tc_group_7.repository.VehicleServiceRepository;
 import com.fiap.soat12.tc_group_7.util.Status;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +28,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.fiap.soat12.tc_group_7.util.Status.getStatusesForPendingOrders;
+import static java.util.Objects.nonNull;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +65,13 @@ public class ServiceOrderService {
         assert serviceOrderRepository != null;
         Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(() -> new NotFoundException("Customer not found"));
         Vehicle vehicle = vehicleRepository.findById(request.getVehicleId()).orElseThrow(() -> new NotFoundException("Vehicle not found"));
-        Employee employee = employeeRepository.findById(request.getEmployeeId()).orElseThrow(() -> new NotFoundException("Attendant not found"));
+
+        Employee employee;
+        if (nonNull(request.getEmployeeId())) {
+            employee = employeeRepository.findById(request.getEmployeeId()).orElseThrow(() -> new NotFoundException("Employee not found"));
+        } else {
+            employee = this.findMostAvailableEmployee();
+        }
 
         order.setCustomer(customer);
         order.setVehicle(vehicle);
@@ -165,6 +188,31 @@ public class ServiceOrderService {
         order.getStatus().reject(order);
         order.setNotes(reason);
         return toResponseDTO(serviceOrderRepository.save(order));
+    }
+
+    public Employee findMostAvailableEmployee() {
+        List<Status> activeStatuses = getStatusesForPendingOrders();
+
+        List<Employee> activeEmployees = employeeRepository.findAllByActiveTrue();
+
+        if (activeEmployees.isEmpty()) {
+            throw new NotFoundException("Nenhum mecânico disponível");
+        }
+
+        return activeEmployees.stream()
+                .min(Comparator
+                        .comparingLong((Employee employee) -> serviceOrderRepository.countByEmployeeAndStatusIn(employee, activeStatuses))
+                        .thenComparing(employee -> findOldestOrderDateForEmployee(employee, activeStatuses) == null ? null :
+                                findOldestOrderDateForEmployee(employee, activeStatuses)))
+                .orElseThrow(() -> new NotFoundException("Nenhum mecânico disponível"));
+    }
+
+    protected Date findOldestOrderDateForEmployee(Employee employee, List<Status> activeStatuses) {
+        List<ServiceOrder> activeOrders = serviceOrderRepository.findByEmployeeAndStatusIn(employee, activeStatuses);
+        return activeOrders.stream()
+                .map(ServiceOrder::getCreatedAt)
+                .min(Comparator.naturalOrder())
+                .orElse(null);
     }
 
     private ServiceOrderResponseDTO toResponseDTO(ServiceOrder order) {
