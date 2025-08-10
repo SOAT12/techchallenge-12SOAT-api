@@ -63,9 +63,23 @@ databaseChangeLog:
               path: serviceOrder/create-table-service-order.sql
               relativeToChangelogFile: true
     - changeSet:
-        id: alter-table-service-order-column-employee-id.sql
+        id: alter-table-service-order-column-employee-id
         author: caiohnrq
         changes:
           - sqlFile:
               path: serviceOrder/alter-table-service-order-column-employee-id.sql
               relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-service-order-vehicle-service
+        author: caiohnrq
+        changes:
+            - sqlFile:
+                path: serviceOrder/create-table-service-order-vehicle-service.sql
+                relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-service-order-stock
+        author: caiohnrq
+        changes:
+            - sqlFile:
+                path: serviceOrder/create-table-service-order-stock.sql
+                relativeToChangelogFile: true
