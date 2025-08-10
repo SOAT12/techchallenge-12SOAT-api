@@ -83,3 +83,10 @@ databaseChangeLog:
             - sqlFile:
                 path: serviceOrder/create-table-service-order-stock.sql
                 relativeToChangelogFile: true
+    - changeSet:
+        id: alter-table-employee-add-column
+        author: alexpires1
+        changes:
+          - sqlFile:
+              path: employee/alter-table-employee-add-columns.sql
+              relativeToChangelogFile: true

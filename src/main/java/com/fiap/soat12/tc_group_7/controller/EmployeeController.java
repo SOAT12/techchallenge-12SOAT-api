@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.fiap.soat12.tc_group_7.dto.ChangePasswordRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.ForgotPasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.LoginRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeResponseDTO;
@@ -130,5 +131,13 @@ public class EmployeeController {
     @PutMapping(path = "/{id}/change-password")
 	public void changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequestDTO requestDTO) throws Exception {
     	employeeService.changePassword(id, requestDTO);
+	}
+    
+    @Operation(summary = "Esqueceu a senha de um funcionário")
+    @ApiResponse(responseCode = "200", description = "Senha nova enviada ao email do funcionário")
+    @ApiResponse(responseCode = "400", description = "Funcionário não encontrado")
+    @PostMapping(path = "/forgot-password")
+	public void forgotPassword(@Valid @RequestBody ForgotPasswordRequestDTO requestDTO) throws Exception {
+    	employeeService.forgotPassword(requestDTO);
 	}
 }

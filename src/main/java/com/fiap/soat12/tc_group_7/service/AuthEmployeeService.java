@@ -1,5 +1,7 @@
 package com.fiap.soat12.tc_group_7.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -29,8 +31,11 @@ import com.fiap.soat12.tc_group_7.util.CryptUtil;
 import com.fiap.soat12.tc_group_7.util.JwtTokenUtil;
 import com.fiap.soat12.tc_group_7.util.UUIDGeneratorUtil;
 
+import lombok.RequiredArgsConstructor;
+
 
 @Service
+@RequiredArgsConstructor
 public class AuthEmployeeService implements UserDetailsService {
 
 	@Autowired
@@ -42,13 +47,11 @@ public class AuthEmployeeService implements UserDetailsService {
 	@Lazy
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	    
+	   
+    private final EmployeeService employeeService;
+
     private final EmployeeRepository employeeRepository;
 
-	public AuthEmployeeService(EmployeeRepository employeeRepository) {
-		this.employeeRepository = employeeRepository;
-	}
-    
 	public LoginResponseDTO auth(LoginRequestDTO requestDTO) throws Exception {
 
 		try {
@@ -57,16 +60,16 @@ public class AuthEmployeeService implements UserDetailsService {
 
 			try {
 
-//				employeeService.authTemporaryPasswordMobile(requestDTO);
+				employeeService.authTemporaryPassword(requestDTO);
 
 				authenticateMobile(requestDTO, true, true);
 
-//				employeeService.authenticatedTemporaryPasswordMobile(requestDTO, true);
+				employeeService.authenticatedTemporaryPassword(requestDTO, true);
 
 			} catch (BadCredentialsException e1) {
 				authenticateMobile(requestDTO, false, false);
 
-//				employeeService.authenticatedOldPasswordMobile(requestDTO);
+				employeeService.authenticatedOldPassword(requestDTO);
 
 			}
 
@@ -109,7 +112,7 @@ public class AuthEmployeeService implements UserDetailsService {
 
 			Predicate<GrantedAuthority> p1 = s -> s.toString().equals("USETEMPORARYPASSWORD");
 			if (authentication.getAuthorities().stream().anyMatch(p1)) {
-//				employeeService.authenticatedTemporaryPasswordMobile(loginMobile, false);
+				employeeService.authenticatedTemporaryPassword(requestDTO, false);
 			}
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -130,13 +133,22 @@ public class AuthEmployeeService implements UserDetailsService {
 
 		UserBuilder builder = org.springframework.security.core.userdetails.User.withUsername(usr);
 
-		String password = username.contains(":USETEMPORARYPASSWORD") ? usuario.getPassword()
-				: usuario.getPassword();
+		String password = username.contains(":USETEMPORARYPASSWORD") ? usuario.getTemporaryPassword()
+	            : usuario.getPassword();
+		
+		List<String> roles = new ArrayList<String>();
+		roles.add("GESTOR");
 
+		builder.roles(roles.toArray(new String[0]));
+		
 		if (username.contains(":MD5")) {
 			builder.password(new BCryptPasswordEncoder().encode(password));
 		} else {
 			builder.password(password);
+		}
+		
+		if (usuario.getUseTemporaryPassword()) {
+			builder.authorities(new String[] { "USETEMPORARYPASSWORD" });
 		}
 
 		return builder.build();
