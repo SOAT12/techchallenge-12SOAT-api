@@ -1,8 +1,8 @@
-package com.fiap.soat12.tc_group_7.dto;
+package com.fiap.soat12.tc_group_7.dto.toolCategory;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 /**
  * DTO para respostas de ToolCategory.

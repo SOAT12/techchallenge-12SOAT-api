@@ -1,7 +1,7 @@
 package com.fiap.soat12.tc_group_7.service;
 
-import com.fiap.soat12.tc_group_7.dto.VehicleRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.VehicleResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.vehicle.VehicleRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.vehicle.VehicleResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.Vehicle;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.repository.VehicleRepository;
@@ -96,5 +96,4 @@ public class VehicleService {
         BeanUtils.copyProperties(savedVehicle, dto);
         return dto;
     }
-
 }

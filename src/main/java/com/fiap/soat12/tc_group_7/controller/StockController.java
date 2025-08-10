@@ -1,7 +1,7 @@
 package com.fiap.soat12.tc_group_7.controller;
 
-import com.fiap.soat12.tc_group_7.dto.StockRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.StockResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.stock.StockRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.stock.StockResponseDTO;
 import com.fiap.soat12.tc_group_7.service.StockService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

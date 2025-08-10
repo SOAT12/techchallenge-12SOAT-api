@@ -1,7 +1,7 @@
 package com.fiap.soat12.tc_group_7.service;
 
-import com.fiap.soat12.tc_group_7.dto.ToolCategoryRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.ToolCategoryResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.ToolCategory;
 import com.fiap.soat12.tc_group_7.repository.ToolCategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,8 +106,8 @@ class ToolCategoryServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(activeCategory.getToolCategoryName(), result.get(0).getToolCategoryName());
-        assertTrue(result.get(0).getActive());
+        assertEquals(activeCategory.getToolCategoryName(), result.getFirst().getToolCategoryName());
+        assertTrue(result.getFirst().getActive());
 
         verify(toolCategoryRepository, times(1)).findAll();
     }
@@ -121,8 +121,8 @@ class ToolCategoryServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(activeCategory.getToolCategoryName(), result.get(0).getToolCategoryName());
-        assertTrue(result.get(0).getActive());
+        assertEquals(activeCategory.getToolCategoryName(), result.getFirst().getToolCategoryName());
+        assertTrue(result.getFirst().getActive());
 
         verify(toolCategoryRepository, times(1)).findByActiveTrue();
     }

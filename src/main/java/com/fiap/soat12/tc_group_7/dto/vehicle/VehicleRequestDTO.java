@@ -1,4 +1,4 @@
-package com.fiap.soat12.tc_group_7.dto;
+package com.fiap.soat12.tc_group_7.dto.vehicle;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -30,6 +30,4 @@ public class VehicleRequestDTO {
     @NotBlank(message = "O nome da cor do veículo não pode estar em branco.")
     @Size(max = 30, message = "O nome da cor do veículo não pode exceder 30 caracteres.")
     private String color;
-
-    private Boolean active = true;
 }

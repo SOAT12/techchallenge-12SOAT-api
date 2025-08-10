@@ -1,9 +1,9 @@
 package com.fiap.soat12.tc_group_7.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fiap.soat12.tc_group_7.dto.employee.EmployeeFunctionResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeResponseDTO;
-import com.fiap.soat12.tc_group_7.dto.employee.EmployeeFunctionResponseDTO;
 import com.fiap.soat12.tc_group_7.service.EmployeeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
