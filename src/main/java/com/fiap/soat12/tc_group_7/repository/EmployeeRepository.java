@@ -1,6 +1,7 @@
 package com.fiap.soat12.tc_group_7.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,6 @@ import com.fiap.soat12.tc_group_7.entity.Employee;
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<Employee> findAllByActiveTrue();
     
-    Employee findByCpf(String cpf);
+    Optional<Employee> findByCpf(String cpf);
 }
 

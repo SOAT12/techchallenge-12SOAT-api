@@ -7,7 +7,6 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +23,7 @@ import com.fiap.soat12.tc_group_7.config.SessionToken;
 import com.fiap.soat12.tc_group_7.dto.LoginRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.LoginResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.Employee;
+import com.fiap.soat12.tc_group_7.exception.BadCredentialsException;
 import com.fiap.soat12.tc_group_7.repository.EmployeeRepository;
 import com.fiap.soat12.tc_group_7.util.CryptUtil;
 import com.fiap.soat12.tc_group_7.util.JwtTokenUtil;
@@ -115,7 +115,7 @@ public class AuthEmployeeService implements UserDetailsService {
 
 		} catch (DisabledException e) {
 			throw new BadCredentialsException("USER_DISABLED", e);
-		} catch (BadCredentialsException e) {
+		} catch (org.springframework.security.authentication.BadCredentialsException e) {
 			throw new BadCredentialsException("INVALID_CREDENTIALS", e);
 		}
 
@@ -125,7 +125,8 @@ public class AuthEmployeeService implements UserDetailsService {
 
 		String usr = username.split(":")[0];
 
-		Employee usuario = employeeRepository.findByCpf(usr);
+		Employee usuario = employeeRepository.findByCpf(usr)
+				.orElseThrow(() -> new UsernameNotFoundException("FALHA NA IDENTIFICAÇÃO: " + usr));
 
 		UserBuilder builder = org.springframework.security.core.userdetails.User.withUsername(usr);
 

@@ -3,6 +3,7 @@ package com.fiap.soat12.tc_group_7.config;
 import java.io.IOException;
 import java.io.Serializable;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
 		response.setContentType("application/json;charset=UTF-8");
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.getWriter().write(new ObjectMapper()
-				.writeValueAsString(new IllegalArgumentException()));
+				.writeValueAsString(new ApiError(HttpStatus.UNAUTHORIZED, authException.getMessage(), authException)));
+
 
 	}
 

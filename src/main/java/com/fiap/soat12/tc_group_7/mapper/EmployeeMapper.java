@@ -1,11 +1,13 @@
 package com.fiap.soat12.tc_group_7.mapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.Employee;
 import com.fiap.soat12.tc_group_7.entity.EmployeeFunction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import com.fiap.soat12.tc_group_7.util.CryptUtil;
 
 @Component
 public class EmployeeMapper {
@@ -32,7 +34,7 @@ public class EmployeeMapper {
         return Employee.builder()
                 .cpf(dto.getCpf())
                 .name(dto.getName())
-                .password(dto.getPassword())
+                .password(CryptUtil.bcrypt(dto.getPassword()))
                 .phone(dto.getPhone())
                 .email(dto.getEmail())
                 .active(dto.getActive())

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -125,12 +126,12 @@ public class RequestFilter extends OncePerRequestFilter {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 
-//			ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-//
-//			response.setHeader("Content-Type", "application/json;charset=UTF-8");
-//			response.setStatus(HttpStatus.BAD_REQUEST.value());
-//
-//			response.getWriter().write(new ObjectMapper().writeValueAsString(apiError));
+			ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+
+			response.setHeader("Content-Type", "application/json;charset=UTF-8");
+			response.setStatus(HttpStatus.BAD_REQUEST.value());
+
+			response.getWriter().write(new ObjectMapper().writeValueAsString(apiError));
 
 		}
 
