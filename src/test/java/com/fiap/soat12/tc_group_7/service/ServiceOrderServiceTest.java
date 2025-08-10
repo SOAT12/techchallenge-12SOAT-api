@@ -2,7 +2,6 @@ package com.fiap.soat12.tc_group_7.service;
 
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
-import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.*;
 import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
@@ -21,13 +20,11 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ServiceOrderService Unit Tests")
@@ -45,8 +42,6 @@ class ServiceOrderServiceTest {
     private VehicleServiceRepository serviceRepository;
     @Mock
     private StockRepository stockRepository;
-    @Mock
-    private StockService stockService;
 
     @InjectMocks
     private ServiceOrderService serviceOrderService;
@@ -90,19 +85,10 @@ class ServiceOrderServiceTest {
         serviceOrder.setServices(Collections.emptySet());
         serviceOrder.setStockItems(Collections.emptySet());
 
-//        ServiceOrderRequestDTO.VehicleServiceItemDTO vehicleServiceItemDTO = new ServiceOrderRequestDTO.VehicleServiceItemDTO();
-//        vehicleServiceItemDTO.setServiceId(serviceOrder.getId());
-
-//        ServiceOrderRequestDTO.StockItemDTO stockItemDTO = new ServiceOrderRequestDTO.StockItemDTO();
-//        stockItemDTO.setStockId(stock.getId());
-//        stockItemDTO.setRequiredQuantity(3);
-
         requestDTO = new ServiceOrderRequestDTO();
         requestDTO.setCustomerId(1L);
         requestDTO.setVehicleId(1L);
         requestDTO.setEmployeeId(1L);
-//        requestDTO.setServices(List.of(vehicleServiceItemDTO));
-//        requestDTO.setStockItems(List.of(stockItemDTO));
     }
 
     @Nested
