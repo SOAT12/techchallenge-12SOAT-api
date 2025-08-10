@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -138,11 +137,11 @@ public class EmployeeService {
 		String recipient = employee.getCpf();
 		String message = tempPassword;
 
-		mailClient.prepareAndSend(recipient, message);
+//		mailClient.prepareAndSend(recipient, message);
 
-		employee.setTemporaryPassword(CryptUtil.bcrypt(tempPassword));
-		employee.setPasswordValidity(DateUtils.toLocalDateTime(DateUtils.getCurrentDate()));
-		employee.setUseTemporaryPassword(true);
+//		employee.setTemporaryPassword(CryptUtil.bcrypt(tempPassword));
+//		employee.setPasswordValidity(DateUtils.toLocalDateTime(DateUtils.getCurrentDate()));
+//		employee.setUseTemporaryPassword(true);
 
 		employeeRepository.save(employee);
 	}
