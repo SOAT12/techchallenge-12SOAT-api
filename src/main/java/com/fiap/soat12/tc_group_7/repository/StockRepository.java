@@ -12,4 +12,5 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
     List<Stock> findByToolCategory(ToolCategory toolCategory);
     List<Stock> findByActiveTrueAndQuantityGreaterThan(Integer quantity);
     List<Stock> findByActiveTrue();
+    Stock findByIdAndActiveTrue(Long id);
 }

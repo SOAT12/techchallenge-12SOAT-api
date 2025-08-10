@@ -1,8 +1,8 @@
 package com.fiap.soat12.tc_group_7.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiap.soat12.tc_group_7.dto.VehicleRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.VehicleResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.vehicle.VehicleRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.vehicle.VehicleResponseDTO;
 import com.fiap.soat12.tc_group_7.service.VehicleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +42,7 @@ public class VehicleControllerTest {
 
     @BeforeEach
     void setUp() {
-        vehicleRequestDTO = new VehicleRequestDTO("RIO2A18", "Honda", "HRV", 2025, "Gray", true);
+        vehicleRequestDTO = new VehicleRequestDTO("RIO2A18", "Honda", "HRV", 2025, "Gray");
         vehicleResponseDTO = new VehicleResponseDTO(1L, "RIO2A18", "Honda", "HRV", 2025, "Gray", true);
     }
 

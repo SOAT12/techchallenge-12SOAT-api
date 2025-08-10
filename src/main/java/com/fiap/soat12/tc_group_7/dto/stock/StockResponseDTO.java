@@ -1,8 +1,10 @@
-package com.fiap.soat12.tc_group_7.dto;
+package com.fiap.soat12.tc_group_7.dto.stock;
 
+import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryResponseDTO;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+
 import java.math.BigDecimal;
 import java.util.Date;
 

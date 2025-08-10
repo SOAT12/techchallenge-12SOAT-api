@@ -34,6 +34,7 @@ public class CustomerMapper {
                 .district(requestDTO.getDistrict())
                 .street(requestDTO.getStreet())
                 .number(requestDTO.getNumber())
+                .deleted(false)
                 .build();
     }
 

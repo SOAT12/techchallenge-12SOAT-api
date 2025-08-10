@@ -1,7 +1,7 @@
 package com.fiap.soat12.tc_group_7.controller;
 
-import com.fiap.soat12.tc_group_7.dto.VehicleRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.VehicleResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.vehicle.VehicleRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.vehicle.VehicleResponseDTO;
 import com.fiap.soat12.tc_group_7.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -51,8 +51,8 @@ public class VehicleController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @Operation(summary = "Obtém um veículo pelo ID",
-            description = "Retorna um veículo específico pelo seu ID.")
+    @Operation(summary = "Obtém um veículo pela placa informada",
+            description = "Retorna um veículo específico pela sua placa.")
     @ApiResponse(responseCode = "200", description = "Veículo encontrado com sucesso")
     @ApiResponse(responseCode = "404", description = "Veículo não encontrado")
     @GetMapping("/plate/{licensePlate}")
@@ -62,8 +62,8 @@ public class VehicleController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @Operation(summary = "Lista todos os itens de estoque",
-            description = "Retorna uma lista de todos os itens em estoque cadastrados.")
+    @Operation(summary = "Lista todos os veículos",
+            description = "Retorna uma lista de todos os veículos cadastrados.")
     @ApiResponse(responseCode = "200", description = "Lista de itens de estoque retornada com sucesso")
     @GetMapping("/all")
     public ResponseEntity<List<VehicleResponseDTO>> getAllVehicles(){
@@ -71,9 +71,9 @@ public class VehicleController {
         return new ResponseEntity<>(vehiclesActive, HttpStatus.OK);
     }
 
-    @Operation(summary = "Lista todos os itens de estoque ativos",
-            description = "Retorna uma lista de todos os itens em estoque cadastrados e com status ativo")
-    @ApiResponse(responseCode = "200", description = "Lista de itens de estoque ativas retornada com sucesso")
+    @Operation(summary = "Lista todos os veículos ativos",
+            description = "Retorna uma lista de todos os veículos cadastrados e com status ativo")
+    @ApiResponse(responseCode = "200", description = "Lista de veículos ativos retornada com sucesso")
     @GetMapping
     public ResponseEntity<List<VehicleResponseDTO>> getAllVehiclesActive(){
         List<VehicleResponseDTO> vehiclesActive = vehicleService.findAllVehiclesActive();

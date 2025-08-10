@@ -1,10 +1,11 @@
 package com.fiap.soat12.tc_group_7.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+
 import java.math.BigDecimal;
 
 @EqualsAndHashCode(callSuper = true)

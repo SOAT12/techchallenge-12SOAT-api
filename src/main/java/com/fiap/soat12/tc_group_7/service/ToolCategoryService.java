@@ -1,7 +1,7 @@
 package com.fiap.soat12.tc_group_7.service;
 
-import com.fiap.soat12.tc_group_7.dto.ToolCategoryRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.ToolCategoryResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.ToolCategory;
 import com.fiap.soat12.tc_group_7.repository.ToolCategoryRepository;
 import org.springframework.beans.BeanUtils;

@@ -1,10 +1,10 @@
-package com.fiap.soat12.tc_group_7.dto;
+package com.fiap.soat12.tc_group_7.dto.toolCategory;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 /**
  * DTO para requisições de criação/atualização de ToolCategory.

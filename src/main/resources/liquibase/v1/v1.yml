@@ -14,7 +14,7 @@ databaseChangeLog:
               path: customer/alter-table-customer-add-column-deleted.sql
               relativeToChangelogFile: true
     - changeSet:
-      id: create-table-vehicle_service
+        id: create-table-vehicle_service
         author: vinicius.filho
         changes:
           - sqlFile:
@@ -55,3 +55,31 @@ databaseChangeLog:
           - sqlFile:
               path: employee/create-table-employee.sql
               relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-service-order
+        author: caiohnrq
+        changes:
+          - sqlFile:
+              path: serviceOrder/create-table-service-order.sql
+              relativeToChangelogFile: true
+    - changeSet:
+        id: alter-table-service-order-column-employee-id
+        author: caiohnrq
+        changes:
+          - sqlFile:
+              path: serviceOrder/alter-table-service-order-column-employee-id.sql
+              relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-service-order-vehicle-service
+        author: caiohnrq
+        changes:
+            - sqlFile:
+                path: serviceOrder/create-table-service-order-vehicle-service.sql
+                relativeToChangelogFile: true
+    - changeSet:
+        id: create-table-service-order-stock
+        author: caiohnrq
+        changes:
+            - sqlFile:
+                path: serviceOrder/create-table-service-order-stock.sql
+                relativeToChangelogFile: true
