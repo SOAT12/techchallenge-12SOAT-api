@@ -9,14 +9,22 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/vehicle-services")
+@RequestMapping("/api/vehicle-services")
 @RequiredArgsConstructor
-@Tag(name = "VehicleService", description = "API para gerenciar serviços")
+@Tag(name = "Serviço", description = "API para gerenciar serviços")
 public class VehicleServiceController {
 
     private final VehicleServiceService vehicleServiceService;
@@ -29,6 +37,14 @@ public class VehicleServiceController {
         return vehicleServiceService.getAllActiveVehicleServices();
     }
 
+    @GetMapping("/all")
+    @Operation(summary = "Busca todos os serviços ativos",
+            description = "Retorna uma lista de todos os serviços com status ativo.")
+    @ApiResponse(responseCode = "200", description = "Lista de serviços ativos retornada com sucesso")
+    public List<VehicleServiceResponseDTO> getAllVehicleServices() {
+        return vehicleServiceService.getAllVehicleServices();
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Busca um serviço por ID",
             description = "Retorna os dados de um serviço ativo da oficina.")
@@ -39,6 +55,7 @@ public class VehicleServiceController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Cria um novo serviço",
             description = "Cadastra um novo serviço ativo na oficina.")
     @ApiResponse(responseCode = "201", description = "Serviço criado com sucesso")
@@ -56,14 +73,22 @@ public class VehicleServiceController {
         return vehicleServiceService.update(id, dto);
     }
 
-    @PatchMapping("/{id}/deactivate")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
     @Operation(summary = "Desativa um serviço",
             description = "Marca um serviço como inativo.")
     @ApiResponse(responseCode = "204", description = "Serviço desativado com sucesso")
     @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
     public void deactivate(@PathVariable Long id) {
         vehicleServiceService.deactivate(id);
+    }
+
+    @PutMapping("/{id}/activate")
+    @Operation(summary = "Ativa um serviço",
+            description = "Marca um serviço como ativo.")
+    @ApiResponse(responseCode = "204", description = "Serviço ativado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
+    public void activate(@PathVariable Long id) {
+        vehicleServiceService.activate(id);
     }
 
 }

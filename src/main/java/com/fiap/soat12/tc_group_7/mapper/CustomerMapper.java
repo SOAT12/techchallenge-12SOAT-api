@@ -20,6 +20,7 @@ public class CustomerMapper {
                 .district(customer.getDistrict())
                 .street(customer.getStreet())
                 .number(customer.getNumber())
+                .deleted(customer.getDeleted())
                 .build();
     }
 

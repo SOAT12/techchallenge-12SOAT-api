@@ -20,4 +20,5 @@ public class CustomerResponseDTO {
     private String district;
     private String street;
     private String number;
+    private Boolean deleted;
 }
