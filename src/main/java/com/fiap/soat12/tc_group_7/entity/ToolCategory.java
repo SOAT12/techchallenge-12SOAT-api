@@ -22,7 +22,4 @@ public class ToolCategory {
     @Column(name = "active", nullable = false)
     private Boolean active = true;
 
-    public ToolCategory(String toolCategoryName) {
-        this.toolCategoryName = toolCategoryName;
-    }
 }

@@ -2,6 +2,7 @@ package com.fiap.soat12.tc_group_7.service;
 
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.*;
 import com.fiap.soat12.tc_group_7.entity.VehicleService;
 import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
@@ -10,6 +11,7 @@ import com.fiap.soat12.tc_group_7.repository.*;
 import com.fiap.soat12.tc_group_7.util.Status;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true)
@@ -37,6 +40,8 @@ public class ServiceOrderService {
     private final VehicleServiceRepository serviceRepository;
     @Autowired
     private final StockRepository stockRepository;
+    @Autowired
+    private StockService stockService;
 
     @Transactional
     public ServiceOrderResponseDTO createServiceOrder(ServiceOrderRequestDTO request) {
@@ -48,11 +53,14 @@ public class ServiceOrderService {
         assert serviceOrderRepository != null;
         Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(() -> new NotFoundException("Customer not found"));
         Vehicle vehicle = vehicleRepository.findById(request.getVehicleId()).orElseThrow(() -> new NotFoundException("Vehicle not found"));
-        Employee employee = employeeRepository.findById(request.getEmployeeId()).orElseThrow(() -> new NotFoundException("Attendant not found"));
+
+        if (request.getEmployeeId() != null) {
+            Employee employee = employeeRepository.findById(request.getEmployeeId()).orElseThrow(() -> new NotFoundException("Attendant not found"));
+            order.setEmployee(employee);
+        }
 
         order.setCustomer(customer);
         order.setVehicle(vehicle);
-        order.setEmployee(employee);
 
         mapServicesDetail(request, order);
         mapStockItemsDetail(request, order);
@@ -68,7 +76,7 @@ public class ServiceOrderService {
     @Transactional(readOnly = true)
     public ServiceOrderResponseDTO findById(Long id) {
         return serviceOrderRepository.findById(id).map(this::toResponseDTO)
-                .orElseThrow(() -> new NotFoundException("Ordem de Serviço não encontrada com o id: " + id));
+                .orElseThrow(() -> new NotFoundException("Ordem de Serviço não encontrada: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -135,36 +143,105 @@ public class ServiceOrderService {
 
     private ServiceOrder getOrderById(Long id) {
         return serviceOrderRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Service Order not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Ordem de serviço não encontrada com o id: " + id));
     }
 
     @Transactional
-    public ServiceOrderResponseDTO diagnose(Long id) throws InvalidTransitionException {
+    public Optional<ServiceOrderResponseDTO> diagnose(Long id, Long employeeId) throws InvalidTransitionException {
+        Employee employee = null;
         ServiceOrder order = getOrderById(id);
+
+        if (employeeId != null) {
+            employee = employeeRepository.findById(employeeId).orElseThrow(() -> new NotFoundException("Funcionário não encontrado."));
+            order.setEmployee(employee);
+        }
+
         order.getStatus().diagnose(order);
-        return toResponseDTO(serviceOrderRepository.save(order));
+        return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
     }
 
     @Transactional
-    public ServiceOrderResponseDTO waitForApproval(Long id) throws InvalidTransitionException {
+    public Optional<ServiceOrderResponseDTO> waitForApproval(Long id) throws InvalidTransitionException {
         ServiceOrder order = getOrderById(id);
         order.getStatus().waitForApproval(order);
-        return toResponseDTO(serviceOrderRepository.save(order));
+        return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
     }
 
     @Transactional
-    public ServiceOrderResponseDTO approve(Long id) throws InvalidTransitionException {
+    public Optional<ServiceOrderResponseDTO> approve(Long id, Long employeeId) throws InvalidTransitionException {
+        Employee employee = null;
         ServiceOrder order = getOrderById(id);
+
+        if (employeeId != null) {
+            employee = employeeRepository.findById(employeeId).orElseThrow(() -> new NotFoundException("Funcionário não encontrado."));
+            order.setEmployee(employee);
+        }
         order.getStatus().approve(order);
-        return toResponseDTO(serviceOrderRepository.save(order));
+        return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
     }
 
     @Transactional
-    public ServiceOrderResponseDTO reject(Long id, String reason) throws InvalidTransitionException {
+    public Optional<ServiceOrderResponseDTO> reject(Long id, String reason) throws InvalidTransitionException {
         ServiceOrder order = getOrderById(id);
         order.getStatus().reject(order);
         order.setNotes(reason);
-        return toResponseDTO(serviceOrderRepository.save(order));
+        return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
+    }
+
+    @Transactional
+    public Optional<ServiceOrderResponseDTO> waitForStock(Long id) throws InvalidTransitionException {
+        ServiceOrder order = getOrderById(id);
+        order.getStatus().waitForStock(order);
+        return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
+    }
+
+    @Transactional
+    public Optional<ServiceOrderResponseDTO> execute(Long id) throws InvalidTransitionException {
+        ServiceOrder order = getOrderById(id);
+        order.getStatus().execute(order);
+        return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
+    }
+
+    @Transactional
+    public Optional<ServiceOrderResponseDTO> finish(Long id) throws InvalidTransitionException {
+        ServiceOrder order = getOrderById(id);
+        order.getStatus().finish(order);
+        //todo chamar serviço de envio de email ao cliente
+        return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
+    }
+
+    @Transactional
+    public Optional<ServiceOrderResponseDTO> deliver(Long id) throws InvalidTransitionException {
+        ServiceOrder order = getOrderById(id);
+        order.getStatus().deliver(order);
+        return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
+    }
+
+    private void mapServicesDetail(ServiceOrderRequestDTO request, ServiceOrder order) {
+        if (request.getServices() != null) {
+            order.setServices(request.getServices().stream().map(dto -> {
+                ServiceOrderVehicleService sos = new ServiceOrderVehicleService();
+                VehicleService service = serviceRepository.findById(dto.getServiceId()).orElseThrow(() -> new NotFoundException("Serviço não encontrado"));
+                sos.setVehicleService(service);
+                sos.setServiceOrder(order);
+                sos.setId(new ServiceOrderVehicleServiceId(order.getId(), service.getId()));
+                return sos;
+            }).collect(Collectors.toSet()));
+        }
+    }
+
+    private void mapStockItemsDetail(ServiceOrderRequestDTO request, ServiceOrder order) {
+        if (request.getStockItems() != null) {
+            order.setStockItems(request.getStockItems().stream().map(dto -> {
+                Stock stock = stockRepository.findById(dto.getStockId()).orElseThrow(() -> new NotFoundException("Peça não encontrada"));
+                ServiceOrderStock sos = new ServiceOrderStock();
+                sos.setStock(stock);
+                sos.getStock().setQuantity(dto.getRequiredQuantity());
+                sos.setServiceOrder(order);
+                sos.setId(new ServiceOrderStockId(order.getId(), stock.getId()));
+                return sos;
+            }).collect(Collectors.toSet()));
+        }
     }
 
     private ServiceOrderResponseDTO toResponseDTO(ServiceOrder order) {
@@ -172,22 +249,28 @@ public class ServiceOrderService {
             return null;
         }
 
-        ServiceOrderResponseDTO.CustomerDTO customerDTO = new ServiceOrderResponseDTO.CustomerDTO(
+        ServiceOrderResponseDTO.CustomerDTO customerDTO = null;
+        ServiceOrderResponseDTO.VehicleDTO vehicleDTO = null;
+        ServiceOrderResponseDTO.EmployeeDTO attendantDTO = null;
+
+        customerDTO = new ServiceOrderResponseDTO.CustomerDTO(
                 order.getCustomer().getId(),
                 order.getCustomer().getName(),
                 order.getCustomer().getCpf()
         );
 
-        ServiceOrderResponseDTO.VehicleDTO vehicleDTO = new ServiceOrderResponseDTO.VehicleDTO(
+        vehicleDTO = new ServiceOrderResponseDTO.VehicleDTO(
                 order.getVehicle().getId(),
                 order.getVehicle().getLicensePlate(),
                 order.getVehicle().getModel()
         );
 
-        ServiceOrderResponseDTO.EmployeeDTO attendantDTO = new ServiceOrderResponseDTO.EmployeeDTO(
-                order.getEmployee().getId(),
-                order.getEmployee().getName()
-        );
+        if (order.getEmployee() != null) {
+            attendantDTO = new ServiceOrderResponseDTO.EmployeeDTO(
+                    order.getEmployee().getId(),
+                    order.getEmployee().getName()
+            );
+        }
 
         List<ServiceOrderResponseDTO.ServiceItemDetailDTO> servicesMap = order.getServices().stream().map(
                         serviceItem -> new ServiceOrderResponseDTO.ServiceItemDetailDTO(
@@ -223,32 +306,5 @@ public class ServiceOrderService {
         dto.setStockItems(stockItemsMap);
 
         return dto;
-    }
-
-    private void mapServicesDetail(ServiceOrderRequestDTO request, ServiceOrder order) {
-        if (request.getServices() != null) {
-            order.setServices(request.getServices().stream().map(dto -> {
-                ServiceOrderVehicleService sos = new ServiceOrderVehicleService();
-                VehicleService service = serviceRepository.findById(dto.getServiceId()).orElseThrow(() -> new NotFoundException("Serviço não encontrado"));
-                sos.setVehicleService(service);
-                sos.setServiceOrder(order);
-                sos.setId(new ServiceOrderVehicleServiceId(order.getId(), service.getId()));
-                return sos;
-            }).collect(Collectors.toSet()));
-        }
-    }
-
-    private void mapStockItemsDetail(ServiceOrderRequestDTO request, ServiceOrder order) {
-        if (request.getStockItems() != null) {
-            order.setStockItems(request.getStockItems().stream().map(dto -> {
-                Stock stock = stockRepository.findById(dto.getStockId()).orElseThrow(() -> new NotFoundException("Peça não encontrada"));
-                ServiceOrderStock sos = new ServiceOrderStock();
-                sos.setStock(stock);
-                sos.getStock().setQuantity(dto.getRequiredQuantity());
-                sos.setServiceOrder(order);
-                sos.setId(new ServiceOrderStockId(order.getId(), stock.getId()));
-                return sos;
-            }).collect(Collectors.toSet()));
-        }
     }
 }
