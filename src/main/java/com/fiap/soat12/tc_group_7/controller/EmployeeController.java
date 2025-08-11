@@ -1,19 +1,5 @@
 package com.fiap.soat12.tc_group_7.controller;
 
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
 import com.fiap.soat12.tc_group_7.dto.ChangePasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ForgotPasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.LoginRequestDTO;
@@ -21,12 +7,19 @@ import com.fiap.soat12.tc_group_7.dto.employee.EmployeeRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeResponseDTO;
 import com.fiap.soat12.tc_group_7.service.AuthEmployeeService;
 import com.fiap.soat12.tc_group_7.service.EmployeeService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -121,23 +114,39 @@ public class EmployeeController {
     @ApiResponse(responseCode = "401", description = "Credenciais não autorizadas")
     @PostMapping(path = "/login")
 	public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO requestDTO) throws Exception {
-    	return new ResponseEntity<>(authEmployeeService.auth(requestDTO), HttpStatus.OK);
-	}
+        try {
+            return new ResponseEntity<>(authEmployeeService.auth(requestDTO), HttpStatus.OK);
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+    }
     
     @Operation(summary = "Altera a senha de um funcionário")
     @ApiResponse(responseCode = "200", description = "Funcionário altera senha com sucesso")
     @ApiResponse(responseCode = "400", description = "Funcionário não encontrado")
     @ApiResponse(responseCode = "401", description = "Credenciais não autorizadas")
     @PutMapping(path = "/{id}/change-password")
-	public void changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequestDTO requestDTO) throws Exception {
-    	employeeService.changePassword(id, requestDTO);
-	}
+	public ResponseEntity<Void> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequestDTO requestDTO) throws Exception {
+        try {
+            employeeService.changePassword(id, requestDTO);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
     
     @Operation(summary = "Esqueceu a senha de um funcionário")
     @ApiResponse(responseCode = "200", description = "Senha nova enviada ao email do funcionário")
     @ApiResponse(responseCode = "400", description = "Funcionário não encontrado")
     @PostMapping(path = "/forgot-password")
-	public void forgotPassword(@Valid @RequestBody ForgotPasswordRequestDTO requestDTO) throws Exception {
-    	employeeService.forgotPassword(requestDTO);
-	}
+	public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequestDTO requestDTO) throws Exception {
+        try {
+            employeeService.forgotPassword(requestDTO);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
 }

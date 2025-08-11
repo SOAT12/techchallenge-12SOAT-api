@@ -322,7 +322,7 @@ class EmployeeControllerTest {
         mockMvc.perform(post("/api/employees/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -340,7 +340,7 @@ class EmployeeControllerTest {
     }
 
     @Test
-    @DisplayName("PUT /api/employees/{id}/change-password - Deve retornar 400 para senhas que não coincidem")
+    @DisplayName("PUT /api/employees/{id}/change-password - Deve retornar 401 para senhas que não coincidem")
     void shouldReturnBadRequestWhenNewPasswordDoesNotMatchConfirmation() throws Exception {
         Long employeeId = 101L;
         ChangePasswordRequestDTO requestDTO = new ChangePasswordRequestDTO("senhaAntiga", "senhaNova", "senhaDiferente");
@@ -351,11 +351,11 @@ class EmployeeControllerTest {
         mockMvc.perform(put("/api/employees/{id}/change-password", employeeId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName("PUT /api/employees/{id}/change-password - Deve retornar 400 para senha antiga incorreta")
+    @DisplayName("PUT /api/employees/{id}/change-password - Deve retornar 401 para senha antiga incorreta")
     void shouldReturnBadRequestWhenOldPasswordIsIncorrect() throws Exception {
         Long employeeId = 101L;
         ChangePasswordRequestDTO requestDTO = new ChangePasswordRequestDTO("senhaAntigaErrada", "senhaNova", "senhaNova");
@@ -366,7 +366,7 @@ class EmployeeControllerTest {
         mockMvc.perform(put("/api/employees/{id}/change-password", employeeId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
     }
 
 
