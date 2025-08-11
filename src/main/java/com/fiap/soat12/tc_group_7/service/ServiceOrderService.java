@@ -2,12 +2,24 @@ package com.fiap.soat12.tc_group_7.service;
 
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
-import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
-import com.fiap.soat12.tc_group_7.entity.*;
+import com.fiap.soat12.tc_group_7.entity.Customer;
+import com.fiap.soat12.tc_group_7.entity.Employee;
+import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
+import com.fiap.soat12.tc_group_7.entity.ServiceOrderStock;
+import com.fiap.soat12.tc_group_7.entity.ServiceOrderStockId;
+import com.fiap.soat12.tc_group_7.entity.ServiceOrderVehicleService;
+import com.fiap.soat12.tc_group_7.entity.ServiceOrderVehicleServiceId;
+import com.fiap.soat12.tc_group_7.entity.Stock;
+import com.fiap.soat12.tc_group_7.entity.Vehicle;
 import com.fiap.soat12.tc_group_7.entity.VehicleService;
 import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
-import com.fiap.soat12.tc_group_7.repository.*;
+import com.fiap.soat12.tc_group_7.repository.CustomerRepository;
+import com.fiap.soat12.tc_group_7.repository.EmployeeRepository;
+import com.fiap.soat12.tc_group_7.repository.ServiceOrderRepository;
+import com.fiap.soat12.tc_group_7.repository.StockRepository;
+import com.fiap.soat12.tc_group_7.repository.VehicleRepository;
+import com.fiap.soat12.tc_group_7.repository.VehicleServiceRepository;
 import com.fiap.soat12.tc_group_7.util.Status;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -17,16 +29,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.fiap.soat12.tc_group_7.util.Status.getStatusesForPendingOrders;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true)
 public class ServiceOrderService {
+
+    protected static final String MECHANIC_DESCRIPTION = "Mecânico";
 
     @Autowired
     private final ServiceOrderRepository serviceOrderRepository;
@@ -40,8 +58,6 @@ public class ServiceOrderService {
     private final VehicleServiceRepository serviceRepository;
     @Autowired
     private final StockRepository stockRepository;
-    @Autowired
-    private StockService stockService;
 
     @Transactional
     public ServiceOrderResponseDTO createServiceOrder(ServiceOrderRequestDTO request) {
@@ -54,13 +70,16 @@ public class ServiceOrderService {
         Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(() -> new NotFoundException("Customer not found"));
         Vehicle vehicle = vehicleRepository.findById(request.getVehicleId()).orElseThrow(() -> new NotFoundException("Vehicle not found"));
 
-        if (request.getEmployeeId() != null) {
-            Employee employee = employeeRepository.findById(request.getEmployeeId()).orElseThrow(() -> new NotFoundException("Attendant not found"));
-            order.setEmployee(employee);
+        Employee employee;
+        if (nonNull(request.getEmployeeId())) {
+            employee = employeeRepository.findById(request.getEmployeeId()).orElseThrow(() -> new NotFoundException("Employee not found"));
+        } else {
+            employee = this.findMostAvailableEmployee();
         }
 
         order.setCustomer(customer);
         order.setVehicle(vehicle);
+        order.setEmployee(employee);
 
         mapServicesDetail(request, order);
         mapStockItemsDetail(request, order);
@@ -242,6 +261,31 @@ public class ServiceOrderService {
                 return sos;
             }).collect(Collectors.toSet()));
         }
+    }
+
+    public Employee findMostAvailableEmployee() {
+        List<Status> activeStatuses = getStatusesForPendingOrders();
+
+        List<Employee> activeEmployees = employeeRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(MECHANIC_DESCRIPTION);
+
+        if (activeEmployees.isEmpty()) {
+            throw new NotFoundException("Nenhum mecânico disponível");
+        }
+
+        return activeEmployees.stream()
+                .min(Comparator
+                        .comparingLong((Employee employee) -> serviceOrderRepository.countByEmployeeAndStatusIn(employee, activeStatuses))
+                        .thenComparing(employee -> findOldestOrderDateForEmployee(employee, activeStatuses) == null ? null :
+                                findOldestOrderDateForEmployee(employee, activeStatuses)))
+                .orElseThrow(() -> new NotFoundException("Nenhum mecânico disponível"));
+    }
+
+    protected Date findOldestOrderDateForEmployee(Employee employee, List<Status> activeStatuses) {
+        List<ServiceOrder> activeOrders = serviceOrderRepository.findByEmployeeAndStatusIn(employee, activeStatuses);
+        return activeOrders.stream()
+                .map(ServiceOrder::getCreatedAt)
+                .min(Comparator.naturalOrder())
+                .orElse(null);
     }
 
     private ServiceOrderResponseDTO toResponseDTO(ServiceOrder order) {

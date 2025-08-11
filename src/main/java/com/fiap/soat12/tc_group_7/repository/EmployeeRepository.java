@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<Employee> findAllByActiveTrue();
+    List<Employee> findAllByEmployeeFunction_descriptionAndActiveTrue(String employeeFunctionDescription);
 }
 

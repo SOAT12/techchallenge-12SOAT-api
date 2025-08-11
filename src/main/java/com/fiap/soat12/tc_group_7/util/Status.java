@@ -3,7 +3,9 @@ package com.fiap.soat12.tc_group_7.util;
 import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
 import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public enum Status {
 
@@ -107,5 +109,9 @@ public enum Status {
 
     public void deliver(ServiceOrder order) throws InvalidTransitionException {
         throw new InvalidTransitionException(String.format("Não é possível mover para o status %s, a partir do status %s.", DELIVERED.name(), this.name()));
+    }
+
+    public static List<Status> getStatusesForPendingOrders() {
+        return Arrays.asList(Status.OPENED, Status.IN_DIAGNOSIS, Status.APPROVED, Status.IN_EXECUTION);
     }
 }

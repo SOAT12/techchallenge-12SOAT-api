@@ -77,6 +77,13 @@ databaseChangeLog:
                     path: notification/create-table-notification_employee.sql
                     relativeToChangelogFile: true
     - changeSet:
+        id: insert-into-employee-function-initial-values
+        author: vinicius.filho
+        changes:
+          - sqlFile:
+              path: employee/insert-into-employee-function-initial-values.sql
+              relativeToChangelogFile: true
+    - changeSet:
         id: alter-table-service-order-column-employee-id
         author: caiohnrq
         changes:
