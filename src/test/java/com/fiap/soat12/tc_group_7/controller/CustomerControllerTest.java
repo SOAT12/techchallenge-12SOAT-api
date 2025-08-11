@@ -37,6 +37,32 @@ public class CustomerControllerTest {
     private CustomerService customerService;
 
     @Test
+    void getAllActiveCustomers_withSuccess() throws Exception {
+        CustomerResponseDTO customerResponseDTO = CustomerResponseDTO.builder()
+                .id(1L)
+                .cpf("123.456.789-00")
+                .name("João Silva")
+                .phone("99999-9999")
+                .email("joao@email.com")
+                .city("São Paulo")
+                .state("SP")
+                .district("Centro")
+                .street("Rua A")
+                .number("123")
+                .build();
+
+        when(customerService.getAllActiveCustomers()).thenReturn(List.of(customerResponseDTO));
+
+        mockMvc.perform(get("/api/customers")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].cpf").value("123.456.789-00"))
+                .andExpect(jsonPath("$[0].name").value("João Silva"))
+                .andExpect(jsonPath("$[0].email").value("joao@email.com"));
+    }
+
+    @Test
     void getAllCustomers_withSuccess() throws Exception {
         CustomerResponseDTO customerResponseDTO = CustomerResponseDTO.builder()
                 .id(1L)
@@ -53,7 +79,7 @@ public class CustomerControllerTest {
 
         when(customerService.getAllCustomers()).thenReturn(List.of(customerResponseDTO));
 
-        mockMvc.perform(get("/v1/customers")
+        mockMvc.perform(get("/api/customers/all")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1L))
@@ -74,7 +100,7 @@ public class CustomerControllerTest {
 
         when(customerService.getCustomerByCpf(cpf)).thenReturn(dto);
 
-        mockMvc.perform(get("/v1/customers/cpf")
+        mockMvc.perform(get("/api/customers/cpf")
                         .param("cpf", cpf))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(dto.getId()))
@@ -110,7 +136,7 @@ public class CustomerControllerTest {
 
         when(customerService.createCustomer(requestDTO)).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/v1/customers")
+        mockMvc.perform(post("/api/customers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isCreated())
@@ -151,7 +177,7 @@ public class CustomerControllerTest {
                 .thenReturn(responseDTO);
 
         // Act & Assert
-        mockMvc.perform(put("/v1/customers/{id}", id)
+        mockMvc.perform(put("/api/customers/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isOk())
@@ -169,10 +195,24 @@ public class CustomerControllerTest {
         doNothing().when(customerService).deleteCustomerById(id);
 
         // Act & Assert
-        mockMvc.perform(delete("/v1/customers/{id}", id))
-                .andExpect(status().isNoContent())
+        mockMvc.perform(delete("/api/customers/{id}", id))
+                .andExpect(status().isOk())
                 .andDo(print());
         verify(customerService).deleteCustomerById(id);
+    }
+
+    @Test
+    void activateCustomer_withSuccess() throws Exception {
+        // Arrange
+        Long id = 1L;
+
+        doNothing().when(customerService).activateCustomer(id);
+
+        // Act & Assert
+        mockMvc.perform(put("/api/customers/{id}/activate", id))
+                .andExpect(status().isOk())
+                .andDo(print());
+        verify(customerService).activateCustomer(id);
     }
 
 }

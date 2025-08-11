@@ -25,6 +25,13 @@ public class VehicleServiceService {
                 .toList();
     }
 
+    public List<VehicleServiceResponseDTO> getAllVehicleServices() {
+        List<VehicleService> activeServices = vehicleServiceRepository.findAll();
+        return activeServices.stream()
+                .map(vehicleServiceMapper::toVehicleServiceResponseDTO)
+                .toList();
+    }
+
     public VehicleServiceResponseDTO getById(Long id) {
         VehicleService service = vehicleServiceRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new NotFoundException("Serviço não encontrado."));
@@ -52,6 +59,13 @@ public class VehicleServiceService {
         VehicleService entity = vehicleServiceRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new NotFoundException("Serviço não encontrado."));
         entity.setActive(false);
+        vehicleServiceRepository.save(entity);
+    }
+
+    public void activate(Long id) {
+        VehicleService entity = vehicleServiceRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Serviço não encontrado."));
+        entity.setActive(true);
         vehicleServiceRepository.save(entity);
     }
 
