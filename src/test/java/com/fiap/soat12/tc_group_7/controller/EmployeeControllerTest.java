@@ -1,17 +1,23 @@
 package com.fiap.soat12.tc_group_7.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fiap.soat12.tc_group_7.dto.ChangePasswordRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.ForgotPasswordRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.LoginRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.LoginResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeFunctionResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeResponseDTO;
+import com.fiap.soat12.tc_group_7.service.AuthEmployeeService;
 import com.fiap.soat12.tc_group_7.service.EmployeeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -22,7 +28,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,6 +45,9 @@ class EmployeeControllerTest {
 
     @MockitoBean
     private EmployeeService employeeService;
+
+    @MockitoBean
+    private AuthEmployeeService authEmployeeService;
 
     private final EmployeeFunctionResponseDTO functionResponseDTO = EmployeeFunctionResponseDTO.builder()
             .id(1L)
@@ -285,6 +294,107 @@ class EmployeeControllerTest {
 
         mockMvc.perform(put("/api/employees/{id}/activate", 999L))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("POST /api/employees/login - Deve retornar um token em caso de sucesso")
+    void shouldLoginSuccessfully() throws Exception {
+        LoginRequestDTO requestDTO = new LoginRequestDTO("12345678900", "senha123");
+        LoginResponseDTO responseDTO = new LoginResponseDTO("mock-token-jwt");
+
+        when(authEmployeeService.auth(any(LoginRequestDTO.class))).thenReturn(responseDTO);
+
+        mockMvc.perform(post("/api/employees/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").value("mock-token-jwt"));
+    }
+
+    @Test
+    @DisplayName("POST /api/employees/login - Deve retornar 400 para credenciais inválidas")
+    void shouldReturnUnauthorizedForInvalidLoginCredentials() throws Exception {
+        LoginRequestDTO requestDTO = new LoginRequestDTO("12345678900", "senhaerrada");
+
+        when(authEmployeeService.auth(any(LoginRequestDTO.class)))
+                .thenThrow(new BadCredentialsException("INVALID_CREDENTIALS"));
+
+        mockMvc.perform(post("/api/employees/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("PUT /api/employees/{id}/change-password - Deve alterar a senha com sucesso")
+    void shouldChangePasswordSuccessfully() throws Exception {
+        Long employeeId = 101L;
+        ChangePasswordRequestDTO requestDTO = new ChangePasswordRequestDTO("senhaAntiga", "senhaNova", "senhaNova");
+
+        doNothing().when(employeeService).changePassword(eq(employeeId), any(ChangePasswordRequestDTO.class));
+
+        mockMvc.perform(put("/api/employees/{id}/change-password", employeeId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("PUT /api/employees/{id}/change-password - Deve retornar 400 para senhas que não coincidem")
+    void shouldReturnBadRequestWhenNewPasswordDoesNotMatchConfirmation() throws Exception {
+        Long employeeId = 101L;
+        ChangePasswordRequestDTO requestDTO = new ChangePasswordRequestDTO("senhaAntiga", "senhaNova", "senhaDiferente");
+
+        doThrow(new BadCredentialsException("A nova senha e a confirmação não são iguais."))
+                .when(employeeService).changePassword(eq(employeeId), any(ChangePasswordRequestDTO.class));
+
+        mockMvc.perform(put("/api/employees/{id}/change-password", employeeId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("PUT /api/employees/{id}/change-password - Deve retornar 400 para senha antiga incorreta")
+    void shouldReturnBadRequestWhenOldPasswordIsIncorrect() throws Exception {
+        Long employeeId = 101L;
+        ChangePasswordRequestDTO requestDTO = new ChangePasswordRequestDTO("senhaAntigaErrada", "senhaNova", "senhaNova");
+
+        doThrow(new BadCredentialsException("A senha antiga está incorreta."))
+                .when(employeeService).changePassword(eq(employeeId), any(ChangePasswordRequestDTO.class));
+
+        mockMvc.perform(put("/api/employees/{id}/change-password", employeeId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    @DisplayName("POST /api/employees/forgot-password - Deve enviar e-mail em caso de sucesso")
+    void shouldSendForgotPasswordEmailSuccessfully() throws Exception {
+        ForgotPasswordRequestDTO requestDTO = new ForgotPasswordRequestDTO("12345678900");
+
+        doNothing().when(employeeService).forgotPassword(any(ForgotPasswordRequestDTO.class));
+
+        mockMvc.perform(post("/api/employees/forgot-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("POST /api/employees/forgot-password - Deve retornar 400 se o funcionário não for encontrado")
+    void shouldReturnBadRequestWhenEmployeeNotFoundOnForgotPassword() throws Exception {
+        ForgotPasswordRequestDTO requestDTO = new ForgotPasswordRequestDTO("99999999999");
+
+        doThrow(new UsernameNotFoundException("FALHA NA IDENTIFICAÇÃO: 99999999999"))
+                .when(employeeService).forgotPassword(any(ForgotPasswordRequestDTO.class));
+
+        mockMvc.perform(post("/api/employees/forgot-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isBadRequest());
     }
 }
 
