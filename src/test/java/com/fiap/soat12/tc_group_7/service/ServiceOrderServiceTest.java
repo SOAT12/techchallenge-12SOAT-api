@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static com.fiap.soat12.tc_group_7.service.ServiceOrderService.MECHANIC_DESCRIPTION;
 import static com.fiap.soat12.tc_group_7.util.Status.getStatusesForPendingOrders;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -65,7 +66,7 @@ public class ServiceOrderServiceTest {
 
         List<Status> activeStatuses = getStatusesForPendingOrders();
 
-        when(employeeRepository.findAllByActiveTrue())
+        when(employeeRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(MECHANIC_DESCRIPTION))
                 .thenReturn(Arrays.asList(employee1, employee2));
         when(serviceOrderRepository.countByEmployeeAndStatusIn(employee1, activeStatuses))
                 .thenReturn(1L);
@@ -82,7 +83,7 @@ public class ServiceOrderServiceTest {
     @Test
     void testFindMostAvailableEmployee_withNoActiveEmployees() {
         // Simulando que não existem funcionários ativos
-        when(employeeRepository.findAllByActiveTrue()).thenReturn(Collections.emptyList());
+        when(employeeRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(MECHANIC_DESCRIPTION)).thenReturn(Collections.emptyList());
 
         // Executar o método e verificar a exceção
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
@@ -129,7 +130,7 @@ public class ServiceOrderServiceTest {
 
         List<Status> activeStatuses = getStatusesForPendingOrders();
 
-        when(employeeRepository.findAllByActiveTrue())
+        when(employeeRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(MECHANIC_DESCRIPTION))
                 .thenReturn(Arrays.asList(employee1, employee2, employee3));
         when(serviceOrderRepository.findByEmployeeAndStatusIn(employee1, activeStatuses))
                 .thenReturn(Collections.singletonList(order1));

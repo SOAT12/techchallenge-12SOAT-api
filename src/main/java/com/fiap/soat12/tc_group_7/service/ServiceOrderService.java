@@ -42,6 +42,8 @@ import static java.util.Objects.nonNull;
 @NoArgsConstructor(force = true)
 public class ServiceOrderService {
 
+    protected static final String MECHANIC_DESCRIPTION = "Mecânico";
+
     @Autowired
     private final ServiceOrderRepository serviceOrderRepository;
     @Autowired
@@ -193,7 +195,7 @@ public class ServiceOrderService {
     public Employee findMostAvailableEmployee() {
         List<Status> activeStatuses = getStatusesForPendingOrders();
 
-        List<Employee> activeEmployees = employeeRepository.findAllByActiveTrue();
+        List<Employee> activeEmployees = employeeRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(MECHANIC_DESCRIPTION);
 
         if (activeEmployees.isEmpty()) {
             throw new NotFoundException("Nenhum mecânico disponível");

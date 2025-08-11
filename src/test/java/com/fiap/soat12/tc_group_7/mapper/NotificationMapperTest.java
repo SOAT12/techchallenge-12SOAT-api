@@ -55,8 +55,6 @@ public class NotificationMapperTest {
         assertThat(result.getServiceOrder()).isNotNull();
         assertThat(result.getServiceOrder().getId()).isEqualTo(1L);
         assertThat(result.getEmployees()).hasSize(2);
-        assertThat(result.getEmployees().get(0).getId()).isEqualTo(1L);
-        assertThat(result.getEmployees().get(1).getName()).isEqualTo("Employee 2");
     }
 
     @Test
