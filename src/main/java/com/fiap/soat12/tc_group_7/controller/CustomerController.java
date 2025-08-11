@@ -46,7 +46,7 @@ public class CustomerController {
         return customerService.getAllCustomers();
     }
 
-    @GetMapping("/cpf")
+    @GetMapping("/by-cpf")
     @Operation(summary = "Busca cliente pelo CPF",
             description = "Retorna o cliente correspondente ao CPF informado.")
     @ApiResponse(responseCode = "200", description = "Cliente encontrado com sucesso")
