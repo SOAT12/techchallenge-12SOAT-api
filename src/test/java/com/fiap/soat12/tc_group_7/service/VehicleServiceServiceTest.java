@@ -77,7 +77,95 @@ public class VehicleServiceServiceTest {
     }
 
     @Test
-    void testCreateVehicleService() {
+    void getAllVehicleServices_withSuccess() {
+        // Arrange
+        VehicleService service1 = VehicleService.builder()
+                .id(1L)
+                .name("Troca de óleo")
+                .value(BigDecimal.valueOf(150))
+                .active(true)
+                .build();
+        VehicleService service2 = VehicleService.builder()
+                .id(2L)
+                .name("Balanceamento")
+                .value(BigDecimal.valueOf(80))
+                .active(true)
+                .build();
+        List<VehicleService> serviceList = List.of(service1, service2);
+
+        when(vehicleServiceRepository.findAll()).thenReturn(serviceList);
+
+        VehicleServiceResponseDTO dto1 = VehicleServiceResponseDTO.builder()
+                .id(1L)
+                .name("Troca de óleo")
+                .value(BigDecimal.valueOf(150))
+                .build();
+        VehicleServiceResponseDTO dto2 = VehicleServiceResponseDTO.builder()
+                .id(2L)
+                .name("Balanceamento")
+                .value(BigDecimal.valueOf(80))
+                .build();
+
+        when(vehicleServiceMapper.toVehicleServiceResponseDTO(service1)).thenReturn(dto1);
+        when(vehicleServiceMapper.toVehicleServiceResponseDTO(service2)).thenReturn(dto2);
+
+        // Act
+        List<VehicleServiceResponseDTO> result = vehicleServiceService.getAllVehicleServices();
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("Troca de óleo", result.get(0).getName());
+        assertEquals("Balanceamento", result.get(1).getName());
+        verify(vehicleServiceRepository).findAll();
+        verify(vehicleServiceMapper, times(2)).toVehicleServiceResponseDTO(any(VehicleService.class));
+    }
+
+    @Test
+    void getById_withSuccess() {
+        // Arrange
+        Long id = 1L;
+        VehicleService service1 = VehicleService.builder()
+                .id(1L)
+                .name("Troca de óleo")
+                .value(BigDecimal.valueOf(150))
+                .active(true)
+                .build();
+        VehicleService service2 = VehicleService.builder()
+                .id(2L)
+                .name("Balanceamento")
+                .value(BigDecimal.valueOf(80))
+                .active(true)
+                .build();
+        List<VehicleService> serviceList = List.of(service1, service2);
+
+        when(vehicleServiceRepository.findByIdAndActiveTrue(id)).thenReturn(Optional.of(service1));
+
+        VehicleServiceResponseDTO dto1 = VehicleServiceResponseDTO.builder()
+                .id(1L)
+                .name("Troca de óleo")
+                .value(BigDecimal.valueOf(150))
+                .build();
+        VehicleServiceResponseDTO dto2 = VehicleServiceResponseDTO.builder()
+                .id(2L)
+                .name("Balanceamento")
+                .value(BigDecimal.valueOf(80))
+                .build();
+
+        when(vehicleServiceMapper.toVehicleServiceResponseDTO(service1)).thenReturn(dto1);
+
+        // Act
+        VehicleServiceResponseDTO result = vehicleServiceService.getById(id);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Troca de óleo", result.getName());
+        verify(vehicleServiceRepository).findByIdAndActiveTrue(id);
+        verify(vehicleServiceMapper, times(1)).toVehicleServiceResponseDTO(any(VehicleService.class));
+    }
+
+    @Test
+    void create_withSuccess() {
         VehicleServiceRequestDTO request = VehicleServiceRequestDTO.builder()
                 .name("Troca de óleo")
                 .value(BigDecimal.valueOf(120))
@@ -94,18 +182,19 @@ public class VehicleServiceServiceTest {
                 .value(BigDecimal.valueOf(120))
                 .build();
 
-        when(vehicleServiceRepository.save(any(VehicleService.class))).thenReturn(entity);
+        when(vehicleServiceMapper.toVehicleService(request)).thenReturn(entity);
+        when(vehicleServiceRepository.save(entity)).thenReturn(entity);
         when(vehicleServiceMapper.toVehicleServiceResponseDTO(entity)).thenReturn(response);
 
         VehicleServiceResponseDTO result = vehicleServiceService.create(request);
 
         assertNotNull(result);
         assertEquals("Troca de óleo", result.getName());
-        verify(vehicleServiceRepository).save(any(VehicleService.class));
+        verify(vehicleServiceRepository).save(entity);
     }
 
     @Test
-    void testUpdateVehicleService() {
+    void update_withSuccess() {
         Long id = 1L;
         VehicleServiceRequestDTO request = VehicleServiceRequestDTO.builder()
                 .name("Alinhamento")
@@ -141,7 +230,7 @@ public class VehicleServiceServiceTest {
     }
 
     @Test
-    void testDeactivateVehicleService() {
+    void deactivate_withSuccess() {
         Long id = 1L;
 
         VehicleService existing = VehicleService.builder()
@@ -156,6 +245,25 @@ public class VehicleServiceServiceTest {
         vehicleServiceService.deactivate(id);
 
         assertFalse(existing.getActive());
+        verify(vehicleServiceRepository).save(existing);
+    }
+
+    @Test
+    void activate_withSuccess() {
+        Long id = 1L;
+
+        VehicleService existing = VehicleService.builder()
+                .id(id)
+                .name("Serviço ativo")
+                .value(BigDecimal.valueOf(150))
+                .active(false)
+                .build();
+
+        when(vehicleServiceRepository.findById(id)).thenReturn(Optional.of(existing));
+
+        vehicleServiceService.activate(id);
+
+        assertTrue(existing.getActive());
         verify(vehicleServiceRepository).save(existing);
     }
 

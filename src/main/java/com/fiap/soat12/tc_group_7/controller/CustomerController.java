@@ -9,12 +9,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/customers")
+@RequestMapping("/api/customers")
 @RequiredArgsConstructor
 @Tag(name = "Cliente", description = "API para gerenciar clientes")
 public class CustomerController {
@@ -22,6 +31,14 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping
+    @Operation(summary = "Lista todos os clientes ativos",
+            description = "Retorna uma lista de todos os clientes ativos cadastrados.")
+    @ApiResponse(responseCode = "200", description = "Lista de clientes retornada com sucesso")
+    public List<CustomerResponseDTO> getAllActiveCustomers() {
+        return customerService.getAllActiveCustomers();
+    }
+
+    @GetMapping("/all")
     @Operation(summary = "Lista todos os clientes",
             description = "Retorna uma lista de todos os clientes cadastrados.")
     @ApiResponse(responseCode = "200", description = "Lista de clientes retornada com sucesso")
@@ -60,7 +77,6 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(
             summary = "Deleta um cliente pelo ID",
             description = "Marca o cliente como deletado no banco de dados."
@@ -69,6 +85,15 @@ public class CustomerController {
     @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     public void deleteCustomerById(@PathVariable Long id) {
         customerService.deleteCustomerById(id);
+    }
+
+    @PutMapping("/{id}/activate")
+    @Operation(summary = "Reativa um cliente logicamente inativado",
+            description = "Reativa um cliente que foi inativado logicamente, tornando-o novamente ativo no sistema.")
+    @ApiResponse(responseCode = "204", description = "Cliente reativado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    public void activateCustomer(@PathVariable Long id) {
+        customerService.activateCustomer(id);
     }
 
 }
