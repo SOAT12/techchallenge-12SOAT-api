@@ -1,0 +1,1 @@
+ALTER TABLE service_order ALTER COLUMN employee_id DROP NOT NULL;

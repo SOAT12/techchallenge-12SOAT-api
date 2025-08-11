@@ -1,8 +1,11 @@
 package com.fiap.soat12.tc_group_7.service;
 
+import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.stock.StockRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.stock.StockResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryResponseDTO;
+import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
+import com.fiap.soat12.tc_group_7.entity.ServiceOrderStock;
 import com.fiap.soat12.tc_group_7.entity.Stock;
 import com.fiap.soat12.tc_group_7.entity.ToolCategory;
 import com.fiap.soat12.tc_group_7.repository.StockRepository;
@@ -10,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
