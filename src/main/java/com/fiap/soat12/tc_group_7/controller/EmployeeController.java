@@ -46,7 +46,6 @@ public class EmployeeController {
     @ApiResponse(responseCode = "404", description = "Funcionário não encontrado")
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> getEmployeeById(@PathVariable Long id) {
-    	System.out.println(1);
         return employeeService.getEmployeeById(id)
                 .map(employee -> new ResponseEntity<>(employee, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
