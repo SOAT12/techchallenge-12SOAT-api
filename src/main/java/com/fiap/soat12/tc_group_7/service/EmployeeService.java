@@ -1,18 +1,5 @@
 package com.fiap.soat12.tc_group_7.service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.fiap.soat12.tc_group_7.dto.ChangePasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ForgotPasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.LoginRequestDTO;
@@ -26,8 +13,15 @@ import com.fiap.soat12.tc_group_7.repository.EmployeeRepository;
 import com.fiap.soat12.tc_group_7.util.CodeGenerator;
 import com.fiap.soat12.tc_group_7.util.CryptUtil;
 import com.fiap.soat12.tc_group_7.util.DateUtils;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +57,7 @@ public class EmployeeService {
         employee.setCreatedAt(new Date());
         employee.setUpdatedAt(new Date());
         employee.setActive(true);
+        employee.setUseTemporaryPassword(false);
         Employee saved = employeeRepository.save(employee);
         return employeeMapper.toEmployeeResponseDTO(saved);
     }
