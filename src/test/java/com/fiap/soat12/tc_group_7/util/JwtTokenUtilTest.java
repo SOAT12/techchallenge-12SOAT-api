@@ -79,18 +79,13 @@ public class JwtTokenUtilTest {
     @Test
     @DisplayName("Deve renovar a chave secreta com sucesso")
     void shouldRenewSecretSuccessfully() throws Exception {
-        String originalSecret = jwtTokenUtil.getAllClaimsFromToken(token).getAudience(); // Obtenha o secret atual do token
 
-        // Renovamos a chave secreta
         jwtTokenUtil.renewSecret();
 
-        // Tentamos validar o token original com a nova chave e esperamos uma falha
         assertThrows(SignatureException.class, () -> jwtTokenUtil.getAllClaimsFromToken(token));
 
-        // Geramos um novo token com a nova chave
         String newToken = jwtTokenUtil.generateToken(claims, subject);
 
-        // Verificamos se o novo token é válido com a nova chave
         assertDoesNotThrow(() -> jwtTokenUtil.getAllClaimsFromToken(newToken));
     }
 }

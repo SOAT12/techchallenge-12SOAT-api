@@ -10,9 +10,8 @@ import java.util.Date;
 
 public abstract class DateUtils {
 
-	public static String TIMEZONE_OFFSET_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-
-	public static String TIMEZONE_OFFSET_FORMAT_PTBR = "dd/MM/yyyy HH:mm:ss Z";
+    private DateUtils() {
+    }
 
 	public static Timestamp getCurrentTimestamp() {
 
@@ -100,14 +99,5 @@ public abstract class DateUtils {
 
 		return date == null ? null : simpleDateFormat.parse(date);
 
-	}
-
-	public static void main(String[] args) {
-
-		try {
-			System.out.println( DateUtils.toDate("2019-06-11T09:45:32.000-0000", "yyyy-MM-dd'T'HH:mm:ss.SSSZ") );
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
 	}
 }

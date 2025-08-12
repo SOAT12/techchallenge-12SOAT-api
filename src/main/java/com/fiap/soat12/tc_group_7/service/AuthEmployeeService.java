@@ -1,10 +1,15 @@
 package com.fiap.soat12.tc_group_7.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
-
+import com.fiap.soat12.tc_group_7.config.SessionToken;
+import com.fiap.soat12.tc_group_7.dto.LoginRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.LoginResponseDTO;
+import com.fiap.soat12.tc_group_7.entity.Employee;
+import com.fiap.soat12.tc_group_7.exception.BadCredentialsException;
+import com.fiap.soat12.tc_group_7.repository.EmployeeRepository;
+import com.fiap.soat12.tc_group_7.util.CryptUtil;
+import com.fiap.soat12.tc_group_7.util.JwtTokenUtil;
+import com.fiap.soat12.tc_group_7.util.UUIDGeneratorUtil;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -21,17 +26,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.fiap.soat12.tc_group_7.config.SessionToken;
-import com.fiap.soat12.tc_group_7.dto.LoginRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.LoginResponseDTO;
-import com.fiap.soat12.tc_group_7.entity.Employee;
-import com.fiap.soat12.tc_group_7.exception.BadCredentialsException;
-import com.fiap.soat12.tc_group_7.repository.EmployeeRepository;
-import com.fiap.soat12.tc_group_7.util.CryptUtil;
-import com.fiap.soat12.tc_group_7.util.JwtTokenUtil;
-import com.fiap.soat12.tc_group_7.util.UUIDGeneratorUtil;
-
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 
 @Service
@@ -55,19 +53,19 @@ public class AuthEmployeeService implements UserDetailsService {
 	public LoginResponseDTO auth(LoginRequestDTO requestDTO) throws Exception {
 
 		try {
-			authenticateMobile(requestDTO, false, true);
+            authenticate(requestDTO, false, true);
 		} catch (BadCredentialsException e) {
 
 			try {
 
 				employeeService.authTemporaryPassword(requestDTO);
 
-				authenticateMobile(requestDTO, true, true);
+                authenticate(requestDTO, true, true);
 
 				employeeService.authenticatedTemporaryPassword(requestDTO, true);
 
 			} catch (BadCredentialsException e1) {
-				authenticateMobile(requestDTO, false, false);
+                authenticate(requestDTO, false, false);
 
 				employeeService.authenticatedOldPassword(requestDTO);
 
@@ -95,7 +93,7 @@ public class AuthEmployeeService implements UserDetailsService {
 
 	}
 
-	private void authenticateMobile(LoginRequestDTO requestDTO, Boolean useTmpPwd, Boolean bcrypt) throws Exception {
+	private void authenticate(LoginRequestDTO requestDTO, Boolean useTmpPwd, Boolean bcrypt) throws Exception {
 
 		String username = useTmpPwd ? requestDTO.getCpf() + ":USETEMPORARYPASSWORD" : requestDTO.getCpf();
 
