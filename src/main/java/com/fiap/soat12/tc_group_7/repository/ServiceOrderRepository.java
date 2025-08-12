@@ -6,12 +6,16 @@ import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
 import com.fiap.soat12.tc_group_7.entity.Vehicle;
 import com.fiap.soat12.tc_group_7.util.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
-public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long> {
+public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long>, JpaSpecificationExecutor<ServiceOrder> {
 
     Long countByEmployeeAndStatusIn(Employee employee, List<Status> statusList);
 

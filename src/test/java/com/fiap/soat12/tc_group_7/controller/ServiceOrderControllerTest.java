@@ -1,6 +1,7 @@
 package com.fiap.soat12.tc_group_7.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fiap.soat12.tc_group_7.dto.AverageExecutionTimeResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
 import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
@@ -429,6 +430,22 @@ class ServiceOrderControllerTest {
         }
     }
 
+    @Test
+    public void getAverageExecutionTime_withSuccess() throws Exception {
+        AverageExecutionTimeResponseDTO dto = new AverageExecutionTimeResponseDTO(
+                1L,
+                "1 horas, 0 minutos"
+        );
+
+        when(serviceOrderService.calculateAverageExecutionTime(null, null, null))
+                .thenReturn(dto);
+
+        mockMvc.perform(get("/api/service-orders/average-execution-time"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.averageExecutionTimeHours").value(1))
+                .andExpect(jsonPath("$.averageExecutionTimeFormatted").value("1 horas, 0 minutos"));
+    }
+    
     @Nested
     @DisplayName("Endpoint: PATCH /api/service-orders/{id}/execute")
     class ExecuteAndWaitOnStockTransitionTests {

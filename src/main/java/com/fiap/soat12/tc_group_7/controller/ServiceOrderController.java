@@ -1,5 +1,6 @@
 package com.fiap.soat12.tc_group_7.controller;
 
+import com.fiap.soat12.tc_group_7.dto.AverageExecutionTimeResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
 import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
@@ -10,11 +11,22 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
 import java.util.Collections;
 import java.util.List;
 
@@ -94,7 +106,7 @@ public class ServiceOrderController {
     @ApiResponse(responseCode = "404", description = "Ordem de serviço não encontrada")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
-        if (service.deleteOrderLogically(id)){
+        if (service.deleteOrderLogically(id)) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -110,7 +122,7 @@ public class ServiceOrderController {
         try {
             return service.updateOrder(id, request)
                     .map(updatedOrder -> new ResponseEntity<>(updatedOrder, HttpStatus.OK))
-                    .orElseGet(()-> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -124,7 +136,7 @@ public class ServiceOrderController {
             return service.diagnose(id, employeeId)
                     .map(order -> new ResponseEntity<>(order, HttpStatus.OK))
                     .orElseThrow();
-        }catch (InvalidTransitionException e) {
+        } catch (InvalidTransitionException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
@@ -137,7 +149,7 @@ public class ServiceOrderController {
             return service.waitForApproval(id)
                     .map(order -> new ResponseEntity<>(order, HttpStatus.OK))
                     .orElseThrow();
-        }catch (InvalidTransitionException e) {
+        } catch (InvalidTransitionException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
@@ -205,6 +217,18 @@ public class ServiceOrderController {
         } catch (InvalidTransitionException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
+    }
+
+    @Operation(
+            summary = "Calcula o tempo médio de execução dos serviços",
+            description = "Retorna o tempo médio (em horas e formato legível) das ordens de serviço finalizadas, " +
+                    "com filtros opcionais por data de início, data de fim e lista de serviços."
+    )
+    @GetMapping("/average-execution-time")
+    public AverageExecutionTimeResponseDTO getAverageExecutionTime(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                                   @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+                                                                   @RequestParam(required = false) List<Long> serviceIds) {
+        return service.calculateAverageExecutionTime(startDate, endDate, serviceIds);
     }
 
 }

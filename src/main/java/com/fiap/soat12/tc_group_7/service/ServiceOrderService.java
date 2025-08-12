@@ -1,5 +1,6 @@
 package com.fiap.soat12.tc_group_7.service;
 
+import com.fiap.soat12.tc_group_7.dto.AverageExecutionTimeResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
@@ -21,6 +22,7 @@ import com.fiap.soat12.tc_group_7.repository.ServiceOrderRepository;
 import com.fiap.soat12.tc_group_7.repository.StockRepository;
 import com.fiap.soat12.tc_group_7.repository.VehicleRepository;
 import com.fiap.soat12.tc_group_7.repository.VehicleServiceRepository;
+import com.fiap.soat12.tc_group_7.specification.ServiceOrderSpecification;
 import com.fiap.soat12.tc_group_7.util.Status;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +32,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.fiap.soat12.tc_group_7.util.Status.getStatusesForPendingOrders;
@@ -275,6 +282,32 @@ public class ServiceOrderService {
         return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
     }
 
+    public AverageExecutionTimeResponseDTO calculateAverageExecutionTime(Date startDate, Date endDate, List<Long> serviceIds) {
+        List<ServiceOrder> finishedOrders = serviceOrderRepository.findAll(
+                ServiceOrderSpecification.withFilters(startDate, endDate, serviceIds)
+        );
+
+        if (finishedOrders.isEmpty()) {
+            return new AverageExecutionTimeResponseDTO(0L, "0 horas, 0 minutos");
+        }
+
+        long totalMillis = finishedOrders.stream()
+                .mapToLong(order -> {
+                    Date startedAt = order.getCreatedAt();
+                    Date finishedAt = order.getFinishedAt();
+                    return finishedAt.getTime() - startedAt.getTime();
+                })
+                .sum();
+
+        long avgMillis = totalMillis / finishedOrders.size();
+        Duration avgDuration = Duration.ofMillis(avgMillis);
+
+        return new AverageExecutionTimeResponseDTO(
+                avgDuration.toHours(),
+                String.format("%d horas, %d minutos", avgDuration.toHours(), avgDuration.toMinutesPart())
+        );
+    }
+
     private void mapServicesDetail(ServiceOrderRequestDTO request, ServiceOrder order) {
         if (request.getServices() != null) {
             order.setServices(request.getServices().stream().map(dto -> {
@@ -302,7 +335,7 @@ public class ServiceOrderService {
         }
     }
 
-    public Employee findMostAvailableEmployee() {
+    protected Employee findMostAvailableEmployee() {
         List<Status> activeStatuses = getStatusesForPendingOrders();
 
         List<Employee> activeEmployees = employeeRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(MECHANIC_DESCRIPTION);
