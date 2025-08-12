@@ -101,6 +101,30 @@ public class StockService {
                 });
     }
 
+    public StockAvailabilityResponseDTO checkStockAvailability(ServiceOrder order) {
+        List<StockAvailabilityResponseDTO.MissingItemDTO> missingItems = new ArrayList<>();
+
+        for (ServiceOrderStock requiredItem : order.getStockItems()) {
+
+            Stock availableStock = stockRepository.findByIdAndActiveTrue(requiredItem.getStock().getId());
+
+            int requiredQuantity = requiredItem.getStock().getQuantity();
+            int availableQuantity = availableStock.getQuantity();
+
+            if (availableQuantity < requiredQuantity) {
+                missingItems.add(new StockAvailabilityResponseDTO.MissingItemDTO(
+                        availableStock.getId(),
+                        availableStock.getToolName(),
+                        requiredQuantity,
+                        availableQuantity
+                ));
+            }
+        }
+
+        boolean allItemsAvailable = missingItems.isEmpty();
+        return new StockAvailabilityResponseDTO(allItemsAvailable, missingItems);
+    }
+
     private StockResponseDTO convertToResponseDTO(Stock stock) {
         StockResponseDTO dto = new StockResponseDTO();
         BeanUtils.copyProperties(stock, dto);

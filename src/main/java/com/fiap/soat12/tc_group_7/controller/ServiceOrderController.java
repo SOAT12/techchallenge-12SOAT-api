@@ -7,6 +7,7 @@ import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
 import com.fiap.soat12.tc_group_7.service.ServiceOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -71,6 +73,33 @@ public class ServiceOrderController {
         return ResponseEntity.ok(service.findAllOrders());
     }
 
+    @Operation(summary = "Lista ordens de serviço por CPF ou Placa",
+            description = "Retorna ordens de serviço cadastradas não finalizadas.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ordens de serviço retornada com sucesso."),
+            @ApiResponse(responseCode = "400", description = "Informar pelo menos um parâmetro para a busca."),
+            @ApiResponse(responseCode = "404", description = "Nenhuma ordem de serviço encontrada para os parâmetros informados.")
+    })
+    @GetMapping("/consult")
+    public ResponseEntity<List<ServiceOrderResponseDTO>> consultOrder(
+            @RequestParam(required = false) String document,
+            @RequestParam(required = false) String licensePlate) {
+
+        if (document != null) {
+            return service.findByCustomerInfo(document)
+                    .map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        }
+
+        if (licensePlate != null) {
+            return service.findByVehicleInfo(licensePlate)
+                    .map(order -> ResponseEntity.ok(Collections.singletonList(order)))
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
     @Operation(summary = "Cancela uma ordem de serviço",
             description = "Altera o status de uma ordem de serviço pelo seu ID para cancelada.")
     @ApiResponse(responseCode = "204", description = "Ordem de serviço cancelada com sucesso")
@@ -99,11 +128,10 @@ public class ServiceOrderController {
         }
     }
 
-    //todo implementar lógica da busca automática do mecânico. Enquanto não tem, informar o ID, nos serviços de diagnostico e aprovação
     @Operation(summary = "Atualiza a ordem de serviço para: Em diagnóstico.",
             description = "Atualiza a ordem de serviço para: Em diagnóstico.")
     @PatchMapping("/{id}/diagnose")
-    public ResponseEntity<ServiceOrderResponseDTO> diagnose(@PathVariable Long id, @RequestParam Long employeeId) {
+    public ResponseEntity<ServiceOrderResponseDTO> diagnose(@PathVariable Long id, @RequestParam(required = false) Long employeeId) {
         try {
             return service.diagnose(id, employeeId)
                     .map(order -> new ResponseEntity<>(order, HttpStatus.OK))
@@ -126,7 +154,6 @@ public class ServiceOrderController {
         }
     }
 
-    //todo implementar lógica da busca automática do mecânico. Enquanto não tem, informar o ID, nos serviços de diagnostico e aprovação
     @Operation(summary = "Atualiza a ordem de serviço para: Aprovada.",
             description = "Atualiza a ordem de serviço para: Aprovada.")
     @PatchMapping("/{id}/approve")
@@ -147,6 +174,19 @@ public class ServiceOrderController {
         try {
             return service.reject(id, reason)
                     .map(rejectedOrder -> new ResponseEntity<>(rejectedOrder, HttpStatus.OK))
+                    .orElseThrow();
+        } catch (InvalidTransitionException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Atualiza a ordem de serviço para: Em execução ou Aguardando Peças.",
+            description = "Atualiza a ordem de serviço para Em execução ou Aguardando Peças a depender da validação do estoque.")
+    @PatchMapping("/{id}/execute")
+    public ResponseEntity<ServiceOrderResponseDTO> startServiceOrderExecution(@PathVariable Long id) {
+        try {
+            return service.startOrderExecution(id)
+                    .map(order -> new ResponseEntity<>(order, HttpStatus.OK))
                     .orElseThrow();
         } catch (InvalidTransitionException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

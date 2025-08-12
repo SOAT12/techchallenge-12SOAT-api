@@ -1,18 +1,5 @@
 package com.fiap.soat12.tc_group_7.service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.fiap.soat12.tc_group_7.dto.ChangePasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ForgotPasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.LoginRequestDTO;
@@ -26,12 +13,21 @@ import com.fiap.soat12.tc_group_7.repository.EmployeeRepository;
 import com.fiap.soat12.tc_group_7.util.CodeGenerator;
 import com.fiap.soat12.tc_group_7.util.CryptUtil;
 import com.fiap.soat12.tc_group_7.util.DateUtils;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class EmployeeService {
+    private static final String FALHA_IDENTIFICACAO_MSG = "FALHA NA IDENTIFICAÇÃO: ";
+
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
     private final EmployeeFunctionRepository employeeFunctionRepository;
@@ -63,6 +59,7 @@ public class EmployeeService {
         employee.setCreatedAt(new Date());
         employee.setUpdatedAt(new Date());
         employee.setActive(true);
+        employee.setUseTemporaryPassword(false);
         Employee saved = employeeRepository.save(employee);
         return employeeMapper.toEmployeeResponseDTO(saved);
     }
@@ -139,7 +136,7 @@ public class EmployeeService {
 		String tempPassword = CodeGenerator.generateCode().toLowerCase();
 
 		Employee employee = employeeRepository.findByCpf(forgotPassword.getCpf())
-				.orElseThrow(() -> new UsernameNotFoundException("FALHA NA IDENTIFICAÇÃO: " + forgotPassword.getCpf()));
+				.orElseThrow(() -> new UsernameNotFoundException(FALHA_IDENTIFICACAO_MSG + forgotPassword.getCpf()));
 
 		Map<String, Object> variables = new HashMap<>();
 	    variables.put("message", tempPassword);
@@ -157,7 +154,7 @@ public class EmployeeService {
 	public void authTemporaryPassword(LoginRequestDTO loginRequest) throws Exception {
 
 		Employee employee = employeeRepository.findByCpf(loginRequest.getCpf())
-				.orElseThrow(() -> new UsernameNotFoundException("FALHA NA IDENTIFICAÇÃO: " + loginRequest.getCpf()));
+				.orElseThrow(() -> new UsernameNotFoundException(FALHA_IDENTIFICACAO_MSG + loginRequest.getCpf()));
 		
 		Date passwordValidity = DateUtils.toDate(employee.getPasswordValidity());
 
@@ -178,7 +175,7 @@ public class EmployeeService {
 	public void authenticatedTemporaryPassword(LoginRequestDTO loginRequest, Boolean usedTmp) throws Exception {
 		
 		Employee employee = employeeRepository.findByCpf(loginRequest.getCpf())
-				.orElseThrow(() -> new UsernameNotFoundException("FALHA NA IDENTIFICAÇÃO: " + loginRequest.getCpf()));
+				.orElseThrow(() -> new UsernameNotFoundException(FALHA_IDENTIFICACAO_MSG + loginRequest.getCpf()));
 		
 		if (usedTmp) {
 			employee.setPassword(CryptUtil.bcrypt(loginRequest.getPassword()));
@@ -193,7 +190,7 @@ public class EmployeeService {
 	public void authenticatedOldPassword(LoginRequestDTO loginRequest) throws Exception {
 
 		Employee employee = employeeRepository.findByCpf(loginRequest.getCpf())
-				.orElseThrow(() -> new UsernameNotFoundException("FALHA NA IDENTIFICAÇÃO: " + loginRequest.getCpf()));
+				.orElseThrow(() -> new UsernameNotFoundException(FALHA_IDENTIFICACAO_MSG + loginRequest.getCpf()));
 		
 		employee.setPassword(CryptUtil.bcrypt(loginRequest.getPassword()));
 		employee.setTemporaryPassword("");

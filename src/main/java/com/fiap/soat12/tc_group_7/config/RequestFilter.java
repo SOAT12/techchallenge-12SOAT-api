@@ -1,12 +1,12 @@
 package com.fiap.soat12.tc_group_7.config;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fiap.soat12.tc_group_7.util.JwtTokenUtil;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
@@ -20,14 +20,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiap.soat12.tc_group_7.util.JwtTokenUtil;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
 
 @Component
 public class RequestFilter extends OncePerRequestFilter {
@@ -48,10 +42,6 @@ public class RequestFilter extends OncePerRequestFilter {
 	private Set<String> whiteList = new HashSet<String>();
 
 	private Set<String> pathWhiteList = new HashSet<String>();
-
-	public RequestFilter() {
-
-	}
 
 	@PostConstruct
 	public void init() {
