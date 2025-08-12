@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class EmployeeService {
+    private static final String FALHA_IDENTIFICACAO_MSG = "FALHA NA IDENTIFICAÇÃO: ";
+
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
     private final EmployeeFunctionRepository employeeFunctionRepository;
@@ -134,7 +136,7 @@ public class EmployeeService {
 		String tempPassword = CodeGenerator.generateCode().toLowerCase();
 
 		Employee employee = employeeRepository.findByCpf(forgotPassword.getCpf())
-				.orElseThrow(() -> new UsernameNotFoundException("FALHA NA IDENTIFICAÇÃO: " + forgotPassword.getCpf()));
+				.orElseThrow(() -> new UsernameNotFoundException(FALHA_IDENTIFICACAO_MSG + forgotPassword.getCpf()));
 
 		Map<String, Object> variables = new HashMap<>();
 	    variables.put("message", tempPassword);
@@ -152,7 +154,7 @@ public class EmployeeService {
 	public void authTemporaryPassword(LoginRequestDTO loginRequest) throws Exception {
 
 		Employee employee = employeeRepository.findByCpf(loginRequest.getCpf())
-				.orElseThrow(() -> new UsernameNotFoundException("FALHA NA IDENTIFICAÇÃO: " + loginRequest.getCpf()));
+				.orElseThrow(() -> new UsernameNotFoundException(FALHA_IDENTIFICACAO_MSG + loginRequest.getCpf()));
 		
 		Date passwordValidity = DateUtils.toDate(employee.getPasswordValidity());
 
@@ -173,7 +175,7 @@ public class EmployeeService {
 	public void authenticatedTemporaryPassword(LoginRequestDTO loginRequest, Boolean usedTmp) throws Exception {
 		
 		Employee employee = employeeRepository.findByCpf(loginRequest.getCpf())
-				.orElseThrow(() -> new UsernameNotFoundException("FALHA NA IDENTIFICAÇÃO: " + loginRequest.getCpf()));
+				.orElseThrow(() -> new UsernameNotFoundException(FALHA_IDENTIFICACAO_MSG + loginRequest.getCpf()));
 		
 		if (usedTmp) {
 			employee.setPassword(CryptUtil.bcrypt(loginRequest.getPassword()));
@@ -188,7 +190,7 @@ public class EmployeeService {
 	public void authenticatedOldPassword(LoginRequestDTO loginRequest) throws Exception {
 
 		Employee employee = employeeRepository.findByCpf(loginRequest.getCpf())
-				.orElseThrow(() -> new UsernameNotFoundException("FALHA NA IDENTIFICAÇÃO: " + loginRequest.getCpf()));
+				.orElseThrow(() -> new UsernameNotFoundException(FALHA_IDENTIFICACAO_MSG + loginRequest.getCpf()));
 		
 		employee.setPassword(CryptUtil.bcrypt(loginRequest.getPassword()));
 		employee.setTemporaryPassword("");
