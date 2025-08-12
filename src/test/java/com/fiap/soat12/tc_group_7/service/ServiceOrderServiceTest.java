@@ -1,5 +1,6 @@
 package com.fiap.soat12.tc_group_7.service;
 
+import com.fiap.soat12.tc_group_7.dto.AverageExecutionTimeResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.Customer;
@@ -24,6 +25,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Example;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -40,7 +43,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -231,7 +233,7 @@ class ServiceOrderServiceTest {
     }
 
     @Test
-    void testFindMostAvailableEmployee_withAvailableEmployees() {
+    void findMostAvailableEmployee_withAvailableEmployees() {
         // Arrange
         Employee employee1 = new Employee();
         employee1.setId(1L);
@@ -278,7 +280,7 @@ class ServiceOrderServiceTest {
     }
 
     @Test
-    void testFindMostAvailableEmployee_withNoActiveEmployees() {
+    void findMostAvailableEmployee_withNoActiveEmployees() {
         // Arrange
         when(employeeRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(MECHANIC_DESCRIPTION)).thenReturn(Collections.emptyList());
 
@@ -290,7 +292,7 @@ class ServiceOrderServiceTest {
     }
 
     @Test
-    void testFindMostAvailableEmployee_withEqualActiveOrders() {
+    void findMostAvailableEmployee_withEqualActiveOrders() {
         // Arrange
         Employee employee1 = new Employee();
         employee1.setId(1L);
@@ -341,6 +343,30 @@ class ServiceOrderServiceTest {
 
         // Assert
         assertEquals(employee3, result);
+    }
+
+    @Test
+    public void getAverageExecutionTime_withSuccess() {
+        Date now = new Date();
+        Date oneHourAgo = new Date(now.getTime() - 3600_000);
+
+        ServiceOrder order1 = new ServiceOrder();
+        order1.setCreatedAt(oneHourAgo);
+        order1.setFinishedAt(now);
+
+        ServiceOrder order2 = new ServiceOrder();
+        order2.setCreatedAt(oneHourAgo);
+        order2.setFinishedAt(now);
+
+        List<ServiceOrder> orders = Arrays.asList(order1, order2);
+
+        when(serviceOrderRepository.findAll((Specification) any())).thenReturn(orders);
+
+        AverageExecutionTimeResponseDTO dto = serviceOrderService.calculateAverageExecutionTime(null, null, null);
+
+        // Como os dois têm duração de 1 hora, a média também é 1 hora = 3600000 ms
+        assertEquals(1, dto.getAverageExecutionTimeHours());
+        assertEquals("1 horas, 0 minutos", dto.getAverageExecutionTimeFormatted());
     }
 
 }
