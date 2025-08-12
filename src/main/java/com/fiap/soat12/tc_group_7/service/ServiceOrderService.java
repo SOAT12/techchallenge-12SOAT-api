@@ -2,6 +2,7 @@ package com.fiap.soat12.tc_group_7.service;
 
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.Customer;
 import com.fiap.soat12.tc_group_7.entity.Employee;
 import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
@@ -29,10 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.fiap.soat12.tc_group_7.util.Status.getStatusesForPendingOrders;
@@ -60,6 +58,8 @@ public class ServiceOrderService {
     private final StockRepository stockRepository;
     @Autowired
     private final NotificationService notificationService;
+    @Autowired
+    private final StockService stockService;
 
     @Transactional
     public ServiceOrderResponseDTO createServiceOrder(ServiceOrderRequestDTO request) {
@@ -104,6 +104,27 @@ public class ServiceOrderService {
     @Transactional(readOnly = true)
     public List<ServiceOrderResponseDTO> findAllOrders() {
         return serviceOrderRepository.findAll().stream().map(this::toResponseDTO).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Optional<List<ServiceOrderResponseDTO>> findByCustomerInfo(String document) {
+        List<ServiceOrderResponseDTO> response = new ArrayList<>();
+        Customer customer = customerRepository.findByCpf(document)
+                .orElseThrow(() -> new NotFoundException("Cliente não encontrado: " + document));
+
+        for (ServiceOrder serviceOrder : serviceOrderRepository.findByCustomerAndFinishedAtIsNull(customer)) {
+            response.add(toResponseDTO(serviceOrder));
+        }
+        return Optional.ofNullable(response);
+    }
+
+    @Transactional
+    public Optional<ServiceOrderResponseDTO> findByVehicleInfo(String licensePlate) {
+        Vehicle vehicleFound = vehicleRepository.findByLicensePlate(licensePlate)
+                .orElseThrow(() -> new NotFoundException("Veículo não encontrado: " + licensePlate));
+
+        return Optional.ofNullable(toResponseDTO(serviceOrderRepository.findByVehicleAndFinishedAtIsNull(vehicleFound)));
+
     }
 
     @Transactional
@@ -155,6 +176,8 @@ public class ServiceOrderService {
                         });
                     }
 
+                    stockService.checkStockAvailability(existingOrder);
+
                     existingOrder.setTotalValue(existingOrder.calculateTotalValue(existingOrder.getServices(), existingOrder.getStockItems()));
 
                     serviceOrderRepository.save(existingOrder);
@@ -176,6 +199,9 @@ public class ServiceOrderService {
         if (employeeId != null) {
             employee = employeeRepository.findById(employeeId).orElseThrow(() -> new NotFoundException("Funcionário não encontrado."));
             order.setEmployee(employee);
+        } else {
+            Employee availableEmployee = this.findMostAvailableEmployee();
+            order.setEmployee(availableEmployee);
         }
 
         order.getStatus().diagnose(order);
@@ -214,16 +240,22 @@ public class ServiceOrderService {
     }
 
     @Transactional
-    public Optional<ServiceOrderResponseDTO> waitForStock(Long id) throws InvalidTransitionException {
-        ServiceOrder order = getOrderById(id);
-        order.getStatus().waitForStock(order);
-        return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
-    }
+    public Optional<ServiceOrderResponseDTO> startOrderExecution(Long serviceOrderId) {
+        ServiceOrder order = serviceOrderRepository.findById(serviceOrderId)
+                .orElseThrow(() -> new NotFoundException("Ordem de Serviço não encontrada: " + serviceOrderId));
 
-    @Transactional
-    public Optional<ServiceOrderResponseDTO> execute(Long id) throws InvalidTransitionException {
-        ServiceOrder order = getOrderById(id);
-        order.getStatus().execute(order);
+        StockAvailabilityResponseDTO availability = stockService.checkStockAvailability(order);
+
+        if (!availability.isAvailable()) {
+            order.getStatus().waitForStock(order);
+            notificationService.notifyManagersOutOfStock(order);
+        } else {
+            order.getStatus().execute(order);
+            Employee employee = this.findMostAvailableEmployee();
+            order.setEmployee(employee);
+            notificationService.notifyMechanicAssignedToOS(order, employee);
+        }
+
         return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
     }
 

@@ -6,6 +6,7 @@ import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
 import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.service.ServiceOrderService;
+import com.fiap.soat12.tc_group_7.service.StockService;
 import com.fiap.soat12.tc_group_7.util.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -47,6 +47,10 @@ class ServiceOrderControllerTest {
 
     private ServiceOrderRequestDTO requestDTO;
     private ServiceOrderResponseDTO responseDTO;
+    private ServiceOrderResponseDTO.VehicleDTO vehicleDTO;
+    private ServiceOrderResponseDTO.CustomerDTO customerDTO;
+    @Autowired
+    private StockService stockService;
 
     @BeforeEach
     void setUp() {
@@ -422,6 +426,114 @@ class ServiceOrderControllerTest {
 
             mockMvc.perform(patch("/api/service-orders/99/deliver"))
                     .andExpect(status().isNotFound());
+        }
+    }
+
+    @Nested
+    @DisplayName("Endpoint: PATCH /api/service-orders/{id}/execute")
+    class ExecuteAndWaitOnStockTransitionTests {
+
+        @Test
+        @DisplayName("Should return 200 OK on a successful transition to Delivered")
+        void execute_whenHasStockAvailable_shouldReturnOk() throws Exception {
+            responseDTO.setStatus(Status.IN_EXECUTION);
+            when(serviceOrderService.startOrderExecution(1L)).thenReturn(Optional.of(responseDTO));
+
+            mockMvc.perform(patch("/api/service-orders/1/execute"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status", is("IN_EXECUTION")));
+        }
+
+        @Test
+        @DisplayName("Should return 400 Bad Request for an invalid transition")
+        void deliver_whenTransitionIsInvalid_shouldReturnBadRequest() throws Exception {
+            when(serviceOrderService.startOrderExecution(1L))
+                    .thenThrow(new InvalidTransitionException("Cannot deliver from current state"));
+
+            mockMvc.perform(patch("/api/service-orders/1/execute"))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("Should return 404 Not Found when the order does not exist")
+        void deliver_whenOrderNotFound_shouldReturnNotFound() throws Exception {
+            when(serviceOrderService.startOrderExecution(99L)).thenThrow(new NotFoundException("Ordem de Serviço não encontrada com o ID: 99"));
+
+            mockMvc.perform(patch("/api/service-orders/99/execute"))
+                    .andExpect(status().isNotFound());
+        }
+    }
+
+    @Nested
+    @DisplayName("Endpoint: GET /api/service-orders/consult")
+    class consultOrderControllerTests {
+
+        @BeforeEach
+        void setUp() {
+            customerDTO = new ServiceOrderResponseDTO.CustomerDTO(1L, "João", "0123456789");
+            vehicleDTO = new ServiceOrderResponseDTO.VehicleDTO(1L, "ABC-1234", "Blazer");
+        }
+
+        @Test
+        @DisplayName("Should return 200 OK with a list of orders when a valid document is provided")
+        void consultOrder_whenDocumentIsValid_thenReturnOk() throws Exception {
+
+            responseDTO.setCustomer(customerDTO);
+            List<ServiceOrderResponseDTO> orderList = Collections.singletonList(responseDTO);
+
+            when(serviceOrderService.findByCustomerInfo("0123456789")).thenReturn(Optional.of(orderList));
+
+            mockMvc.perform(get("/api/service-orders/consult")
+                            .param("document", "0123456789"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$[0].id").value("1"))
+                    .andExpect(jsonPath("$[0].customer.name").value("João"));
+        }
+
+        @Test
+        @DisplayName("Should return 200 OK with a single-item list when a valid license plate is provided")
+        void consultOrder_whenLicensePlateIsValid_thenReturnOk() throws Exception {
+
+            responseDTO.setCustomer(customerDTO);
+            responseDTO.setVehicle(vehicleDTO);
+
+            when(serviceOrderService.findByVehicleInfo("ABC-1234")).thenReturn(Optional.of(responseDTO));
+
+            mockMvc.perform(get("/api/service-orders/consult")
+                            .param("licensePlate", "ABC-1234"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$[0].id").value("1"))
+                    .andExpect(jsonPath("$[0].customer.name").value("João"))
+                    .andExpect(jsonPath("$[0].vehicle.model").value("Blazer"));
+        }
+
+        @Test
+        @DisplayName("Should return 404 Not Found when document does not exist")
+        void consultOrder_whenDocumentIsNotFound_thenReturnNotFound() throws Exception {
+            String invalidDocument = "00000000000";
+            when(serviceOrderService.findByCustomerInfo(invalidDocument)).thenReturn(Optional.empty());
+
+            mockMvc.perform(get("/api/service-orders/consult")
+                            .param("document", invalidDocument))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("Should return 404 Not Found when license plate does not exist")
+        void consultOrder_whenLicensePlateIsNotFound_thenReturnNotFound() throws Exception {
+            String invalidPlate = "XYZ-9876";
+            when(serviceOrderService.findByVehicleInfo(invalidPlate)).thenReturn(Optional.empty());
+
+            mockMvc.perform(get("/api/service-orders/consult")
+                            .param("licensePlate", invalidPlate))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("Should return 400 Bad Request when no parameters are provided")
+        void consultOrder_whenNoParametersProvided_thenReturnBadRequest() throws Exception {
+            mockMvc.perform(get("/api/service-orders/consult"))
+                    .andExpect(status().isBadRequest());
         }
     }
 }
