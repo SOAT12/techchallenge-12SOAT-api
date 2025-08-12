@@ -3,6 +3,7 @@ package com.fiap.soat12.tc_group_7.controller;
 import com.fiap.soat12.tc_group_7.dto.ChangePasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ForgotPasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.LoginRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.LoginResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeResponseDTO;
 import com.fiap.soat12.tc_group_7.service.AuthEmployeeService;
@@ -112,11 +113,11 @@ public class EmployeeController {
     @ApiResponse(responseCode = "400", description = "Funcionário não encontrado")
     @ApiResponse(responseCode = "401", description = "Credenciais não autorizadas")
     @PostMapping(path = "/login")
-	public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO requestDTO) throws Exception {
+	public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO requestDTO) throws Exception {
         try {
             return new ResponseEntity<>(authEmployeeService.auth(requestDTO), HttpStatus.OK);
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
     
