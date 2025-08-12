@@ -30,17 +30,4 @@ public class UUIDGeneratorUtil {
 		return uuid;
 
 	}
-	
-	public void clear(){
-		
-		this.uuid = "";
-
-	}
-	
-	public String current(){
-		
-		return uuid;
-
-	}
-	
 }
