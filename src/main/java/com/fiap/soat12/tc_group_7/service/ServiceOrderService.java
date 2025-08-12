@@ -58,6 +58,8 @@ public class ServiceOrderService {
     private final VehicleServiceRepository serviceRepository;
     @Autowired
     private final StockRepository stockRepository;
+    @Autowired
+    private final NotificationService notificationService;
 
     @Transactional
     public ServiceOrderResponseDTO createServiceOrder(ServiceOrderRequestDTO request) {
@@ -89,6 +91,7 @@ public class ServiceOrderService {
         order.setTotalValue(order.calculateTotalValue(order.getServices(), order.getStockItems()));
 
         ServiceOrder savedOrder = serviceOrderRepository.save(order);
+        notificationService.notifyMechanicAssignedToOS(savedOrder, employee);
         return toResponseDTO(savedOrder);
     }
 
@@ -195,6 +198,9 @@ public class ServiceOrderService {
             employee = employeeRepository.findById(employeeId).orElseThrow(() -> new NotFoundException("Funcionário não encontrado."));
             order.setEmployee(employee);
         }
+
+        notificationService.notifyMechanicOSApproved(order, order.getEmployee());
+
         order.getStatus().approve(order);
         return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
     }
@@ -225,6 +231,7 @@ public class ServiceOrderService {
     public Optional<ServiceOrderResponseDTO> finish(Long id) throws InvalidTransitionException {
         ServiceOrder order = getOrderById(id);
         order.getStatus().finish(order);
+        notificationService.notifyAttendantsOSCompleted(order);
         //todo chamar serviço de envio de email ao cliente
         return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
     }
@@ -275,8 +282,11 @@ public class ServiceOrderService {
         return activeEmployees.stream()
                 .min(Comparator
                         .comparingLong((Employee employee) -> serviceOrderRepository.countByEmployeeAndStatusIn(employee, activeStatuses))
-                        .thenComparing(employee -> findOldestOrderDateForEmployee(employee, activeStatuses) == null ? null :
-                                findOldestOrderDateForEmployee(employee, activeStatuses)))
+                        .thenComparing(employee -> {
+                            Date oldestOrderDate = findOldestOrderDateForEmployee(employee, activeStatuses);
+                            return oldestOrderDate == null ? Long.MIN_VALUE : oldestOrderDate.getTime();
+                        })
+                )
                 .orElseThrow(() -> new NotFoundException("Nenhum mecânico disponível"));
     }
 
