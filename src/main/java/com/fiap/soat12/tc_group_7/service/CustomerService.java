@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomerService {
 
+    public static final String CLIENTE_NAO_ENCONTRADO = "Cliente não encontrado.";
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
@@ -35,7 +36,7 @@ public class CustomerService {
     public CustomerResponseDTO getCustomerByCpf(String cpf) {
         return customerRepository.findByCpf(cpf)
                 .map(customerMapper::toCustomerResponseDTO)
-                .orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
+                .orElseThrow(() -> new NotFoundException(CLIENTE_NAO_ENCONTRADO));
     }
 
     public CustomerResponseDTO createCustomer(CustomerRequestDTO requestDTO) {
@@ -50,7 +51,7 @@ public class CustomerService {
 
     public CustomerResponseDTO updateCustomerById(Long id, CustomerRequestDTO requestDTO) {
         Customer existingCustomer = customerRepository.findByIdAndDeletedFalse(id)
-                .orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
+                .orElseThrow(() -> new NotFoundException(CLIENTE_NAO_ENCONTRADO));
 
         existingCustomer.setCpf(requestDTO.getCpf());
         existingCustomer.setName(requestDTO.getName());
@@ -68,14 +69,14 @@ public class CustomerService {
 
     public void deleteCustomerById(Long id) {
         Customer customer = customerRepository.findByIdAndDeletedFalse(id)
-                .orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
+                .orElseThrow(() -> new NotFoundException(CLIENTE_NAO_ENCONTRADO));
         customer.setDeleted(true);
         customerRepository.save(customer);
     }
 
     public void activateCustomer(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Cliente não encontrado."));
+                .orElseThrow(() -> new NotFoundException(CLIENTE_NAO_ENCONTRADO));
         customer.setDeleted(false);
         customerRepository.save(customer);
     }

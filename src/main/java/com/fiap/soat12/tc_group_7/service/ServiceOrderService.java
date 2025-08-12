@@ -45,28 +45,31 @@ import static java.util.Objects.nonNull;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 @NoArgsConstructor(force = true)
 public class ServiceOrderService {
 
     protected static final String MECHANIC_DESCRIPTION = "Mecânico";
 
-    @Autowired
     private final ServiceOrderRepository serviceOrderRepository;
-    @Autowired
     private final CustomerRepository customerRepository;
-    @Autowired
     private final VehicleRepository vehicleRepository;
-    @Autowired
     private final EmployeeRepository employeeRepository;
-    @Autowired
     private final VehicleServiceRepository serviceRepository;
-    @Autowired
     private final StockRepository stockRepository;
-    @Autowired
     private final NotificationService notificationService;
-    @Autowired
     private final StockService stockService;
+
+    @Autowired
+    public ServiceOrderService(ServiceOrderRepository serviceOrderRepository, CustomerRepository customerRepository, VehicleRepository vehicleRepository, EmployeeRepository employeeRepository, VehicleServiceRepository serviceRepository, StockRepository stockRepository, NotificationService notificationService, StockService stockService) {
+        this.serviceOrderRepository = serviceOrderRepository;
+        this.customerRepository = customerRepository;
+        this.vehicleRepository = vehicleRepository;
+        this.employeeRepository = employeeRepository;
+        this.serviceRepository = serviceRepository;
+        this.stockRepository = stockRepository;
+        this.notificationService = notificationService;
+        this.stockService = stockService;
+    }
 
     @Transactional
     public ServiceOrderResponseDTO createServiceOrder(ServiceOrderRequestDTO request) {
