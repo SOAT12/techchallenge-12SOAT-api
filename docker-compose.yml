@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # Serviço da sua aplicação Spring Boot
+  app:
+    build: .
+    container_name: soat12_app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      - db
+    networks:
+      - soat12-network
+
+  # Serviço do banco de dados PostgreSQL
+  db:
+    image: postgres:13-alpine
+    container_name: soat12_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - soat12-network
+
+volumes:
+  postgres-data:
+
+networks:
+  soat12-network:
+    driver: bridge
