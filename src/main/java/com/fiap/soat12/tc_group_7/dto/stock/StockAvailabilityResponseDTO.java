@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class StockAvailabilityResponseDTO {
 
-    private boolean isAvailable; // A quick flag indicating if all items are in stock
+    private boolean isAvailable;
     private List<MissingItemDTO> missingItems;
 
     @Getter

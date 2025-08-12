@@ -2,19 +2,11 @@ package com.fiap.soat12.tc_group_7.service;
 
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
-import com.fiap.soat12.tc_group_7.entity.Customer;
-import com.fiap.soat12.tc_group_7.entity.Employee;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
-import com.fiap.soat12.tc_group_7.entity.Stock;
-import com.fiap.soat12.tc_group_7.entity.Vehicle;
+import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
+import com.fiap.soat12.tc_group_7.entity.*;
 import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
-import com.fiap.soat12.tc_group_7.repository.CustomerRepository;
-import com.fiap.soat12.tc_group_7.repository.EmployeeRepository;
-import com.fiap.soat12.tc_group_7.repository.ServiceOrderRepository;
-import com.fiap.soat12.tc_group_7.repository.StockRepository;
-import com.fiap.soat12.tc_group_7.repository.VehicleRepository;
-import com.fiap.soat12.tc_group_7.repository.VehicleServiceRepository;
+import com.fiap.soat12.tc_group_7.repository.*;
 import com.fiap.soat12.tc_group_7.util.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,21 +18,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.fiap.soat12.tc_group_7.service.ServiceOrderService.MECHANIC_DESCRIPTION;
+import static com.fiap.soat12.tc_group_7.util.Status.APPROVED;
 import static com.fiap.soat12.tc_group_7.util.Status.getStatusesForPendingOrders;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,6 +47,8 @@ class ServiceOrderServiceTest {
     private StockRepository stockRepository;
     @Mock
     private NotificationService notificationService;
+    @Mock
+    private StockService stockService;
 
     @InjectMocks
     private ServiceOrderService serviceOrderService;
@@ -185,6 +173,47 @@ class ServiceOrderServiceTest {
         }
 
         @Test
+        void findAllOrders_whenOrderExists_shouldReturnAllOrders() {
+            when(serviceOrderRepository.findAll()).thenReturn(List.of(serviceOrder));
+
+            List<ServiceOrderResponseDTO> ordersList = serviceOrderService.findAllOrders();
+
+
+            assertNotNull(serviceOrderService.findAllOrders());
+            assertEquals(1, ordersList.size());
+        }
+
+        @Test
+        void findByCustomerInfo_shouldSucceed() {
+            String document = "0123456789";
+            customer.setCpf(document);
+            when(customerRepository.findByCpf(document)).thenReturn(Optional.of(customer));
+            when(serviceOrderRepository.findByCustomerAndFinishedAtIsNull(customer)).thenReturn(List.of(serviceOrder));
+
+            Optional<List<ServiceOrderResponseDTO>> byCustomerInfoList = serviceOrderService.findByCustomerInfo(document);
+
+            verify(serviceOrderRepository).findByCustomerAndFinishedAtIsNull(any(Customer.class));
+            assertNotNull(serviceOrderService.findByCustomerInfo(document));
+            assertEquals(1, byCustomerInfoList.get().size());
+            assertEquals(document, byCustomerInfoList.get().get(0).getCustomer().getDocument());
+        }
+
+        @Test
+        void findByVehicleId_shouldSucceed() {
+            String licensePlate = "ABC-1234";
+            vehicle.setLicensePlate(licensePlate);
+
+            when(vehicleRepository.findByLicensePlate(licensePlate)).thenReturn(Optional.of(vehicle));
+            when(serviceOrderRepository.findByVehicleAndFinishedAtIsNull(vehicle)).thenReturn(serviceOrder);
+
+            Optional<ServiceOrderResponseDTO> byVehicleInfo = serviceOrderService.findByVehicleInfo(licensePlate);
+
+            verify(serviceOrderRepository).findByVehicleAndFinishedAtIsNull(any(Vehicle.class));
+            assertNotNull(serviceOrderService.findByVehicleInfo(licensePlate));
+            assertEquals(licensePlate, byVehicleInfo.get().getVehicle().getLicensePlate());
+        }
+
+        @Test
         void deleteOrderLogically_whenOrderExists_shouldSucceed() {
             when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
             serviceOrderService.deleteOrderLogically(1L);
@@ -203,6 +232,18 @@ class ServiceOrderServiceTest {
     @DisplayName("State Transition Tests")
     class StateTransitionTests {
         @Test
+        void waitOnApprove_whenStatusIsInDiagnosis_shouldThrowInvalidTransitionException() {
+            serviceOrder.setStatus(Status.IN_DIAGNOSIS);
+            when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
+            when(serviceOrderRepository.save(any(ServiceOrder.class))).thenReturn(serviceOrder);
+
+            Optional<ServiceOrderResponseDTO> response = serviceOrderService.waitForApproval(1L);
+
+            assertTrue(response.isPresent());
+            assertEquals(Status.WAITING_FOR_APPROVAL, response.get().getStatus());
+        }
+
+        @Test
         void approve_whenStatusIsWaitingForApproval_shouldSucceed() {
             serviceOrder.setStatus(Status.WAITING_FOR_APPROVAL);
             when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
@@ -217,9 +258,44 @@ class ServiceOrderServiceTest {
 
         @Test
         void approve_whenStatusIsOpened_shouldThrowInvalidTransitionException() {
-            serviceOrder.setStatus(Status.OPENED); // Invalid initial state
+            serviceOrder.setStatus(Status.OPENED);
             when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
             assertThrows(InvalidTransitionException.class, () -> serviceOrderService.approve(1L, null));
+        }
+
+        @Test
+        void reject_whenStatusIsWaitingForApproval_shouldSucceed() {
+            serviceOrder.setStatus(Status.WAITING_FOR_APPROVAL);
+            when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
+            when(serviceOrderRepository.save(any(ServiceOrder.class))).thenReturn(serviceOrder);
+
+            Optional<ServiceOrderResponseDTO> response = serviceOrderService.reject(1L, "Muito caro");
+
+            assertTrue(response.isPresent());
+            assertEquals(Status.REJECTED, response.get().getStatus());
+            assertEquals("Muito caro", response.get().getNotes());
+        }
+
+        @Test
+        void reject_whenStatusIsOpened_shouldThrowInvalidTransitionException() {
+            serviceOrder.setStatus(Status.OPENED);
+            when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
+            assertThrows(InvalidTransitionException.class, () -> serviceOrderService.reject(1L, null));
+        }
+
+        @Test
+        void diagnose_whenEmployeeIsNotInformed_shouldSucceed() {
+            employee.setActive(true);
+            employee.setName("Mecânico 1");
+            when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
+            when(employeeRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(anyString())).thenReturn(List.of(employee));
+            when(serviceOrderRepository.save(any(ServiceOrder.class))).thenReturn(serviceOrder);
+
+            Optional<ServiceOrderResponseDTO> response = serviceOrderService.diagnose(1L, null);
+
+            assertTrue(response.isPresent());
+            assertEquals(Status.IN_DIAGNOSIS, response.get().getStatus());
+            verify(serviceOrderRepository).save(serviceOrder);
         }
 
         @Test
@@ -227,6 +303,64 @@ class ServiceOrderServiceTest {
             when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
             when(employeeRepository.findById(99L)).thenReturn(Optional.empty());
             assertThrows(NotFoundException.class, () -> serviceOrderService.diagnose(1L, 99L));
+        }
+
+        @Test
+        void finish_whenStatusIsInExecution_shouldSucceed() {
+            serviceOrder.setStatus(Status.IN_EXECUTION);
+            when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
+            when(serviceOrderRepository.save(any(ServiceOrder.class))).thenReturn(serviceOrder);
+
+            Optional<ServiceOrderResponseDTO> response = serviceOrderService.finish(1L);
+
+            assertTrue(response.isPresent());
+            assertEquals(Status.FINISHED, response.get().getStatus());
+        }
+
+        @Test
+        void deliver_whenStatusIsFinished_shouldSucceed() {
+            serviceOrder.setStatus(Status.FINISHED);
+            when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
+            when(serviceOrderRepository.save(any(ServiceOrder.class))).thenReturn(serviceOrder);
+
+            Optional<ServiceOrderResponseDTO> response = serviceOrderService.deliver(1L);
+
+            assertTrue(response.isPresent());
+            assertEquals(Status.DELIVERED, response.get().getStatus());
+        }
+    }
+
+    @Nested
+    @DisplayName("startOnExecution Flow Tests")
+    class ExecutionFlowTests {
+        @Test
+        void startOrderExecution_whenStockIsAvailable_shouldSetStatusToExecute() {
+            StockAvailabilityResponseDTO availability = new StockAvailabilityResponseDTO(true, Collections.emptyList());
+            serviceOrder.setStatus(APPROVED);
+            employee.setActive(true);
+            employee.setName("Mecânico 1");
+            when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
+            when(stockService.checkStockAvailability(serviceOrder)).thenReturn(availability);
+            when(employeeRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(anyString())).thenReturn(Collections.singletonList(employee));
+
+            serviceOrderService.startOrderExecution(1L);
+
+            verify(notificationService).notifyMechanicAssignedToOS(serviceOrder, employee);
+            assertEquals(Status.IN_EXECUTION, serviceOrder.getStatus());
+            verify(serviceOrderRepository).save(serviceOrder);
+        }
+
+        @Test
+        void startOrderExecution_whenStockIsUnavailable_shouldSetStatusToWaitForStock() {
+            StockAvailabilityResponseDTO availability = new StockAvailabilityResponseDTO(false, Collections.emptyList());
+            serviceOrder.setStatus(APPROVED);
+            when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
+            when(stockService.checkStockAvailability(serviceOrder)).thenReturn(availability);
+
+            serviceOrderService.startOrderExecution(1L);
+
+            assertEquals(Status.WAITING_ON_STOCK, serviceOrder.getStatus());
+            verify(serviceOrderRepository).save(serviceOrder);
         }
     }
 
