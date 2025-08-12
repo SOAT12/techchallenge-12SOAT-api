@@ -40,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,6 +59,8 @@ class ServiceOrderServiceTest {
     private VehicleServiceRepository serviceRepository;
     @Mock
     private StockRepository stockRepository;
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private ServiceOrderService serviceOrderService;
@@ -121,6 +124,7 @@ class ServiceOrderServiceTest {
 
             assertNotNull(response);
             assertEquals(Status.OPENED, response.getStatus());
+            verify(notificationService).notifyMechanicAssignedToOS(serviceOrder, serviceOrder.getEmployee());
             verify(serviceOrderRepository).save(any(ServiceOrder.class));
         }
 
@@ -141,6 +145,7 @@ class ServiceOrderServiceTest {
             assertNotNull(response);
             verify(serviceRepository).findById(101L);
             verify(stockRepository).findById(201L);
+            verify(notificationService).notifyMechanicAssignedToOS(serviceOrder, serviceOrder.getEmployee());
         }
 
         @Test
@@ -205,6 +210,7 @@ class ServiceOrderServiceTest {
 
             Optional<ServiceOrderResponseDTO> response = serviceOrderService.approve(1L, null);
 
+            verify(notificationService).notifyMechanicOSApproved(serviceOrder, serviceOrder.getEmployee());
             assertTrue(response.isPresent());
             assertEquals(Status.APPROVED, response.get().getStatus());
         }
