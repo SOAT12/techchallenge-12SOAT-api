@@ -58,7 +58,7 @@ public class ApiErrorTest {
         assertNotNull(apiError.getTimestamp());
         assertEquals(httpStatus, apiError.getStatus());
         assertEquals(errorMessage, apiError.getMessage());
-        assertEquals("", apiError.getDebugMessage());
+        assertEquals(exception.getClass().getName(), apiError.getDebugMessage());
     }
 
     @Test

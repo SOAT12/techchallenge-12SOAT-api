@@ -1,14 +1,17 @@
 package com.fiap.soat12.tc_group_7.util;
 
-import java.util.Calendar;
-
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Calendar;
 
 public class CodeGenerator {
 	
 	public static Long sequence = 0L;
 	
 	public static char[] alfabeto = new char[]{ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
+
+    private CodeGenerator() {
+    }
 
 	public static String generateCode() {
 		

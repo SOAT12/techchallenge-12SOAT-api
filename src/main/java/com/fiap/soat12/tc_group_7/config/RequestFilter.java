@@ -7,7 +7,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -24,14 +24,13 @@ import java.io.IOException;
 import java.util.*;
 
 @Component
+@RequiredArgsConstructor
 public class RequestFilter extends OncePerRequestFilter {
 
 	@Lazy
-	@Autowired
-	private SessionToken sessionToken;
+	private final SessionToken sessionToken;
 
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
+	private final JwtTokenUtil jwtTokenUtil;
 
 //	@Value("${white.list.ipaddress}")
 	private String whiteListValue = "";
