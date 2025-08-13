@@ -72,8 +72,7 @@ public class WebSecurityConfig {
                                 "/swagger-ui/**",
                                 "/api-docs/**",
                                 "/api/employees/login",
-                                "/api/employees/forgot-password",
-                                "/api/employees"
+                                "/api/employees/forgot-password"
                         ).permitAll()
 
                         // Endpoints do StockController
