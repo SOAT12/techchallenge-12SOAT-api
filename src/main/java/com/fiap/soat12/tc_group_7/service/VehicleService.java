@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class VehicleService {
 
+    public static final String VEICULO_NAO_ENCONTRADO = "Veículo não encontrado";
     private final VehicleRepository vehicleRepository;
 
     public VehicleService (VehicleRepository vehicleRepository){
@@ -41,7 +42,7 @@ public class VehicleService {
     public Optional<VehicleResponseDTO> findByLicensePlate(String licensePlate) {
         return Optional.ofNullable(vehicleRepository.findByLicensePlate(licensePlate).filter(Vehicle::getActive)
                 .map(this::convertToResponseDTO)
-                .orElseThrow(() -> new NotFoundException("Veículo não encontrado")));
+                .orElseThrow(() -> new NotFoundException(VEICULO_NAO_ENCONTRADO)));
     }
 
     @Transactional(readOnly = true)
@@ -67,7 +68,7 @@ public class VehicleService {
                     Vehicle updatedVehicle = vehicleRepository.save(existingVehicle);
 
                     return convertToResponseDTO(updatedVehicle);
-                }).orElseThrow(() -> new NotFoundException("Veículo não encontrado")));
+                }).orElseThrow(() -> new NotFoundException(VEICULO_NAO_ENCONTRADO)));
     }
 
     @Transactional
@@ -77,7 +78,7 @@ public class VehicleService {
                     vehicle.setActive(false);
                     vehicleRepository.save(vehicle);
                     return true;
-                }).orElseThrow(() -> new NotFoundException("Veículo não encontrado"));
+                }).orElseThrow(() -> new NotFoundException(VEICULO_NAO_ENCONTRADO));
         return false;
     }
 

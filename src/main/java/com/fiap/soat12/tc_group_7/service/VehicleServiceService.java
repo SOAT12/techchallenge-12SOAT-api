@@ -15,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VehicleServiceService {
 
+    public static final String SERVICO_NAO_ENCONTRADO = "Serviço não encontrado.";
     private final VehicleServiceRepository vehicleServiceRepository;
     private final VehicleServiceMapper vehicleServiceMapper;
 
@@ -34,7 +35,7 @@ public class VehicleServiceService {
 
     public VehicleServiceResponseDTO getById(Long id) {
         VehicleService service = vehicleServiceRepository.findByIdAndActiveTrue(id)
-                .orElseThrow(() -> new NotFoundException("Serviço não encontrado."));
+                .orElseThrow(() -> new NotFoundException(SERVICO_NAO_ENCONTRADO));
         return vehicleServiceMapper.toVehicleServiceResponseDTO(service);
     }
 
@@ -46,7 +47,7 @@ public class VehicleServiceService {
 
     public VehicleServiceResponseDTO update(Long id, VehicleServiceRequestDTO dto) {
         VehicleService vehicleService = vehicleServiceRepository.findByIdAndActiveTrue(id)
-                .orElseThrow(() -> new NotFoundException("Serviço não encontrado."));
+                .orElseThrow(() -> new NotFoundException(SERVICO_NAO_ENCONTRADO));
 
         vehicleService.setName(dto.getName());
         vehicleService.setValue(dto.getValue());
@@ -57,14 +58,14 @@ public class VehicleServiceService {
 
     public void deactivate(Long id) {
         VehicleService entity = vehicleServiceRepository.findByIdAndActiveTrue(id)
-                .orElseThrow(() -> new NotFoundException("Serviço não encontrado."));
+                .orElseThrow(() -> new NotFoundException(SERVICO_NAO_ENCONTRADO));
         entity.setActive(false);
         vehicleServiceRepository.save(entity);
     }
 
     public void activate(Long id) {
         VehicleService entity = vehicleServiceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Serviço não encontrado."));
+                .orElseThrow(() -> new NotFoundException(SERVICO_NAO_ENCONTRADO));
         entity.setActive(true);
         vehicleServiceRepository.save(entity);
     }

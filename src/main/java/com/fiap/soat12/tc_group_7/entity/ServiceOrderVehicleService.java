@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "service_order_vehicle_service")
 @Getter
 @Setter
-public class ServiceOrderVehicleService {
+public class ServiceOrderVehicleService implements Serializable {
 
     @EmbeddedId
     private ServiceOrderVehicleServiceId id;

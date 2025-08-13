@@ -79,36 +79,38 @@ public enum Status {
     DELIVERED,
     CANCELED;
 
+    public static final String MSG_ERROR = "Não é possível mover para o status %s, a partir do status %s.";
+
     public void diagnose(ServiceOrder order) throws InvalidTransitionException {
-        throw new InvalidTransitionException(String.format("Não é possível mover para o status %s, a partir do status %s.", IN_DIAGNOSIS.name(), this.name()));
+        throw new InvalidTransitionException(String.format(MSG_ERROR, IN_DIAGNOSIS.name(), this.name()));
     }
 
     public void waitForApproval(ServiceOrder order) throws InvalidTransitionException {
-        throw new InvalidTransitionException(String.format("Não é possível mover para o status %s, a partir do status %s.", WAITING_FOR_APPROVAL.name(), this.name()));
+        throw new InvalidTransitionException(String.format(MSG_ERROR, WAITING_FOR_APPROVAL.name(), this.name()));
     }
 
     public void approve(ServiceOrder order) throws InvalidTransitionException {
-        throw new InvalidTransitionException(String.format("Não é possível mover para o status %s, a partir do status %s.", APPROVED.name(), this.name()));
+        throw new InvalidTransitionException(String.format(MSG_ERROR, APPROVED.name(), this.name()));
     }
 
     public void reject(ServiceOrder order) throws InvalidTransitionException {
-        throw new InvalidTransitionException(String.format("Não é possível mover para o status %s, a partir do status %s.", REJECTED.name(), this.name()));
+        throw new InvalidTransitionException(String.format(MSG_ERROR, REJECTED.name(), this.name()));
     }
 
     public void waitForStock(ServiceOrder order) throws InvalidTransitionException {
-        throw new InvalidTransitionException(String.format("Não é possível mover para o status %s, a partir do status %s.", WAITING_ON_STOCK.name(), this.name()));
+        throw new InvalidTransitionException(String.format(MSG_ERROR, WAITING_ON_STOCK.name(), this.name()));
     }
 
     public void execute(ServiceOrder order) throws InvalidTransitionException {
-        throw new InvalidTransitionException(String.format("Não é possível mover para o status %s, a partir do status %s.", IN_EXECUTION.name(), this.name()));
+        throw new InvalidTransitionException(String.format(MSG_ERROR, IN_EXECUTION.name(), this.name()));
     }
 
     public void finish(ServiceOrder order) throws InvalidTransitionException {
-        throw new InvalidTransitionException(String.format("Não é possível mover para o status %s, a partir do status %s.", FINISHED.name(), this.name()));
+        throw new InvalidTransitionException(String.format(MSG_ERROR, FINISHED.name(), this.name()));
     }
 
     public void deliver(ServiceOrder order) throws InvalidTransitionException {
-        throw new InvalidTransitionException(String.format("Não é possível mover para o status %s, a partir do status %s.", DELIVERED.name(), this.name()));
+        throw new InvalidTransitionException(String.format(MSG_ERROR, DELIVERED.name(), this.name()));
     }
 
     public static List<Status> getStatusesForPendingOrders() {
