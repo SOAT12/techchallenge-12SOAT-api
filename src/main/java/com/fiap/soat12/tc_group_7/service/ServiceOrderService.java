@@ -312,7 +312,8 @@ public class ServiceOrderService {
                 Stock stock = stockRepository.findById(dto.getStockId()).orElseThrow(() -> new NotFoundException("Peça não encontrada"));
                 ServiceOrderStock sos = new ServiceOrderStock();
                 sos.setStock(stock);
-                sos.getStock().setQuantity(dto.getRequiredQuantity());
+                sos.getStock().setQuantity(stock.getQuantity() - dto.getRequiredQuantity());
+//                sos.getStock().setQuantity(dto.getRequiredQuantity());
                 sos.setServiceOrder(order);
                 sos.setId(new ServiceOrderStockId(order.getId(), stock.getId()));
                 return sos;
