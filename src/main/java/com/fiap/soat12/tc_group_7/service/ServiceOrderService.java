@@ -256,7 +256,7 @@ public class ServiceOrderService {
         ServiceOrder order = getOrderById(id);
         order.getStatus().finish(order);
         notificationService.notifyAttendantsOSCompleted(order);
-        //todo chamar serviço de envio de email ao cliente fazer aqui
+        //todo chamar serviço de envio de email ao cliente
         return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
     }
 

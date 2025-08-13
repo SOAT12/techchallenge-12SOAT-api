@@ -160,6 +160,7 @@ Após a aplicação estar em execução, você pode interagir com a API RESTful 
 * No corpo da requisição, utilize os `ids` do cliente, veículo, mecânico e serviço criados anteriormente.
 * Guarde o `id` da OS criada para os próximos passos.
 * employeeId = É opcional, passar apenas quando quiser quiser criar uma OS com um mecânico específico atribuído
+* Notifica o mecânico que ele foi atribuído para uma nova OS
 
 ```json 
 {
@@ -186,6 +187,8 @@ Após a aplicação estar em execução, você pode interagir com a API RESTful 
 **Passo 5.1: Alterar para em diagnóstico**
 * Utilizar o endpoint `PATCH  /api/service-orders/{{SERVICE_ORDER_ID}}/diagnose?employeeId=1` altera a status da OS para em diagnóstico.
 * employeeId = É opcional, passar apenas quando quiser associar à um mecânico específico.
+* Quando não é passado, é atribúido ao mecânico com menos OS na fila. 
+* Se houver mecânicos com a mesma quantidade é atribuído ao mais antigo.
 
 **Passo 5.2.1: Consultar OS por CPF**
 * Utilizar o endpoint `GET /api/service-orders/consult?document=48123980027`
@@ -197,27 +200,21 @@ Após a aplicação estar em execução, você pode interagir com a API RESTful 
 * Utilizar o endpoint `PATCH /api/service-orders/{{SERVICE_ORDER_ID}}/wait-for-approval` altera a status da OS para aguardando aprovação do cliente.
 
 **Passo 5.3: Cliente Aprova o Orçamento**
-* Utilizar o endpoint `PATCH /api/service-orders/{{SERVICE_ORDER_ID}}/approve?employeeId=1` altera a status da OS para aguardando aprovação do cliente.
+* Utilizar o endpoint `PATCH /api/service-orders/{{SERVICE_ORDER_ID}}/approve?employeeId=1` altera o status da OS para aprovada pelo cliente.
 * Quando a aprovação for feita pela Atendente e não pelo cliente pode ser passado o `employeeId` para já associar para um mecânico específico
+* Notifica o mecânico atribuído que a OS foi aprovada
 
+**Passo 5.4: Iniciar Execução do Serviço**
+* Utilizar o endpoint `PATCH /api/service-orders/{{SERVICE_ORDER_ID}}/execute` altera o status da OS para Em execução.
 
+**Passo 5.5: Finalizar OS**
+* Utilizar o endpoint `PATCH /api/service-orders/{{SERVICE_ORDER_ID}}/finish` altera o status da OS para Finalizada.
+* É enviado um E-mail ao cliente avisando que foi terminado o serviço e notifica a atendente.
 
-**Passo 5: Fluxo de Status da OS**
-* Utilize os endpoints `PATCH` para simular as transições de status da OS, seguindo a máquina de estados do domínio.
-    * `PATCH /api/service-orders/{id}/diagnose`
-    * `PATCH /api/service-orders/{id}/wait-for-approval`
-    * `PATCH /api/service-orders/{id}/approve`
-    * `PATCH /api/service-orders/{id}/execute`
-    * `PATCH /api/service-orders/{id}/finish`
-    * `PATCH /api/service-orders/{id}/deliver`
+**Passo 5.5: Entregar o veículo**
+* Utilizar o endpoint `PATCH /api/service-orders/{{SERVICE_ORDER_ID}}/deliver` altera o status da OS para Entregue.
 
+**Passo 6: Consultar Tempo Médio de Execução do serviço**
+* Utilizar o endpoint `GET  /api/service-orders/average-execution-time?serviceIds=1` altera o status da OS para Entregue.
+* Esse endpoint tem parâmetros opcionais como "startDate", "endDate" e lista de "serviceIds" 
 
-
-**Passo 5: Consulta e Monitoramento**
-* Após finalizar uma OS, use o endpoint `GET /api/service-orders/{id}` para ver o status final.
-* Utilize o endpoint `GET /api/service-orders/average-execution-time` para ver o tempo médio de execução das OS finalizadas.
-
-
-**Passo 5: Consulta e Monitoramento**
-* Após finalizar uma OS, use o endpoint `GET /api/service-orders/{id}` para ver o status final.
-* Utilize o endpoint `GET /api/service-orders/average-execution-time` para ver o tempo médio de execução das OS finalizadas.
