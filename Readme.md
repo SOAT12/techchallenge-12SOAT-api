@@ -53,7 +53,7 @@ O projeto utiliza Docker e Docker Compose para orquestrar a aplicação e seu ba
 
 Após a aplicação estar em execução, você pode interagir com a API RESTful através da documentação interativa do Swagger.
 
-1.  Abra o navegador e acesse a URL do Swagger: `http://localhost:8080/swagger-ui.html`.
+1.  Abra o navegador e acesse a URL do Swagger: `http://localhost:8080/swagger-ui/index.html#`.
 2.  Siga este "caminho feliz" para testar a funcionalidade principal do sistema:
 
 **Passo 1: Cadastro de Funcionário**
