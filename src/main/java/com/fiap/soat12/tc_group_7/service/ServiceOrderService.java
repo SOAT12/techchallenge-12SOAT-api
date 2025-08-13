@@ -4,28 +4,14 @@ import com.fiap.soat12.tc_group_7.dto.AverageExecutionTimeResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
-import com.fiap.soat12.tc_group_7.entity.Customer;
-import com.fiap.soat12.tc_group_7.entity.Employee;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrderStock;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrderStockId;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrderVehicleService;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrderVehicleServiceId;
-import com.fiap.soat12.tc_group_7.entity.Stock;
-import com.fiap.soat12.tc_group_7.entity.Vehicle;
+import com.fiap.soat12.tc_group_7.entity.*;
 import com.fiap.soat12.tc_group_7.entity.VehicleService;
 import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
-import com.fiap.soat12.tc_group_7.repository.CustomerRepository;
-import com.fiap.soat12.tc_group_7.repository.EmployeeRepository;
-import com.fiap.soat12.tc_group_7.repository.ServiceOrderRepository;
-import com.fiap.soat12.tc_group_7.repository.StockRepository;
-import com.fiap.soat12.tc_group_7.repository.VehicleRepository;
-import com.fiap.soat12.tc_group_7.repository.VehicleServiceRepository;
+import com.fiap.soat12.tc_group_7.repository.*;
 import com.fiap.soat12.tc_group_7.specification.ServiceOrderSpecification;
 import com.fiap.soat12.tc_group_7.util.Status;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.fiap.soat12.tc_group_7.util.Status.getStatusesForPendingOrders;
@@ -274,7 +256,7 @@ public class ServiceOrderService {
         ServiceOrder order = getOrderById(id);
         order.getStatus().finish(order);
         notificationService.notifyAttendantsOSCompleted(order);
-        //todo chamar serviço de envio de email ao cliente
+        //todo chamar serviço de envio de email ao cliente fazer aqui
         return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
     }
 
