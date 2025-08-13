@@ -186,6 +186,8 @@ Após a aplicação estar em execução, você pode interagir com a API RESTful 
 **Passo 5.1: Alterar para em diagnóstico**
 * Utilizar o endpoint `PATCH  /api/service-orders/{{SERVICE_ORDER_ID}}/diagnose?employeeId=1` altera a status da OS para em diagnóstico.
 * employeeId = É opcional, passar apenas quando quiser associar à um mecânico específico.
+* Quando não é passado, é atribúido ao mecânico com menos OS na fila. 
+* Se houver mecânicos com a mesma quantidade é atribuído ao mais antigo.
 
 **Passo 5.2.1: Consultar OS por CPF**
 * Utilizar o endpoint `GET /api/service-orders/consult?document=48123980027`
