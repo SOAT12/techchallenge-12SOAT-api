@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public interface CreateStockItemUseCase {
+public interface CreateStockUseCase {
 
     Stock createStock(CreateStockCommand stock);
 

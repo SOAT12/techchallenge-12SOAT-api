@@ -1,7 +1,5 @@
 package com.fiap.soat12.tc_group_7.api.domain.model;
 
-import com.fiap.soat12.tc_group_7.entity.ToolCategory;
-
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
@@ -45,6 +43,25 @@ public class Stock {
 
     /* BUSINESS LOGIC METHODS */
 
+    public void addStock(Integer newQuantity) {
+        if(Objects.isNull(newQuantity) ||  newQuantity < 0) {
+            throw new IllegalArgumentException("A tool quantity must not be null or fewer than zero");
+        }
+        this.quantity += newQuantity;
+        this.isActive = true;
+    }
+
+    public void removingStock(Integer removingQuantity){
+        if(Objects.isNull(removingQuantity) || removingQuantity < 1) {
+            throw new IllegalArgumentException("A tool quantity must not be null or fewer than one");
+        }
+        if(removingQuantity > this.quantity) {
+            throw new IllegalArgumentException("A tool quantity must not be greater than the current quantity");
+        }
+        this.quantity -= removingQuantity;
+    }
+
+
     public void deactivate() {
         if (Boolean.FALSE.equals(this.isActive)) {
             throw new IllegalStateException("Cannot deactivate an stock who is already inactive.");
@@ -52,11 +69,31 @@ public class Stock {
         this.isActive = false;
     }
 
-    public void changeCategory(ToolCategory newToolCategory) {
+    public void updateDetails(String newName, BigDecimal newValue, ToolCategory newCategory){
+        changeName(newName);
+        changeValue(newValue);
+        changeCategory(newCategory);
+    }
+
+    private void changeCategory(ToolCategory newToolCategory) {
         if(Objects.isNull(newToolCategory)) {
             throw new IllegalArgumentException("New tool category cannot be null.");
         }
         this.toolCategory = newToolCategory;
+    }
+
+    private void changeName(String newName) {
+        if(Objects.isNull(newName)) {
+            throw new IllegalArgumentException("New name cannot be null.");
+        }
+        this.toolName = newName;
+    }
+
+    private void changeValue(BigDecimal newValue) {
+        if(Objects.isNull(newValue) || newValue.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("New value cannot be null or negative.");
+        }
+        this.value = newValue;
     }
 
     /* GETTERS AND SETTERS */
