@@ -46,7 +46,7 @@ public class StockRepositoryAdapter implements StockRepositoryPort {
      */
     @Override
     public Optional<Stock> findActiveById(UUID stockItemId) {
-        return springStockRepository.findByIdAndIsActiveTrue(stockItemId)
+        return springStockRepository.findByIdAndActiveTrue(stockItemId)
                 .map(stockMapper::toDomain);
     }
 
@@ -56,7 +56,7 @@ public class StockRepositoryAdapter implements StockRepositoryPort {
      */
     @Override
     public Optional<Stock> findByName(String name) {
-        return springStockRepository.findByName(name)
+        return springStockRepository.findByToolName(name)
                 .map(stockMapper::toDomain);
     }
 
@@ -65,7 +65,7 @@ public class StockRepositoryAdapter implements StockRepositoryPort {
      */
     @Override
     public List<Stock> findAllActive() {
-        return springStockRepository.findByIsActiveTrue().stream()
+        return springStockRepository.findByActiveTrue().stream()
                 .map(stockMapper::toDomain)
                 .collect(Collectors.toList());
     }

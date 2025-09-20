@@ -8,11 +8,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface SpringStockRepository extends JpaRepository<StockEntity, UUID> {
-    Optional<StockEntity> findByIdAndIsActiveTrue(UUID id);
+    Optional<StockEntity> findByIdAndActiveTrue(UUID id);
 
-    List<StockEntity> findByIsActiveTrue();
+    List<StockEntity> findByActiveTrue();
 
-    boolean existsByName(String name);
+    boolean existsByToolName(String name);
 
-    Optional<StockEntity> findByName(String name);
+    Optional<StockEntity> findByToolName(String name);
 }
