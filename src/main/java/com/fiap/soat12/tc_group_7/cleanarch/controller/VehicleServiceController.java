@@ -2,7 +2,7 @@ package com.fiap.soat12.tc_group_7.cleanarch.controller;
 
 import com.fiap.soat12.tc_group_7.cleanarch.entity.VehicleService;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.VehicleServiceGateway;
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.VehicleDataSource;
+import com.fiap.soat12.tc_group_7.cleanarch.interfaces.VehicleServiceRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.presenter.VehicleServicePresenter;
 import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleServiceUserCase;
 import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceRequestDTO;
@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 
 public class VehicleServiceController {
 
-    private final VehicleDataSource dataSource;
+    private final VehicleServiceRepository dataSource;
     private final VehicleServicePresenter vehicleServicePresenter;
 
-    public VehicleServiceController(VehicleDataSource dataSource) {
+    public VehicleServiceController(VehicleServiceRepository dataSource) {
         this.dataSource = dataSource;
         this.vehicleServicePresenter = new VehicleServicePresenter();
     }

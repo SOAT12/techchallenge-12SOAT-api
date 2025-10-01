@@ -3,15 +3,14 @@ package com.fiap.soat12.tc_group_7.cleanarch.entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 @Builder
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class VehicleService extends Audit {
+public class VehicleService {
 
     private Long id;
 
@@ -20,5 +19,9 @@ public class VehicleService extends Audit {
     private BigDecimal value;
 
     private Boolean active;
+
+    private Date createdAt;
+
+    private Date updatedAt;
 
 }

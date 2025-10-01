@@ -5,7 +5,7 @@ import com.fiap.soat12.tc_group_7.cleanarch.entity.VehicleService;
 import java.util.List;
 import java.util.Optional;
 
-public interface VehicleDataSource {
+public interface VehicleServiceRepository {
 
     List<VehicleService> findAll();
 

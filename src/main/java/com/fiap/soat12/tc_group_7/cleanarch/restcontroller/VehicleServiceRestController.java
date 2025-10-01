@@ -1,4 +1,4 @@
-package com.fiap.soat12.tc_group_7.cleanarch.api;
+package com.fiap.soat12.tc_group_7.cleanarch.restcontroller;
 
 import com.fiap.soat12.tc_group_7.cleanarch.controller.VehicleServiceController;
 import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceRequestDTO;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/clean-arch/vehicle-services")
 @RequiredArgsConstructor
 @Tag(name = "Serviço", description = "API para gerenciar serviços")
-public class VehicleServiceApi {
+public class VehicleServiceRestController {
 
     private final VehicleServiceController vehicleServiceController;
 
