@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: techchallenge-configmap
+  labels:
+    app.kubernetes.io/name: techchallenge-app
+    app.kubernetes.io/part-of: techchallenge
+data:
+  application.properties: |
+    server.port=8080
+    spring.application.name=techchallenge-app
+    spring.liquibase.change-log=classpath:liquibase/liquibase-changelog.yml
