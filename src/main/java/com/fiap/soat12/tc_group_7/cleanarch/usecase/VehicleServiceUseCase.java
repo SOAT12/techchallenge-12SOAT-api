@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class VehicleServiceUserCase {
+public class VehicleServiceUseCase {
 
     public static final String SERVICE_NOT_FOUND_MESSAGE = "Serviço não encontrado.";
 
