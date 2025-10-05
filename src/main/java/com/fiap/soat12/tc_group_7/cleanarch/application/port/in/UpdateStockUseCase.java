@@ -1,7 +1,6 @@
 package com.fiap.soat12.tc_group_7.cleanarch.application.port.in;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Stock;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
 
 import java.math.BigDecimal;
 import java.util.UUID;

@@ -1,8 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity;
 
 
-import com.fiap.soat12.tc_group_7.entity.Audit;
-import com.fiap.soat12.tc_group_7.entity.ToolCategory;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -38,7 +38,7 @@ public class StockEntity extends Audit {
 
     @ManyToOne
     @JoinColumn(name = "tool_category_id", nullable = false)
-    private ToolCategory toolCategory;
+    private ToolCategoryEntity toolCategoryEntity;
 
 }
 

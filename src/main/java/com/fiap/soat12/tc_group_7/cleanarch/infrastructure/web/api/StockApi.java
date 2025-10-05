@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Controlador dos endpoints para CRUD de itens de estoque.
@@ -45,7 +46,7 @@ public class StockApi {
     @ApiResponse(responseCode = "200", description = "Item de estoque encontrado com sucesso")
     @ApiResponse(responseCode = "404", description = "Item de estoque não encontrado")
     @GetMapping("/{id}")
-    public ResponseEntity<StockResponseDTO> getStockById(@PathVariable Long id) {
+    public StockResponseDTO getStockById(@PathVariable UUID id) {
         return stockController.getStockById(id);
     }
 
@@ -53,18 +54,16 @@ public class StockApi {
             description = "Retorna uma lista de todos os itens em estoque cadastrados.")
     @ApiResponse(responseCode = "200", description = "Lista de itens de estoque retornada com sucesso")
     @GetMapping("/all")
-    public ResponseEntity<List<StockResponseDTO>> getAllStockItems() {
-        List<StockResponseDTO> stockItems = stockController.getAllStockItems();
-        return new ResponseEntity<>(stockItems, HttpStatus.OK);
+    public List<StockResponseDTO> getAllStockItems() {
+        return stockController.getAllStockItems();
     }
 
     @Operation(summary = "Lista todos os itens de estoque ativos",
             description = "Retorna uma lista de todos os itens em estoque cadastrados e com status ativo")
     @ApiResponse(responseCode = "200", description = "Lista de itens de estoque ativas retornada com sucesso")
     @GetMapping
-    public ResponseEntity<List<StockResponseDTO>> getAllStockItemsActive() {
-        List<StockResponseDTO> stockItems = stockController.getAllStockItemsActive();
-        return new ResponseEntity<>(stockItems, HttpStatus.OK);
+    public List<StockResponseDTO> getAllStockItemsActive() {
+        return stockController.getAllStockItemsActive();
     }
 
     @Operation(summary = "Atualiza um item de estoque existente",
@@ -73,7 +72,7 @@ public class StockApi {
     @ApiResponse(responseCode = "400", description = "Requisição inválida ou categoria não encontrada")
     @ApiResponse(responseCode = "404", description = "Item de estoque não encontrado")
     @PutMapping("/{id}")
-    public ResponseEntity<StockResponseDTO> updateStock(@PathVariable Long id, @Valid @RequestBody StockRequestDTO requestDTO) {
+    public StockResponseDTO updateStock(@PathVariable Long id, @Valid @RequestBody StockRequestDTO requestDTO) {
         try {
             return stockController.updateStock(id, requestDTO);
         } catch (IllegalArgumentException e) {
@@ -86,7 +85,7 @@ public class StockApi {
     @ApiResponse(responseCode = "204", description = "Item de estoque deletado com sucesso")
     @ApiResponse(responseCode = "404", description = "Item de estoque não encontrado")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStock(@PathVariable Long id) {
+    public void deleteStock(@PathVariable Long id) {
         stockController.logicallyDeleteStock(id);
     }
 
@@ -95,7 +94,7 @@ public class StockApi {
     @ApiResponse(responseCode = "200", description = "Item de estoque reativado com sucesso")
     @ApiResponse(responseCode = "404", description = "Item de estoque não encontrado")
     @PatchMapping("/{id}/reactivate")
-    public ResponseEntity<StockResponseDTO> reactivateStock(@PathVariable Long id) {
+    public StockResponseDTO reactivateStock(@PathVariable Long id) {
         return stockController.reactivateStock(id);
     }
 }

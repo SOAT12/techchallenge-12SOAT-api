@@ -2,9 +2,8 @@ package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.reposito
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Stock;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.StockRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.mapper.StockPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.SpringStockRepository;
-import lombok.RequiredArgsConstructor;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.mapper.StockMapper;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.StockJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,11 +12,15 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
-@RequiredArgsConstructor
-public class StockRepositoryAdapter implements StockRepository {
+public class StockRepositoryImpl implements StockRepository {
 
-    private final SpringStockRepository springStockRepository;
-    private final StockPresenter stockPresenter;
+    private final StockJpaRepository stockJpaRepository;
+    private final StockMapper stockMapper;
+
+    public StockRepositoryImpl(StockJpaRepository stockJpaRepository) {
+        this.stockJpaRepository = stockJpaRepository;
+        this.stockMapper = new StockMapper();
+    }
 
     /**
      * @param stock
@@ -25,9 +28,9 @@ public class StockRepositoryAdapter implements StockRepository {
      */
     @Override
     public Stock save(Stock stock) {
-        var entity = stockPresenter.toEntity(stock);
-        var savedStock = springStockRepository.save(entity);
-        return stockPresenter.toDomain(savedStock);
+        var entity = stockMapper.toEntity(stock);
+        var savedStock = stockJpaRepository.save(entity);
+        return stockMapper.toDomain(savedStock);
     }
 
     /**
@@ -36,8 +39,8 @@ public class StockRepositoryAdapter implements StockRepository {
      */
     @Override
     public Optional<Stock> findById(UUID stockItemId) {
-        return springStockRepository.findById(stockItemId)
-                .map(stockPresenter::toDomain);
+        return stockJpaRepository.findById(stockItemId)
+                .map(stockMapper::toDomain);
     }
 
     /**
@@ -46,8 +49,8 @@ public class StockRepositoryAdapter implements StockRepository {
      */
     @Override
     public Optional<Stock> findActiveById(UUID stockItemId) {
-        return springStockRepository.findByIdAndActiveTrue(stockItemId)
-                .map(stockPresenter::toDomain);
+        return stockJpaRepository.findByIdAndActiveTrue(stockItemId)
+                .map(stockMapper::toDomain);
     }
 
     /**
@@ -56,8 +59,8 @@ public class StockRepositoryAdapter implements StockRepository {
      */
     @Override
     public Optional<Stock> findByName(String name) {
-        return springStockRepository.findByToolName(name)
-                .map(stockPresenter::toDomain);
+        return stockJpaRepository.findByToolName(name)
+                .map(stockMapper::toDomain);
     }
 
     /**
@@ -65,8 +68,8 @@ public class StockRepositoryAdapter implements StockRepository {
      */
     @Override
     public List<Stock> findAllActive() {
-        return springStockRepository.findByActiveTrue().stream()
-                .map(stockPresenter::toDomain)
+        return stockJpaRepository.findByActiveTrue().stream()
+                .map(stockMapper::toDomain)
                 .collect(Collectors.toList());
     }
 
@@ -75,9 +78,9 @@ public class StockRepositoryAdapter implements StockRepository {
      */
     @Override
     public void inactivateById(UUID stockItemId) {
-        springStockRepository.findById(stockItemId).ifPresent(entity -> {
+        stockJpaRepository.findById(stockItemId).ifPresent(entity -> {
             entity.setActive(false);
-            springStockRepository.save(entity);
+            stockJpaRepository.save(entity);
         });
     }
 
@@ -86,9 +89,9 @@ public class StockRepositoryAdapter implements StockRepository {
      */
     @Override
     public void activateById(UUID stockItemId) {
-        springStockRepository.findById(stockItemId).ifPresent(entity -> {
+        stockJpaRepository.findById(stockItemId).ifPresent(entity -> {
             entity.setActive(true);
-            springStockRepository.save(entity);
+            stockJpaRepository.save(entity);
         });
 
     }

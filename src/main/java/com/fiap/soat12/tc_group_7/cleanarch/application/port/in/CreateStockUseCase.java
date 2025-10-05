@@ -1,7 +1,6 @@
 package com.fiap.soat12.tc_group_7.cleanarch.application.port.in;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Stock;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

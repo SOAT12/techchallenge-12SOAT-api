@@ -8,15 +8,17 @@ import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.Sto
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.StockResponseDTO;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class StockController {
 
     private final com.fiap.soat12.tc_group_7.cleanarch.domain.repository.StockRepository stockRepository;
     private final StockPresenter stockPresenter;
 
-    public StockController(com.fiap.soat12.tc_group_7.cleanarch.domain.repository.StockRepository stockRepository, StockPresenter stockPresenter) {
+    public StockController(com.fiap.soat12.tc_group_7.cleanarch.domain.repository.StockRepository stockRepository) {
         this.stockRepository = stockRepository;
-        this.stockPresenter = stockPresenter;
+        this.stockPresenter = new StockPresenter();
     }
 
     public StockResponseDTO createStock(StockRequestDTO requestDTO) {
@@ -27,8 +29,12 @@ public class StockController {
         return stockPresenter.toStockResponseDTO(stock);
     }
 
-    public StockResponseDTO getStockById(Long id) {
-        return null;
+    public StockResponseDTO getStockById(UUID id) {
+        StockGateway stockGateway = new StockGateway(this.stockRepository);
+        StockUseCase stockUseCase = new StockUseCase(stockGateway);
+
+        Stock stock = stockUseCase.findStockItemById(id);
+        return stockPresenter.toStockResponseDTO(stock);
     }
 
     public List<StockResponseDTO> getAllStockItems() {

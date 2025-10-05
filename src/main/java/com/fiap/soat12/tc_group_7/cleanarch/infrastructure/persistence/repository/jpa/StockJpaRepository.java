@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface SpringStockRepository extends JpaRepository<StockEntity, UUID> {
+public interface StockJpaRepository extends JpaRepository<StockEntity, UUID> {
     Optional<StockEntity> findByIdAndActiveTrue(UUID id);
 
     List<StockEntity> findByActiveTrue();

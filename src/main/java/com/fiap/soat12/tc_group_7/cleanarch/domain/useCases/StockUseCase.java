@@ -2,15 +2,14 @@ package com.fiap.soat12.tc_group_7.cleanarch.domain.useCases;
 
 import com.fiap.soat12.tc_group_7.cleanarch.application.port.in.UpdateStockUseCase;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Stock;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.StockGateway;
+import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -43,8 +42,8 @@ public class StockUseCase {
         return stockGateway.save(stockItem);
     }
 
-    public Optional<Stock> findStockItemById(UUID id) {
-        return stockGateway.findActiveById(id);
+    public Stock findStockItemById(UUID id) {
+        return stockGateway.findActiveById(id).orElseThrow(() -> new NotFoundException("Item de estoque não encontrado."));
     }
 
     public void inactivateStockItem(UUID id) {
