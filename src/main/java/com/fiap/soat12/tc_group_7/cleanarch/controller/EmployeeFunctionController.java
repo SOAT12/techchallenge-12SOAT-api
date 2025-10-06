@@ -1,17 +1,24 @@
 package com.fiap.soat12.tc_group_7.cleanarch.controller;
 
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.CustomerGateway;
+import com.fiap.soat12.tc_group_7.cleanarch.gateway.EmployeeFunctionGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.interfaces.EmployeeFunctionRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.interfaces.EmployeeRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.presenter.EmployeeFunctionPresenter;
 import com.fiap.soat12.tc_group_7.cleanarch.presenter.EmployeePresenter;
 import com.fiap.soat12.tc_group_7.cleanarch.usecase.CustomerUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.usecase.EmployeeFunctionUseCase;
 import com.fiap.soat12.tc_group_7.dto.customer.CustomerRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.customer.CustomerResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.employee.EmployeeFunctionRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.employee.EmployeeFunctionResponseDTO;
+import com.fiap.soat12.tc_group_7.exception.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+@Slf4j
 public class EmployeeFunctionController {
 
     private final EmployeeFunctionRepository employeeFunctionRepository;
@@ -22,55 +29,64 @@ public class EmployeeFunctionController {
         this.employeeFunctionPresenter = new EmployeeFunctionPresenter();
     }
 
-//    public List<CustomerResponseDTO> getAllActiveCustomers() {
-//        CustomerGateway customerGateway = new CustomerGateway(employeeFunctionRepository);
-//        CustomerUseCase customerUseCase = new CustomerUseCase(customerGateway);
-//        var customers = customerUseCase.getAllActiveCustomers();
-//        return customers.stream()
-//                .map(employeePresenter::toEmployeeResponseDTO)
-//                .toList();
-//    }
-//
-//    public List<CustomerResponseDTO> getAllCustomers() {
-//        CustomerGateway customerGateway = new CustomerGateway(employeeFunctionRepository);
-//        CustomerUseCase customerUseCase = new CustomerUseCase(customerGateway);
-//        var customers = customerUseCase.getAllCustomers();
-//        return customers.stream()
-//                .map(customerPresenter::toCustomerResponseDTO)
-//                .toList();
-//    }
-//
-//    public CustomerResponseDTO getCustomerByCpf(@RequestParam String cpf) {
-//        CustomerGateway customerGateway = new CustomerGateway(employeeFunctionRepository);
-//        CustomerUseCase customerUseCase = new CustomerUseCase(customerGateway);
-//        var customer = customerUseCase.getCustomerByCpf(cpf);
-//        return customerPresenter.toCustomerResponseDTO(customer);
-//    }
-//
-//    public CustomerResponseDTO createCustomer(CustomerRequestDTO requestDTO) {
-//        CustomerGateway customerGateway = new CustomerGateway(employeeFunctionRepository);
-//        CustomerUseCase customerUseCase = new CustomerUseCase(customerGateway);
-//        var customer = customerUseCase.createCustomer(requestDTO);
-//        return customerPresenter.toCustomerResponseDTO(customer);
-//    }
-//
-//    public CustomerResponseDTO updateCustomerById(Long id, CustomerRequestDTO requestDTO) {
-//        CustomerGateway customerGateway = new CustomerGateway(employeeFunctionRepository);
-//        CustomerUseCase customerUseCase = new CustomerUseCase(customerGateway);
-//        var customer = customerUseCase.updateCustomerById(id, requestDTO);
-//        return customerPresenter.toCustomerResponseDTO(customer);
-//    }
-//
-//    public void deleteCustomerById(Long id) {
-//        CustomerGateway customerGateway = new CustomerGateway(employeeFunctionRepository);
-//        CustomerUseCase customerUseCase = new CustomerUseCase(customerGateway);
-//        customerUseCase.deleteCustomerById(id);
-//    }
-//
-//    public void activateCustomer(Long id) {
-//        CustomerGateway customerGateway = new CustomerGateway(employeeFunctionRepository);
-//        CustomerUseCase customerUseCase = new CustomerUseCase(customerGateway);
-//        customerUseCase.activateCustomer(id);
-//    }
+    public EmployeeFunctionResponseDTO createEmployeeFunction(EmployeeFunctionRequestDTO requestDTO) {
+        EmployeeFunctionGateway employeeFunctionGateway = new EmployeeFunctionGateway(employeeFunctionRepository);
+        EmployeeFunctionUseCase employeeFunctionUseCase = new EmployeeFunctionUseCase(employeeFunctionGateway, employeeFunctionPresenter);
+        var employeeFunction = employeeFunctionUseCase.createEmployeeFunction(requestDTO);
+        return employeeFunctionPresenter.toEmployeeFunctionResponseDTO(employeeFunction);
+    }
 
+    public EmployeeFunctionResponseDTO getEmployeeFunctionById(Long id) {
+        EmployeeFunctionGateway employeeFunctionGateway = new EmployeeFunctionGateway(employeeFunctionRepository);
+        EmployeeFunctionUseCase employeeFunctionUseCase = new EmployeeFunctionUseCase(employeeFunctionGateway, employeeFunctionPresenter);
+        var employeeFunction = employeeFunctionUseCase.getEmployeeFunctionById(id);
+        return employeeFunction
+                .map(employeeFunctionPresenter::toEmployeeFunctionResponseDTO)
+                .orElseThrow(() -> new NotFoundException("Função não encontrada: " + id));
+    }
+
+    public List<EmployeeFunctionResponseDTO> getAllActiveEmployeeFunctions() {
+        EmployeeFunctionGateway employeeFunctionGateway = new EmployeeFunctionGateway(employeeFunctionRepository);
+        EmployeeFunctionUseCase employeeFunctionUseCase = new EmployeeFunctionUseCase(employeeFunctionGateway, employeeFunctionPresenter);
+        var employeeFunctions = employeeFunctionUseCase.getAllActiveEmployeeFunctions();
+        return employeeFunctions.stream()
+                .map(employeeFunctionPresenter::toEmployeeFunctionResponseDTO)
+                .toList();
+    }
+
+    public List<EmployeeFunctionResponseDTO> getAllEmployeeFunctions() {
+        EmployeeFunctionGateway employeeFunctionGateway = new EmployeeFunctionGateway(employeeFunctionRepository);
+        EmployeeFunctionUseCase employeeFunctionUseCase = new EmployeeFunctionUseCase(employeeFunctionGateway, employeeFunctionPresenter);
+        var employeeFunctions = employeeFunctionUseCase.getAllEmployeeFunctions();
+        return employeeFunctions.stream()
+                .map(employeeFunctionPresenter::toEmployeeFunctionResponseDTO)
+                .toList();
+    }
+
+    public EmployeeFunctionResponseDTO updateEmployeeFunctionById(Long id, EmployeeFunctionRequestDTO requestDTO) {
+        EmployeeFunctionGateway employeeFunctionGateway = new EmployeeFunctionGateway(employeeFunctionRepository);
+        EmployeeFunctionUseCase employeeFunctionUseCase = new EmployeeFunctionUseCase(employeeFunctionGateway, employeeFunctionPresenter);
+        var employeeFunction = employeeFunctionUseCase.updateEmployeeFunction(id, requestDTO);
+        return employeeFunction
+                .map(employeeFunctionPresenter::toEmployeeFunctionResponseDTO)
+                .orElseThrow(() -> new NotFoundException("Erro ao atualizar função: " + id));
+    }
+
+    public void inactivateEmployeeFunction(Long id) {
+        EmployeeFunctionGateway employeeFunctionGateway = new EmployeeFunctionGateway(employeeFunctionRepository);
+        EmployeeFunctionUseCase employeeFunctionUseCase = new EmployeeFunctionUseCase(employeeFunctionGateway, employeeFunctionPresenter);
+        boolean success = employeeFunctionUseCase.inactivateEmployeeFunction(id);
+        if (!success) {
+            throw new NotFoundException("Erro ao inativar função: " + id);
+        }
+    }
+
+    public void activateEmployeeFunction(Long id) {
+        EmployeeFunctionGateway employeeFunctionGateway = new EmployeeFunctionGateway(employeeFunctionRepository);
+        EmployeeFunctionUseCase employeeFunctionUseCase = new EmployeeFunctionUseCase(employeeFunctionGateway, employeeFunctionPresenter);
+        boolean success = employeeFunctionUseCase.activateEmployeeFunction(id);
+        if (!success) {
+            throw new NotFoundException("Erro ao reativar função: " + id);
+        }
+    }
 }

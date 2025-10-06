@@ -15,8 +15,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EmployeeUseCase {
 
-    public static final String FALHA_IDENTIFICACAO_MSG = "FALHA NA IDENTIFICAÇÃO: ";
-
     private final EmployeeGateway employeeGateway;
     private final EmployeeFunctionGateway employeeFunctionGateway;
     private final EmployeePresenter employeePresenter;
