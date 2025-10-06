@@ -15,7 +15,4 @@ public interface EmployeeRepository {
 
     EmployeeJpaEntity save(EmployeeJpaEntity employee);
 
-    List<EmployeeJpaEntity> findAllByActiveTrue();
-
-    List<EmployeeJpaEntity> findAllByEmployeeFunction_descriptionAndActiveTrue(String employeeFunctionDescription);
 }

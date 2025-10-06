@@ -30,10 +30,4 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     public EmployeeJpaEntity save(EmployeeJpaEntity employee) {
         return employeeJpaRepository.save(employee);
     }
-
-    @Override
-    public List<EmployeeJpaEntity> findAllByActiveTrue() { return employeeJpaRepository.findAllByActiveTrue(); }
-
-    @Override
-    public List<EmployeeJpaEntity> findAllByEmployeeFunction_descriptionAndActiveTrue(String employeeFunctionDescription) { return employeeJpaRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(employeeFunctionDescription); }
 }
