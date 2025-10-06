@@ -1,40 +1,32 @@
-package com.fiap.soat12.tc_group_7.controller;
+package com.fiap.soat12.tc_group_7.cleanarch.restcontroller;
 
+import com.fiap.soat12.tc_group_7.cleanarch.controller.VehicleServiceController;
 import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceResponseDTO;
-import com.fiap.soat12.tc_group_7.service.VehicleServiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/vehicle-services")
+@RequestMapping("/clean-arch/vehicle-services")
 @RequiredArgsConstructor
 @Tag(name = "Serviço", description = "API para gerenciar serviços")
-public class VehicleServiceController {
+public class VehicleServiceRestController {
 
-    private final VehicleServiceService vehicleServiceService;
+    private final VehicleServiceController vehicleServiceController;
 
     @GetMapping
     @Operation(summary = "Busca todos os serviços ativos",
             description = "Retorna uma lista de todos os serviços com status ativo.")
     @ApiResponse(responseCode = "200", description = "Lista de serviços ativos retornada com sucesso")
     public List<VehicleServiceResponseDTO> getAllActiveVehicleServices() {
-        return vehicleServiceService.getAllActiveVehicleServices();
+        return vehicleServiceController.getAllActiveVehicleServices();
     }
 
     @GetMapping("/all")
@@ -42,7 +34,7 @@ public class VehicleServiceController {
             description = "Retorna uma lista de todos os serviços com status ativo.")
     @ApiResponse(responseCode = "200", description = "Lista de serviços ativos retornada com sucesso")
     public List<VehicleServiceResponseDTO> getAllVehicleServices() {
-        return vehicleServiceService.getAllVehicleServices();
+        return vehicleServiceController.getAllVehicleServices();
     }
 
     @GetMapping("/{id}")
@@ -51,7 +43,7 @@ public class VehicleServiceController {
     @ApiResponse(responseCode = "200", description = "Serviço encontrado com sucesso")
     @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
     public VehicleServiceResponseDTO getById(@PathVariable Long id) {
-        return vehicleServiceService.getById(id);
+        return vehicleServiceController.getById(id);
     }
 
     @PostMapping
@@ -60,7 +52,7 @@ public class VehicleServiceController {
             description = "Cadastra um novo serviço ativo na oficina.")
     @ApiResponse(responseCode = "201", description = "Serviço criado com sucesso")
     public VehicleServiceResponseDTO create(@RequestBody @Valid VehicleServiceRequestDTO dto) {
-        return vehicleServiceService.create(dto);
+        return vehicleServiceController.create(dto);
     }
 
     @PutMapping("/{id}")
@@ -70,7 +62,7 @@ public class VehicleServiceController {
     @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
     public VehicleServiceResponseDTO update(@PathVariable Long id,
                                             @RequestBody @Valid VehicleServiceRequestDTO dto) {
-        return vehicleServiceService.update(id, dto);
+        return vehicleServiceController.update(id, dto);
     }
 
     @DeleteMapping("/{id}")
@@ -79,7 +71,7 @@ public class VehicleServiceController {
     @ApiResponse(responseCode = "204", description = "Serviço desativado com sucesso")
     @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
     public void deactivate(@PathVariable Long id) {
-        vehicleServiceService.deactivate(id);
+        vehicleServiceController.deactivate(id);
     }
 
     @PutMapping("/{id}/activate")
@@ -88,7 +80,7 @@ public class VehicleServiceController {
     @ApiResponse(responseCode = "204", description = "Serviço ativado com sucesso")
     @ApiResponse(responseCode = "404", description = "Serviço não encontrado")
     public void activate(@PathVariable Long id) {
-        vehicleServiceService.activate(id);
+        vehicleServiceController.activate(id);
     }
 
 }
