@@ -4,7 +4,7 @@ import com.fiap.soat12.tc_group_7.cleanarch.entity.VehicleService;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.VehicleServiceGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.interfaces.VehicleServiceRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.presenter.VehicleServicePresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleServiceUserCase;
+import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleServiceUseCase;
 import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceResponseDTO;
 
@@ -23,7 +23,7 @@ public class VehicleServiceController {
 
     public List<VehicleServiceResponseDTO> getAllActiveVehicleServices() {
         VehicleServiceGateway vehicleServiceGateway = new VehicleServiceGateway(dataSource);
-        VehicleServiceUserCase vehicleServiceUserCase = new VehicleServiceUserCase(vehicleServiceGateway);
+        VehicleServiceUseCase vehicleServiceUserCase = new VehicleServiceUseCase(vehicleServiceGateway);
 
         List<VehicleService> vehicleServices = vehicleServiceUserCase.getAllActiveVehicleServices();
         return vehicleServices.stream()
@@ -33,7 +33,7 @@ public class VehicleServiceController {
 
     public List<VehicleServiceResponseDTO> getAllVehicleServices() {
         VehicleServiceGateway vehicleServiceGateway = new VehicleServiceGateway(dataSource);
-        VehicleServiceUserCase vehicleServiceUserCase = new VehicleServiceUserCase(vehicleServiceGateway);
+        VehicleServiceUseCase vehicleServiceUserCase = new VehicleServiceUseCase(vehicleServiceGateway);
 
         List<VehicleService> vehicleServices = vehicleServiceUserCase.getAllVehicleServices();
         return vehicleServices.stream()
@@ -43,7 +43,7 @@ public class VehicleServiceController {
 
     public VehicleServiceResponseDTO getById(Long id) {
         VehicleServiceGateway vehicleServiceGateway = new VehicleServiceGateway(dataSource);
-        VehicleServiceUserCase vehicleServiceUserCase = new VehicleServiceUserCase(vehicleServiceGateway);
+        VehicleServiceUseCase vehicleServiceUserCase = new VehicleServiceUseCase(vehicleServiceGateway);
 
         VehicleService vehicleService = vehicleServiceUserCase.getById(id);
         return vehicleServicePresenter.toVehicleServiceResponseDTO(vehicleService);
@@ -51,7 +51,7 @@ public class VehicleServiceController {
 
     public VehicleServiceResponseDTO create(VehicleServiceRequestDTO dto) {
         VehicleServiceGateway vehicleServiceGateway = new VehicleServiceGateway(dataSource);
-        VehicleServiceUserCase vehicleServiceUserCase = new VehicleServiceUserCase(vehicleServiceGateway);
+        VehicleServiceUseCase vehicleServiceUserCase = new VehicleServiceUseCase(vehicleServiceGateway);
 
         VehicleService vehicleService = vehicleServiceUserCase.create(dto);
         return vehicleServicePresenter.toVehicleServiceResponseDTO(vehicleService);
@@ -59,7 +59,7 @@ public class VehicleServiceController {
 
     public VehicleServiceResponseDTO update(Long id, VehicleServiceRequestDTO dto) {
         VehicleServiceGateway vehicleServiceGateway = new VehicleServiceGateway(dataSource);
-        VehicleServiceUserCase vehicleServiceUserCase = new VehicleServiceUserCase(vehicleServiceGateway);
+        VehicleServiceUseCase vehicleServiceUserCase = new VehicleServiceUseCase(vehicleServiceGateway);
 
         VehicleService vehicleService = vehicleServiceUserCase.update(id, dto);
         return vehicleServicePresenter.toVehicleServiceResponseDTO(vehicleService);
@@ -67,13 +67,13 @@ public class VehicleServiceController {
 
     public void deactivate(Long id) {
         VehicleServiceGateway vehicleServiceGateway = new VehicleServiceGateway(dataSource);
-        VehicleServiceUserCase vehicleServiceUserCase = new VehicleServiceUserCase(vehicleServiceGateway);
+        VehicleServiceUseCase vehicleServiceUserCase = new VehicleServiceUseCase(vehicleServiceGateway);
         vehicleServiceUserCase.deactivate(id);
     }
 
     public void activate(Long id) {
         VehicleServiceGateway vehicleServiceGateway = new VehicleServiceGateway(dataSource);
-        VehicleServiceUserCase vehicleServiceUserCase = new VehicleServiceUserCase(vehicleServiceGateway);
+        VehicleServiceUseCase vehicleServiceUserCase = new VehicleServiceUseCase(vehicleServiceGateway);
         vehicleServiceUserCase.activate(id);
     }
 
