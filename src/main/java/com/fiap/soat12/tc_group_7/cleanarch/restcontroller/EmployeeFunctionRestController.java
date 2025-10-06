@@ -1,4 +1,4 @@
-package com.fiap.soat12.tc_group_7.controller;
+package com.fiap.soat12.tc_group_7.cleanarch.restcontroller;
 
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeFunctionRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeFunctionResponseDTO;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/api/employee-functions")
 @RequiredArgsConstructor
 @Tag(name = "Função de Funcionário", description = "API para gerenciar funções de funcionários")
-public class EmployeeFunctionController {
+public class EmployeeFunctionRestController {
     private final EmployeeFunctionService employeeFunctionService;
 
     @Operation(summary = "Cria uma nova função de funcionário",
