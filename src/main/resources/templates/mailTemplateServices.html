@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Aprovação de Serviço</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .data-table th, .data-table td { padding: 12px; border: 1px solid #e0e0e0; text-align: left; }
+        .data-table th { background-color: #f8f8f8; color: #555555; font-weight: bold; }
+        .align-right { text-align: right !important; }
+
+        .total-row td { font-weight: bold; background-color: #eaf1fa; border-top: 2px solid #555555; }
+        .total-label { text-align: right; }
+
+        .action-section { margin-top: 30px; padding: 20px; background-color: #f2f2f2; border-radius: 8px; text-align: center; }
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+        .btn-approve { background-color: #28a745; }
+        .btn-reject { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Olá, <span th:text="${userName}">Nome do Usuário</span>!</h1>
+
+    <p>Abaixo estão os detalhes dos itens para aprovação:</p>
+
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>Nome do Item</th>
+            <th class="align-right">Valor</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="service : ${services}">
+            <td th:text="${service.name}">Nome do Serviço</td>
+            <td class="align-right">R$ <span th:text="${#numbers.formatDecimal(service.value, 1, 'POINT', 2, 'COMMA')}">123,45</span></td>
+        </tr>
+        </tbody>
+
+        <tfoot>
+        <tr class="total-row">
+            <td class="total-label">Total:</td>
+            <td class="align-right">R$ <span th:text="${#numbers.formatDecimal(totalValue, 1, 'POINT', 2, 'COMMA')}">999,99</span></td>
+        </tr>
+        </tfoot>
+    </table>
+
+    <div class="action-section">
+        <p style="font-size: 1.1em; font-weight: bold; color: #333;">
+            Por favor, tome uma decisão:
+        </p>
+
+        <a th:href="${directApproveLink}"
+           class="btn btn-approve">
+            ✅ Aprovar
+        </a>
+
+        <a th:href="${directRejectLink}"
+           class="btn btn-reject">
+            ❌ Reprovar
+        </a>
+    </div>
+
+    <p style="margin-top: 30px;">Obrigado.</p>
+</div>
+</body>
+</html>

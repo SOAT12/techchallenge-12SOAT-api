@@ -1,4 +1,4 @@
-package com.fiap.soat12.tc_group_7.cleanarch.restcontroller;
+package com.fiap.soat12.tc_group_7.controller;
 
 import com.fiap.soat12.tc_group_7.dto.ChangePasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ForgotPasswordRequestDTO;
@@ -19,11 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/clean-arch/employees")
+@RequestMapping("/api/employees")
 @RequiredArgsConstructor
 @Tag(name = "Funcionário", description = "API para gerenciar funcionários")
-public class EmployeeRestController {
-
+public class EmployeeControllerAuth {
     private final EmployeeService employeeService;
     private final AuthEmployeeService authEmployeeService;
 
@@ -32,7 +31,7 @@ public class EmployeeRestController {
     @ApiResponse(responseCode = "400", description = "Funcionário não encontrado")
     @ApiResponse(responseCode = "401", description = "Credenciais não autorizadas")
     @PostMapping(path = "/login")
-	public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO requestDTO) throws Exception {
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO requestDTO) throws Exception {
         try {
             return new ResponseEntity<>(authEmployeeService.auth(requestDTO), HttpStatus.OK);
         } catch (BadCredentialsException e) {
@@ -45,7 +44,7 @@ public class EmployeeRestController {
     @ApiResponse(responseCode = "400", description = "Funcionário não encontrado")
     @ApiResponse(responseCode = "401", description = "Credenciais não autorizadas")
     @PutMapping(path = "/{id}/change-password")
-	public ResponseEntity<Void> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequestDTO requestDTO) throws Exception {
+    public ResponseEntity<Void> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequestDTO requestDTO) throws Exception {
         try {
             employeeService.changePassword(id, requestDTO);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -60,7 +59,7 @@ public class EmployeeRestController {
     @ApiResponse(responseCode = "200", description = "Senha nova enviada ao email do funcionário")
     @ApiResponse(responseCode = "400", description = "Funcionário não encontrado")
     @PostMapping(path = "/forgot-password")
-	public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequestDTO requestDTO) throws Exception {
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequestDTO requestDTO) throws Exception {
         try {
             employeeService.forgotPassword(requestDTO);
             return new ResponseEntity<>(HttpStatus.OK);
