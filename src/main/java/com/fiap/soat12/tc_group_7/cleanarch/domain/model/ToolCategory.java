@@ -29,18 +29,28 @@ public class ToolCategory {
     }
 
     /* BUSINESS LOGIC METHODS */
-    private void changeName(String newToolCategoryName) {
+    public ToolCategory changeName(String newToolCategoryName) {
         if(Objects.isNull(newToolCategoryName)) {
-            throw new IllegalArgumentException("New name cannot be null.");
+            throw new IllegalArgumentException("Nome da categoria não pode ser nulo.");
         }
         this.toolCategoryName = newToolCategoryName;
+        return this;
     }
 
-    public void deactivate() {
+    public ToolCategory deactivate() {
         if (Boolean.FALSE.equals(this.isActive)) {
-            throw new IllegalStateException("Cannot deactivate an stock who is already inactive.");
+            throw new IllegalStateException("Categoria já encontra-se desativada.");
         }
         this.isActive = false;
+        return this;
+    }
+
+    public ToolCategory activate() {
+        if (Boolean.TRUE.equals(this.isActive)) {
+            throw new IllegalArgumentException("Categoria já encontra-se ativada.");
+        }
+        this.isActive = true;
+        return this;
     }
 
     /* GETTERS AND SETTERS */

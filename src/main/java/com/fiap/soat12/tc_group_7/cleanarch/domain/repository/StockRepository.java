@@ -18,7 +18,5 @@ public interface StockRepository {
 
     Optional<Stock> findByName(String name);
 
-    void inactivateById(UUID stockItemId);
-
-    void activateById(UUID stockItemId);
+    List<Stock> findAll();
 }

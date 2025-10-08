@@ -74,25 +74,10 @@ public class StockRepositoryImpl implements StockRepository {
     }
 
     /**
-     * @param stockItemId
+     * @return
      */
     @Override
-    public void inactivateById(UUID stockItemId) {
-        stockJpaRepository.findById(stockItemId).ifPresent(entity -> {
-            entity.setActive(false);
-            stockJpaRepository.save(entity);
-        });
-    }
-
-    /**
-     * @param stockItemId
-     */
-    @Override
-    public void activateById(UUID stockItemId) {
-        stockJpaRepository.findById(stockItemId).ifPresent(entity -> {
-            entity.setActive(true);
-            stockJpaRepository.save(entity);
-        });
-
+    public List<Stock> findAll() {
+        return List.of();
     }
 }

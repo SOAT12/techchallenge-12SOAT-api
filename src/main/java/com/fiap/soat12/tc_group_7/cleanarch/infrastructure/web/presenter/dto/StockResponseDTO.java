@@ -1,6 +1,5 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto;
 
-import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

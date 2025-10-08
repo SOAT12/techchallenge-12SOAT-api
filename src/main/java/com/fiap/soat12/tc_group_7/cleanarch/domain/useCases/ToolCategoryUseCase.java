@@ -1,0 +1,70 @@
+package com.fiap.soat12.tc_group_7.cleanarch.domain.useCases;
+
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
+import com.fiap.soat12.tc_group_7.cleanarch.gateway.ToolCategoryGateway;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.ToolCategoryPresenter;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.ToolCategoryRequestDTO;
+import com.fiap.soat12.tc_group_7.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.UUID;
+
+@RequiredArgsConstructor
+public class ToolCategoryUseCase {
+
+    private static final String NOT_FOUND_TOOL_CATEGORY_MSG = "Categoria de peça não encontrada.";
+
+    private final ToolCategoryGateway toolCategoryGateway;
+    private final ToolCategoryPresenter toolCategoryPresenter;
+
+
+    public ToolCategory createToolCategory(ToolCategoryRequestDTO requestDTO) {
+        ToolCategory newToolCategory = toolCategoryPresenter.toToolCategory(requestDTO);
+        return toolCategoryGateway.save(newToolCategory);
+    }
+
+    public ToolCategory updateToolCategory(UUID id, ToolCategoryRequestDTO requestDTO) {
+        ToolCategory existingCategory = toolCategoryGateway.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_TOOL_CATEGORY_MSG));
+
+        if(!existingCategory.getToolCategoryName().equalsIgnoreCase(requestDTO.getToolCategoryName())) {
+            toolCategoryGateway.findByName(requestDTO.getToolCategoryName()).ifPresent(category -> {
+                if (!category.getId().equals(id)) {
+                    throw new IllegalArgumentException("O nome da categoria '" + requestDTO.getToolCategoryName() + "' já está em uso.");
+                }
+            });
+        }
+
+        existingCategory.changeName(requestDTO.getToolCategoryName());
+
+        return toolCategoryGateway.save(existingCategory);
+    }
+
+    public ToolCategory getToolCategoryById(UUID id) {
+        return toolCategoryGateway.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_TOOL_CATEGORY_MSG));
+    }
+
+    public List<ToolCategory> getAllToolCategories() {
+        return toolCategoryGateway.findAll();
+    }
+
+    public List<ToolCategory> getAllToolCategoriesActive() {
+        return toolCategoryGateway.findAllActive();
+    }
+
+    public void logicallyDeleteToolCategory(UUID id) {
+        ToolCategory toolCategory = toolCategoryGateway.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_TOOL_CATEGORY_MSG));
+
+        ToolCategory inactivatedCategory = toolCategory.deactivate();
+
+        toolCategoryGateway.save(inactivatedCategory);
+    }
+
+    public ToolCategory reactivateToolCategory(UUID id) {
+        ToolCategory toolCategory = toolCategoryGateway.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_TOOL_CATEGORY_MSG));
+
+        ToolCategory activatedCategory = toolCategory.activate();
+
+        return toolCategoryGateway.save(activatedCategory);
+    }
+}

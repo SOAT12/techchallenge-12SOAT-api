@@ -1,15 +1,15 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Stock;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.StockUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.StockRequestDTO;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.StockResponseDTO;
-import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryResponseDTO;
+import lombok.RequiredArgsConstructor;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
+@RequiredArgsConstructor
 public class StockPresenter {
+
+    private final ToolCategoryPresenter toolCategoryPresenter;
 
     public StockResponseDTO toStockResponseDTO(Stock stock) {
         return StockResponseDTO.builder()
@@ -20,12 +20,16 @@ public class StockPresenter {
                 .quantity(stock.getQuantity())
                 .created_at(stock.getCreatedAt())
                 .updated_at(stock.getUpdatedAt())
-                .toolCategory(stock.getToolCategory())
+                .toolCategory(toolCategoryPresenter.toToolCategoryResponseDTO(stock.getToolCategory()))
                 .build();
 
     }
 
-    public StockUseCase.CreateStockCommand toCreateStockCommand(StockRequestDTO dto) {
-
+    public Stock toStock(StockRequestDTO stockRequestDTO, ToolCategory toolCategory) {
+        return new Stock(
+                stockRequestDTO.getToolName(),
+                stockRequestDTO.getValue(),
+                stockRequestDTO.getQuantity(),
+                toolCategory);
     }
 }

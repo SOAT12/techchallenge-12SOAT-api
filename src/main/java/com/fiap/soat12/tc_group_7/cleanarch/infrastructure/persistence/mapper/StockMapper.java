@@ -39,7 +39,10 @@ public class StockMapper {
             return null;
         }
 
-        ToolCategoryEntity newEntity = new ToolCategoryEntity(domain.getToolCategory().getId(), domain.getToolCategory().getToolCategoryName(), domain.getToolCategory().getActive());
+        ToolCategoryEntity newEntity = new ToolCategoryEntity(
+                domain.getToolCategory().getId(),
+                domain.getToolCategory().getToolCategoryName(),
+                domain.getToolCategory().getActive());
 
         return new StockEntity(
                 domain.getId(),

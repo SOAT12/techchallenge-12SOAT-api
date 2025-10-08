@@ -72,7 +72,7 @@ public class StockApi {
     @ApiResponse(responseCode = "400", description = "Requisição inválida ou categoria não encontrada")
     @ApiResponse(responseCode = "404", description = "Item de estoque não encontrado")
     @PutMapping("/{id}")
-    public StockResponseDTO updateStock(@PathVariable Long id, @Valid @RequestBody StockRequestDTO requestDTO) {
+    public StockResponseDTO updateStock(@PathVariable UUID id, @Valid @RequestBody StockRequestDTO requestDTO) {
         try {
             return stockController.updateStock(id, requestDTO);
         } catch (IllegalArgumentException e) {
@@ -85,7 +85,7 @@ public class StockApi {
     @ApiResponse(responseCode = "204", description = "Item de estoque deletado com sucesso")
     @ApiResponse(responseCode = "404", description = "Item de estoque não encontrado")
     @DeleteMapping("/{id}")
-    public void deleteStock(@PathVariable Long id) {
+    public void deleteStock(@PathVariable UUID id) {
         stockController.logicallyDeleteStock(id);
     }
 
@@ -94,7 +94,7 @@ public class StockApi {
     @ApiResponse(responseCode = "200", description = "Item de estoque reativado com sucesso")
     @ApiResponse(responseCode = "404", description = "Item de estoque não encontrado")
     @PatchMapping("/{id}/reactivate")
-    public StockResponseDTO reactivateStock(@PathVariable Long id) {
+    public StockResponseDTO reactivateStock(@PathVariable UUID id) {
         return stockController.reactivateStock(id);
     }
 }

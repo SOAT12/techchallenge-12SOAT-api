@@ -50,16 +50,18 @@ public class Stock {
     }
 
     /* BUSINESS LOGIC METHODS */
-    public void addStock(Integer newQuantity) {
+    public Stock addStock(Integer newQuantity) {
         if(Objects.isNull(newQuantity) ||  newQuantity < 0) {
             throw new IllegalArgumentException("A tool quantity must not be null or fewer than zero");
         }
         this.quantity += newQuantity;
         this.isActive = true;
         this.updatedAt = new Date();
+
+        return this;
     }
 
-    public void removingStock(Integer removingQuantity){
+    public Stock removingStock(Integer removingQuantity){
         if(Objects.isNull(removingQuantity) || removingQuantity < 1) {
             throw new IllegalArgumentException("A tool quantity must not be null or fewer than one");
         }
@@ -68,48 +70,60 @@ public class Stock {
         }
         this.quantity -= removingQuantity;
         this.updatedAt = new Date();
+
+        return this;
     }
 
 
-    public void deactivate() {
+    public Stock deactivate() {
         if (Boolean.FALSE.equals(this.isActive)) {
-            throw new IllegalStateException("Cannot deactivate an stock who is already inactive.");
+            throw new IllegalStateException("Status do item já encontra-se desativado.");
         }
         this.isActive = false;
         this.updatedAt = new Date();
+
+        return this;
     }
 
-    public void updateDetails(String newName, BigDecimal newValue, ToolCategory newCategory){
+    public Stock updateDetails(String newName, BigDecimal newValue, ToolCategory newCategory){
         changeName(newName);
         changeValue(newValue);
         changeCategory(newCategory);
         this.isActive = true;
         this.updatedAt = new Date();
+
+        return this;
     }
 
-    private void changeCategory(ToolCategory newToolCategory) {
+    private Stock changeCategory(ToolCategory newToolCategory) {
         if(Objects.isNull(newToolCategory)) {
             throw new IllegalArgumentException("New tool category cannot be null.");
         }
         this.toolCategory = newToolCategory;
         this.updatedAt = new Date();
+
+        return this;
     }
 
-    private void changeName(String newName) {
+    private Stock changeName(String newName) {
         if(Objects.isNull(newName)) {
             throw new IllegalArgumentException("New name cannot be null.");
         }
         this.toolName = newName;
         this.updatedAt = new Date();
 
+        return this;
+
     }
 
-    private void changeValue(BigDecimal newValue) {
+    private Stock changeValue(BigDecimal newValue) {
         if(Objects.isNull(newValue) || newValue.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("New value cannot be null or negative.");
         }
         this.value = newValue;
         this.updatedAt = new Date();
+
+        return this;
     }
 
     /* GETTERS AND SETTERS */

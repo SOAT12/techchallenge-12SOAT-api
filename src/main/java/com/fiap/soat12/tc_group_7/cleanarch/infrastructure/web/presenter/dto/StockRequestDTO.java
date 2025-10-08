@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 /**
  * DTO para requisições de criação/atualização de Stock.
@@ -30,5 +31,5 @@ public class StockRequestDTO {
     private Integer quantity;
 
     @NotNull(message = "O ID da categoria da ferramenta não pode ser nulo.")
-    private Long toolCategoryId;
+    private UUID toolCategoryId;
 }
