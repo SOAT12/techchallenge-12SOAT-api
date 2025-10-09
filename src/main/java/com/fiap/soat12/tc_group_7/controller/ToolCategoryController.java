@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Controlador dos endpoints para CRUD de categorias de ferramentas.
  */
-@RestController
+//@RestController
 @RequestMapping("/api/tool-categories")
 @Tag(name = "Categorias de Ferramentas", description = "API para gerenciar categorias de ferramentas")
 public class ToolCategoryController {

@@ -30,7 +30,10 @@ public class StockUseCase {
     public Stock createStock(StockRequestDTO stockDto) {
         ToolCategory category = toolCategoryGateway.findById(stockDto.getToolCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada"));
-        stockGateway.findByName(stockDto.getToolName()).orElseThrow(() -> new IllegalArgumentException("Item já cadastrado."));
+
+        stockGateway.findByName(stockDto.getToolName()).ifPresent(existingItem -> {
+            throw new IllegalArgumentException("Item já cadastrado.");
+        });
 
         Stock newStock = stockPresenter.toStock(stockDto, category);
         return stockGateway.save(newStock);

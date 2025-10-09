@@ -18,7 +18,7 @@ import java.util.UUID;
 public class ToolCategoryEntity implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "tool_category_name", nullable = false, unique = true)

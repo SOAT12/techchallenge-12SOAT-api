@@ -1,6 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.config;
 
-import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.*;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.StockRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.ToolCategoryRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.StockRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.ToolCategoryRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.StockJpaRepository;

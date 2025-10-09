@@ -39,18 +39,19 @@ public class StockMapper {
             return null;
         }
 
-        ToolCategoryEntity newEntity = new ToolCategoryEntity(
-                domain.getToolCategory().getId(),
-                domain.getToolCategory().getToolCategoryName(),
-                domain.getToolCategory().getActive());
+        ToolCategoryEntity categoryEntity = ToolCategoryEntity.builder()
+                .id(domain.getToolCategory().getId())
+                .toolCategoryName(domain.getToolCategory().getToolCategoryName())
+                .active(domain.getToolCategory().getActive())
+                .build();
 
-        return new StockEntity(
-                domain.getId(),
-                domain.getToolName(),
-                domain.getValue(),
-                domain.isActive(),
-                domain.getQuantity(),
-                newEntity
-        );
+        return StockEntity.builder()
+                .id(domain.getId())
+                .toolName(domain.getToolName())
+                .value(domain.getValue())
+                .quantity(domain.getQuantity())
+                .active(domain.isActive())
+                .toolCategoryEntity(categoryEntity)
+                .build();
     }
 }

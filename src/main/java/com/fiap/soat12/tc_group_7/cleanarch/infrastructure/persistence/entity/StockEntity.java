@@ -3,10 +3,7 @@ package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -16,12 +13,13 @@ import java.util.UUID;
 @Entity
 @Table(name = "stock")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class StockEntity extends Audit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "tool_name", nullable = false)

@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class Stock {
 
-    private final UUID id;
+    private UUID id;
     private String toolName;
     private BigDecimal value;
     private Integer quantity;
@@ -28,7 +28,6 @@ public class Stock {
             throw new IllegalArgumentException("A toolCategory is required");
         }
 
-        this.id = UUID.randomUUID();
         this.toolName = toolName;
         this.value = value;
         this.quantity = quantity;

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,8 +46,8 @@ public class StockApi {
             description = "Retorna um item de estoque específico pelo seu ID.")
     @ApiResponse(responseCode = "200", description = "Item de estoque encontrado com sucesso")
     @ApiResponse(responseCode = "404", description = "Item de estoque não encontrado")
-    @GetMapping("/{id}")
-    public StockResponseDTO getStockById(@PathVariable UUID id) {
+    @GetMapping("/id")
+    public StockResponseDTO getStockById(@Param("id") UUID id) {
         return stockController.getStockById(id);
     }
 

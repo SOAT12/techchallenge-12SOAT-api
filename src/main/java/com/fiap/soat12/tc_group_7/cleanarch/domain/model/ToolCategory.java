@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class ToolCategory {
 
-    private final UUID id;
+    private UUID id;
     private String toolCategoryName;
     private Boolean isActive;
 
@@ -17,7 +17,6 @@ public class ToolCategory {
             throw new IllegalArgumentException("A tool category name must not be null or blank");
         }
 
-        this.id = UUID.randomUUID();
         this.toolCategoryName = toolCategoryName;
         this.isActive = true;
     }

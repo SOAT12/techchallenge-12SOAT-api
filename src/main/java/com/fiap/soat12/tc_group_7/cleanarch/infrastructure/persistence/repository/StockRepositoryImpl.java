@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Repository
 public class StockRepositoryImpl implements StockRepository {
 
     private final StockJpaRepository stockJpaRepository;
@@ -78,6 +77,6 @@ public class StockRepositoryImpl implements StockRepository {
      */
     @Override
     public List<Stock> findAll() {
-        return List.of();
+        return stockJpaRepository.findAll().stream().map(stockMapper::toDomain).toList();
     }
 }
