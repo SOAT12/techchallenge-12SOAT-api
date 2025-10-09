@@ -1,4 +1,4 @@
-package com.fiap.soat12.tc_group_7.cleanarch.api;
+package com.fiap.soat12.tc_group_7.cleanarch.restcontroller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiap.soat12.tc_group_7.cleanarch.controller.VehicleServiceController;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-public class VehicleServiceApiTest {
+public class VehicleServiceRestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
