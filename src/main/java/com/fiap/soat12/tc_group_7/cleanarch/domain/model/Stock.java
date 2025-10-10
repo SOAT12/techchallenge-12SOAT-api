@@ -17,26 +17,6 @@ public class Stock {
     private Date updatedAt;
 
     /* CONSTRUCTORS */
-    public Stock(String toolName, BigDecimal value, Integer quantity, ToolCategory toolCategory) {
-        if(toolName == null || toolName.isBlank()) {
-            throw new IllegalArgumentException("A tool name must not be null or blank");
-        }
-        if(value == null || value.compareTo(BigDecimal.ZERO) < 0 || quantity == null || quantity < 0) {
-            throw new IllegalArgumentException("A tool value and  quantity must not be null or fewer than zero");
-        }
-        if(toolCategory == null) {
-            throw new IllegalArgumentException("A toolCategory is required");
-        }
-
-        this.toolName = toolName;
-        this.value = value;
-        this.quantity = quantity;
-        this.toolCategory = toolCategory;
-        this.isActive = true;
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
-    }
-
     public Stock(UUID id, String toolName, BigDecimal value, Integer quantity, ToolCategory toolCategory, Boolean isActive, Date createdAt, Date updatedAt) {
         this.id = id;
         this.toolName = toolName;
@@ -48,10 +28,38 @@ public class Stock {
         this.updatedAt = updatedAt;
     }
 
+    private Stock(String toolName, BigDecimal value, Integer quantity, ToolCategory toolCategory, Boolean isActive, Date createdAt, Date updatedAt) {
+        this.toolName = toolName;
+        this.value = value;
+        this.quantity = quantity;
+        this.toolCategory = toolCategory;
+        this.isActive = isActive;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    /* FACTORY */
+    public static Stock create(String toolName, BigDecimal value, Integer quantity, ToolCategory toolCategory) {
+        if(toolName == null || toolName.isBlank()) {
+            throw new IllegalArgumentException("Nome do item não pode ser nulo ou vazio.");
+        }
+        if(value == null || value.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Valor não pode ser nulo ou menor que zero.");
+        }
+        if(quantity == null || quantity < 0) {
+            throw new IllegalArgumentException("Quantidade não pode ser nula ou menor que zero.");
+        }
+        if(toolCategory == null) {
+            throw new IllegalArgumentException("Uma categoria válida é necessária.");
+        }
+
+        return new Stock(toolName, value, quantity, toolCategory, true, new Date(), new Date());
+    }
+
     /* BUSINESS LOGIC METHODS */
     public Stock addStock(Integer newQuantity) {
         if(Objects.isNull(newQuantity) ||  newQuantity < 0) {
-            throw new IllegalArgumentException("A tool quantity must not be null or fewer than zero");
+            throw new IllegalArgumentException("Quantidade não pode ser nula ou menor do que zero.");
         }
         this.quantity += newQuantity;
         this.isActive = true;
@@ -62,10 +70,10 @@ public class Stock {
 
     public Stock removingStock(Integer removingQuantity){
         if(Objects.isNull(removingQuantity) || removingQuantity < 1) {
-            throw new IllegalArgumentException("A tool quantity must not be null or fewer than one");
+            throw new IllegalArgumentException("Quantidade não pode ser nula ou menor do que zero.");
         }
         if(removingQuantity > this.quantity) {
-            throw new IllegalArgumentException("A tool quantity must not be greater than the current quantity");
+            throw new IllegalArgumentException("Quantidade em estoque menor do que a informada.");
         }
         this.quantity -= removingQuantity;
         this.updatedAt = new Date();
@@ -76,7 +84,7 @@ public class Stock {
 
     public Stock deactivate() {
         if (Boolean.FALSE.equals(this.isActive)) {
-            throw new IllegalStateException("Status do item já encontra-se desativado.");
+            throw new IllegalStateException("Item já encontra-se desativado.");
         }
         this.isActive = false;
         this.updatedAt = new Date();
@@ -84,11 +92,19 @@ public class Stock {
         return this;
     }
 
-    public Stock updateDetails(String newName, BigDecimal newValue, ToolCategory newCategory){
+    public Stock activate() {
+        if (Boolean.TRUE.equals(this.isActive)) {
+            throw new IllegalArgumentException("Item já encontra-se ativado.");
+        }
+        this.isActive = true;
+        return this;
+    }
+
+    public Stock updateDetails(String newName, BigDecimal newValue, Boolean isActive, ToolCategory newCategory){
         changeName(newName);
         changeValue(newValue);
         changeCategory(newCategory);
-        this.isActive = true;
+        this.isActive = isActive;
         this.updatedAt = new Date();
 
         return this;
@@ -96,7 +112,7 @@ public class Stock {
 
     private Stock changeCategory(ToolCategory newToolCategory) {
         if(Objects.isNull(newToolCategory)) {
-            throw new IllegalArgumentException("New tool category cannot be null.");
+            throw new IllegalArgumentException("Categoria não pode ser nula");
         }
         this.toolCategory = newToolCategory;
         this.updatedAt = new Date();
@@ -106,7 +122,7 @@ public class Stock {
 
     private Stock changeName(String newName) {
         if(Objects.isNull(newName)) {
-            throw new IllegalArgumentException("New name cannot be null.");
+            throw new IllegalArgumentException("Nome do item não pode ser nulo.");
         }
         this.toolName = newName;
         this.updatedAt = new Date();
@@ -117,7 +133,7 @@ public class Stock {
 
     private Stock changeValue(BigDecimal newValue) {
         if(Objects.isNull(newValue) || newValue.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("New value cannot be null or negative.");
+            throw new IllegalArgumentException("Valor não pode ser nulo ou menor que zero.");
         }
         this.value = newValue;
         this.updatedAt = new Date();

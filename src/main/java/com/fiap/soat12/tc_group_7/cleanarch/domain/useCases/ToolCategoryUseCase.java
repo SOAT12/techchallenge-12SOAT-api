@@ -2,8 +2,6 @@ package com.fiap.soat12.tc_group_7.cleanarch.domain.useCases;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.ToolCategoryGateway;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.ToolCategoryPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.ToolCategoryRequestDTO;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
@@ -16,26 +14,25 @@ public class ToolCategoryUseCase {
     private static final String NOT_FOUND_TOOL_CATEGORY_MSG = "Categoria de peça não encontrada.";
 
     private final ToolCategoryGateway toolCategoryGateway;
-    private final ToolCategoryPresenter toolCategoryPresenter;
 
+    public ToolCategory createToolCategory(String toolCategoryName) {
 
-    public ToolCategory createToolCategory(ToolCategoryRequestDTO requestDTO) {
-        ToolCategory newToolCategory = toolCategoryPresenter.toToolCategory(requestDTO);
-        return toolCategoryGateway.save(newToolCategory);
+        ToolCategory toolCategory = ToolCategory.create(toolCategoryName);
+        return toolCategoryGateway.save(toolCategory);
     }
 
-    public ToolCategory updateToolCategory(UUID id, ToolCategoryRequestDTO requestDTO) {
+    public ToolCategory updateToolCategory(UUID id, String toolCategoryName) {
         ToolCategory existingCategory = toolCategoryGateway.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_TOOL_CATEGORY_MSG));
 
-        if(!existingCategory.getToolCategoryName().equalsIgnoreCase(requestDTO.getToolCategoryName())) {
-            toolCategoryGateway.findByName(requestDTO.getToolCategoryName()).ifPresent(category -> {
+        if(!existingCategory.getToolCategoryName().equalsIgnoreCase(toolCategoryName)) {
+            toolCategoryGateway.findByName(toolCategoryName).ifPresent(category -> {
                 if (!category.getId().equals(id)) {
-                    throw new IllegalArgumentException("O nome da categoria '" + requestDTO.getToolCategoryName() + "' já está em uso.");
+                    throw new IllegalArgumentException(String.format("O nome da categoria %s já está em uso.", toolCategoryName));
                 }
             });
         }
 
-        existingCategory.changeName(requestDTO.getToolCategoryName());
+        existingCategory.changeName(toolCategoryName);
 
         return toolCategoryGateway.save(existingCategory);
     }

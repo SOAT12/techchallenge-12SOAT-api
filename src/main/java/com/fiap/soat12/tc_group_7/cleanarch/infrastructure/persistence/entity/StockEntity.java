@@ -1,12 +1,10 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity;
 
 
-import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)

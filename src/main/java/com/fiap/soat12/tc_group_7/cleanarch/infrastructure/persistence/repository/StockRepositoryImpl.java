@@ -4,7 +4,6 @@ import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Stock;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.StockRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.mapper.StockMapper;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.StockJpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;

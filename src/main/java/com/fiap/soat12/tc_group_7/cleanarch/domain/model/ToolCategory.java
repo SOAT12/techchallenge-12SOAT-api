@@ -1,7 +1,5 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.model;
 
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ToolCategoryEntity;
-
 import java.util.Objects;
 import java.util.UUID;
 
@@ -12,19 +10,24 @@ public class ToolCategory {
     private Boolean isActive;
 
     /* CONSTRUCTORS */
-    public ToolCategory(String toolCategoryName) {
-        if(toolCategoryName == null || toolCategoryName.isBlank()) {
-            throw new IllegalArgumentException("A tool category name must not be null or blank");
-        }
-
-        this.toolCategoryName = toolCategoryName;
-        this.isActive = true;
-    }
-
     public ToolCategory(UUID id, String toolCategoryName, Boolean isActive) {
         this.id = id;
         this.toolCategoryName = toolCategoryName;
         this.isActive = isActive;
+    }
+
+    private ToolCategory(String toolCategoryName, Boolean isActive) {
+        this.toolCategoryName = toolCategoryName;
+        this.isActive = isActive;
+    }
+
+    /* FACTORY */
+    public static ToolCategory create(String toolCategoryName) {
+        if(toolCategoryName == null || toolCategoryName.isBlank()) {
+            throw new IllegalArgumentException("A tool category name must not be null or blank");
+        }
+
+        return new ToolCategory(toolCategoryName, true);
     }
 
     /* BUSINESS LOGIC METHODS */

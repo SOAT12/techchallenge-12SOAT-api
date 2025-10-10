@@ -1,8 +1,6 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Stock;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.StockRequestDTO;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.StockResponseDTO;
 import lombok.RequiredArgsConstructor;
 
@@ -23,13 +21,5 @@ public class StockPresenter {
                 .toolCategory(toolCategoryPresenter.toToolCategoryResponseDTO(stock.getToolCategory()))
                 .build();
 
-    }
-
-    public Stock toStock(StockRequestDTO stockRequestDTO, ToolCategory toolCategory) {
-        return new Stock(
-                stockRequestDTO.getToolName(),
-                stockRequestDTO.getValue(),
-                stockRequestDTO.getQuantity(),
-                toolCategory);
     }
 }
