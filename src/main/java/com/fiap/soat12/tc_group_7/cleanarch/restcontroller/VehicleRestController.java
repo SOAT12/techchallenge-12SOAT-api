@@ -1,40 +1,35 @@
-package com.fiap.soat12.tc_group_7.controller;
+package com.fiap.soat12.tc_group_7.cleanarch.restcontroller;
 
+import com.fiap.soat12.tc_group_7.cleanarch.controller.VehicleController;
 import com.fiap.soat12.tc_group_7.dto.vehicle.VehicleRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.vehicle.VehicleResponseDTO;
-import com.fiap.soat12.tc_group_7.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/vehicle")
+@RequestMapping("/clean-arch/vehicles")
 @Tag(name = "Veículo", description = "API para gerenciar veículos")
-public class VehicleController {
-    
-    private final VehicleService vehicleService;
+public class VehicleRestController {
 
-
-    public VehicleController(VehicleService vehicleService) {
-        this.vehicleService = vehicleService;
-    }
+    private final VehicleController vehicleController;
 
     @Operation(summary = "Cria um novo veículo",
             description = "Cria um novo veículo com base nos dados fornecidos, associando-o a uma categoria existente.")
     @ApiResponse(responseCode = "201", description = "Veículo criado com sucesso")
     @ApiResponse(responseCode = "400", description = "Requisição inválida ou categoria não encontrada")
     @PostMapping
-    public ResponseEntity<VehicleResponseDTO> createVehicle(@RequestBody @Valid VehicleRequestDTO requestDTO) {
+    public VehicleResponseDTO createVehicle(@RequestBody @Valid VehicleRequestDTO requestDTO) {
         try {
-            VehicleResponseDTO createdVehicle = vehicleService.createVehicle(requestDTO);
-            return new ResponseEntity<>(createdVehicle, HttpStatus.CREATED);
+            return vehicleController.createVehicle(requestDTO);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -45,10 +40,8 @@ public class VehicleController {
     @ApiResponse(responseCode = "200", description = "Veículo encontrado com sucesso")
     @ApiResponse(responseCode = "404", description = "Veículo não encontrado")
     @GetMapping("/{id}")
-    public ResponseEntity<VehicleResponseDTO> getVehicleById(@PathVariable Long id){
-        return vehicleService.findById(id)
-                .map(vehicle -> new ResponseEntity<>(vehicle, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public VehicleResponseDTO getVehicleById(@PathVariable Long id) {
+        return vehicleController.getVehicleById(id);
     }
 
     @Operation(summary = "Obtém um veículo pela placa informada",
@@ -56,28 +49,24 @@ public class VehicleController {
     @ApiResponse(responseCode = "200", description = "Veículo encontrado com sucesso")
     @ApiResponse(responseCode = "404", description = "Veículo não encontrado")
     @GetMapping("/plate/{licensePlate}")
-    public ResponseEntity<VehicleResponseDTO> getVehicleByLicensePlate(@PathVariable String licensePlate){
-        return vehicleService.findByLicensePlate(licensePlate)
-                .map(vehicle -> new ResponseEntity<>(vehicle, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public VehicleResponseDTO getVehicleByLicensePlate(@PathVariable String licensePlate) {
+        return vehicleController.getVehicleByLicensePlate(licensePlate);
     }
 
     @Operation(summary = "Lista todos os veículos",
             description = "Retorna uma lista de todos os veículos cadastrados.")
     @ApiResponse(responseCode = "200", description = "Lista de itens de estoque retornada com sucesso")
     @GetMapping("/all")
-    public ResponseEntity<List<VehicleResponseDTO>> getAllVehicles(){
-        List<VehicleResponseDTO> vehiclesActive = vehicleService.findAll();
-        return new ResponseEntity<>(vehiclesActive, HttpStatus.OK);
+    public List<VehicleResponseDTO> getAllVehicles() {
+        return vehicleController.getAllVehicles();
     }
 
     @Operation(summary = "Lista todos os veículos ativos",
             description = "Retorna uma lista de todos os veículos cadastrados e com status ativo")
     @ApiResponse(responseCode = "200", description = "Lista de veículos ativos retornada com sucesso")
     @GetMapping
-    public ResponseEntity<List<VehicleResponseDTO>> getAllVehiclesActive(){
-        List<VehicleResponseDTO> vehiclesActive = vehicleService.findAllVehiclesActive();
-        return new ResponseEntity<>(vehiclesActive, HttpStatus.OK);
+    public List<VehicleResponseDTO> getAllVehiclesActive() {
+        return vehicleController.getAllVehiclesActive();
     }
 
     @Operation(summary = "Atualiza um veículo existente",
@@ -86,14 +75,8 @@ public class VehicleController {
     @ApiResponse(responseCode = "400", description = "Requisição inválida ou categoria não encontrada")
     @ApiResponse(responseCode = "404", description = "Veículo não encontrado")
     @PutMapping("/{id}")
-    public ResponseEntity<VehicleResponseDTO> updateVehicle(@PathVariable Long id, @Valid @RequestBody VehicleRequestDTO requestDTO) {
-        try {
-            return vehicleService.updateVehicle(id, requestDTO)
-                    .map(updatedVehicle -> new ResponseEntity<>(updatedVehicle, HttpStatus.OK))
-                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public VehicleResponseDTO updateVehicle(@PathVariable Long id, @Valid @RequestBody VehicleRequestDTO requestDTO) {
+        return vehicleController.updateVehicle(id, requestDTO);
     }
 
     @Operation(summary = "Deleta um veículo",
@@ -101,11 +84,8 @@ public class VehicleController {
     @ApiResponse(responseCode = "204", description = "Veículo deletado com sucesso")
     @ApiResponse(responseCode = "404", description = "Veículo não encontrado")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteVehicle(@PathVariable Long id){
-        if (vehicleService.logicallyDeleteVehicle(id)) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public void deleteVehicle(@PathVariable Long id) {
+        vehicleController.deleteVehicle(id);
     }
 
     @Operation(summary = "Reativa um veículo",
@@ -113,9 +93,8 @@ public class VehicleController {
     @ApiResponse(responseCode = "200", description = "Veículo reativado com sucesso")
     @ApiResponse(responseCode = "404", description = "Veículo não encontrado")
     @PatchMapping("/{id}/reactivate")
-    public ResponseEntity<VehicleResponseDTO> reactivateVehicle(@PathVariable Long id){
-        return vehicleService.reactivateVehicle(id)
-                .map(reactivatedVehicle -> new ResponseEntity<>(reactivatedVehicle, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public void reactivateVehicle(@PathVariable Long id) {
+        vehicleController.reactivateVehicle(id);
     }
+
 }

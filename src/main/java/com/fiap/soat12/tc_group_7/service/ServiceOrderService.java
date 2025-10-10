@@ -11,6 +11,7 @@ import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.repository.*;
 import com.fiap.soat12.tc_group_7.specification.ServiceOrderSpecification;
 import com.fiap.soat12.tc_group_7.util.Status;
+import jakarta.mail.MessagingException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -40,9 +41,10 @@ public class ServiceOrderService {
     private final StockRepository stockRepository;
     private final NotificationService notificationService;
     private final StockService stockService;
+    private final MailClient mailClient;
 
     @Autowired
-    public ServiceOrderService(ServiceOrderRepository serviceOrderRepository, CustomerRepository customerRepository, VehicleRepository vehicleRepository, EmployeeRepository employeeRepository, VehicleServiceRepository serviceRepository, StockRepository stockRepository, NotificationService notificationService, StockService stockService) {
+    public ServiceOrderService(ServiceOrderRepository serviceOrderRepository, CustomerRepository customerRepository, VehicleRepository vehicleRepository, EmployeeRepository employeeRepository, VehicleServiceRepository serviceRepository, StockRepository stockRepository, NotificationService notificationService, StockService stockService, MailClient mailClient) {
         this.serviceOrderRepository = serviceOrderRepository;
         this.customerRepository = customerRepository;
         this.vehicleRepository = vehicleRepository;
@@ -51,6 +53,7 @@ public class ServiceOrderService {
         this.stockRepository = stockRepository;
         this.notificationService = notificationService;
         this.stockService = stockService;
+        this.mailClient = mailClient;
     }
 
     @Transactional
@@ -201,10 +204,25 @@ public class ServiceOrderService {
     }
 
     @Transactional
-    public Optional<ServiceOrderResponseDTO> waitForApproval(Long id) throws InvalidTransitionException {
+    public Optional<ServiceOrderResponseDTO> waitForApproval(Long id) throws InvalidTransitionException, MessagingException {
+
+        final String BASE_URL = "http://localhost:8080/api/service-orders/";
         ServiceOrder order = getOrderById(id);
         order.getStatus().waitForApproval(order);
-        return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
+        Optional<ServiceOrderResponseDTO> service = Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("totalValue", order.getTotalValue());
+        variables.put("userName", order.getCustomer().getName());
+        variables.put("services", service.get().getServices());
+        variables.put("directApproveLink", BASE_URL + id + "/approve");
+        variables.put("directRejectLink", BASE_URL + id + "/reject");
+
+        String subject = order.getCustomer().getName() + " Seu Orçamento de Serviços está Pronto! (Aprovação Necessária)";
+
+        mailClient.sendMail(order.getCustomer().getEmail(), subject, "mailTemplateServices", variables);
+
+        return service;
     }
 
     @Transactional
@@ -252,12 +270,24 @@ public class ServiceOrderService {
     }
 
     @Transactional
-    public Optional<ServiceOrderResponseDTO> finish(Long id) throws InvalidTransitionException {
+    public Optional<ServiceOrderResponseDTO> finish(Long id) throws InvalidTransitionException, MessagingException {
         ServiceOrder order = getOrderById(id);
         order.getStatus().finish(order);
         notificationService.notifyAttendantsOSCompleted(order);
-        //todo chamar serviço de envio de email ao cliente
-        return Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
+        Optional<ServiceOrderResponseDTO> service = Optional.ofNullable(toResponseDTO(serviceOrderRepository.save(order)));
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("orderId", order.getId());
+        variables.put("totalValue", order.getTotalValue());
+        variables.put("userName", order.getCustomer().getName());
+        variables.put("services", service.get().getServices());
+        variables.put("vehicle", service.get().getVehicle());
+
+        String subject = order.getCustomer().getName() + " Seus serviços solicitados foram finalizados";
+
+        mailClient.sendMail(order.getCustomer().getEmail(), subject, "mailTemplateServiceFinish", variables);
+
+        return service;
     }
 
     @Transactional

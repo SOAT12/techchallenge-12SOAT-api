@@ -1,12 +1,11 @@
 package com.fiap.soat12.tc_group_7.mapper;
 
-import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.VehicleService;
+import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceResponseDTO;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class VehicleServiceMapperTest {
 
