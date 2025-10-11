@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -149,7 +150,7 @@ public class ServiceOrderController {
             return service.waitForApproval(id)
                     .map(order -> new ResponseEntity<>(order, HttpStatus.OK))
                     .orElseThrow();
-        } catch (InvalidTransitionException e) {
+        } catch (InvalidTransitionException | MessagingException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
@@ -201,8 +202,10 @@ public class ServiceOrderController {
             return service.finish(id)
                     .map(finishedOrder -> new ResponseEntity<>(finishedOrder, HttpStatus.OK))
                     .orElseThrow();
-        } catch (InvalidTransitionException e) {
+        } catch (InvalidTransitionException e ) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
         }
     }
 

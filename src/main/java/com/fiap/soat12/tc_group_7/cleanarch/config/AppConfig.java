@@ -1,20 +1,20 @@
 package com.fiap.soat12.tc_group_7.cleanarch.config;
 
-import com.fiap.soat12.tc_group_7.cleanarch.controller.CustomerController;
-import com.fiap.soat12.tc_group_7.cleanarch.controller.VehicleController;
-import com.fiap.soat12.tc_group_7.cleanarch.controller.VehicleServiceController;
+import com.fiap.soat12.tc_group_7.cleanarch.controller.*;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.CustomerGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.VehicleGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.VehicleServiceGateway;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.EmployeeFunction.EmployeeFunctionJpaRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.EmployeeFunction.EmployeeFunctionRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.customer.CustomerJpaRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.customer.CustomerRepositoryImpl;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.employee.EmployeeJpaRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.employee.EmployeeRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicle.VehicleJpaRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicle.VehicleRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicleservice.VehicleServiceJpaRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicleservice.VehicleServiceRepositoryImpl;
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.CustomerRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.VehicleRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.VehicleServiceRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.interfaces.*;
 import com.fiap.soat12.tc_group_7.cleanarch.presenter.CustomerPresenter;
 import com.fiap.soat12.tc_group_7.cleanarch.presenter.VehiclePresenter;
 import com.fiap.soat12.tc_group_7.cleanarch.presenter.VehicleServicePresenter;
@@ -104,5 +104,26 @@ public class AppConfig {
                                                  CustomerPresenter customerPresenter) {
         return new CustomerController(customerUseCase, customerPresenter);
     }
+
+    @Bean
+    public EmployeeRepository employeeDataSource(EmployeeJpaRepository employeeJpaRepository) {
+        return new EmployeeRepositoryImpl(employeeJpaRepository);
+    }
+
+    @Bean
+    public EmployeeController employeeController(EmployeeRepository employeeRepository, EmployeeFunctionRepository employeeFunctionRepository) {
+        return new EmployeeController(employeeRepository, employeeFunctionRepository);
+    }
+
+    @Bean
+    public EmployeeFunctionRepository employeeFunctionDataSource(EmployeeFunctionJpaRepository employeeFunctionJpaRepository) {
+        return new EmployeeFunctionRepositoryImpl(employeeFunctionJpaRepository);
+    }
+
+    @Bean
+    public EmployeeFunctionController employeeFunctionController(EmployeeFunctionRepository employeeFunctionRepository) {
+        return new EmployeeFunctionController(employeeFunctionRepository);
+    }
+
 
 }
