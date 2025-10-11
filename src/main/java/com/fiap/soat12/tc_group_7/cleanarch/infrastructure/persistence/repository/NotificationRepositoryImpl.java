@@ -1,6 +1,8 @@
-package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.notification;
+package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.NotificationRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.NotificationJpaEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.NotificationJpaRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

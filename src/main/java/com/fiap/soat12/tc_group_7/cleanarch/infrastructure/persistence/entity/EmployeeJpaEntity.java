@@ -1,10 +1,11 @@
-package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.employee;
+package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity;
 
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.EmployeeFunction.EmployeeFunctionJpaEntity;
 import com.fiap.soat12.tc_group_7.entity.Audit;
-import com.fiap.soat12.tc_group_7.entity.EmployeeFunction;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Date;

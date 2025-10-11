@@ -1,6 +1,8 @@
-package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.employee;
+package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.EmployeeRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.EmployeeJpaEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.EmployeeJpaRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

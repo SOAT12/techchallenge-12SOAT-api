@@ -1,6 +1,8 @@
-package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.customer;
+package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.CustomerRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.CustomerJpaEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.CustomerJpaRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

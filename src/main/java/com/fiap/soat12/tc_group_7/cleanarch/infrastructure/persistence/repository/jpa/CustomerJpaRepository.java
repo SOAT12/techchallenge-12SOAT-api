@@ -1,5 +1,6 @@
-package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.customer;
+package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa;
 
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.CustomerJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

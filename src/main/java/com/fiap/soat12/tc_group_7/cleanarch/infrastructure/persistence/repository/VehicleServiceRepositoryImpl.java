@@ -1,6 +1,8 @@
-package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicleservice;
+package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.VehicleServiceRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.VehicleServiceJpaEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.VehicleServiceJpaRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

@@ -2,7 +2,7 @@ package com.fiap.soat12.tc_group_7.cleanarch.gateway;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Customer;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.CustomerRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.customer.CustomerJpaEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.CustomerJpaEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

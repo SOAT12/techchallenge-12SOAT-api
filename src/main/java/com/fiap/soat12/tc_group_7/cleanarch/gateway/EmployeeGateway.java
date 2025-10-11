@@ -3,8 +3,8 @@ package com.fiap.soat12.tc_group_7.cleanarch.gateway;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Employee;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.EmployeeFunction;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.EmployeeRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.EmployeeFunction.EmployeeFunctionJpaEntity;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.employee.EmployeeJpaEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.EmployeeFunctionJpaEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.EmployeeJpaEntity;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

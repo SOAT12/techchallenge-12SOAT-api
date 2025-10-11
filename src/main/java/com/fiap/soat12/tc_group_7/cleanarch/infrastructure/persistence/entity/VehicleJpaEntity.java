@@ -1,4 +1,4 @@
-package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicle;
+package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity;
 
 import com.fiap.soat12.tc_group_7.entity.Audit;
 import jakarta.persistence.*;
