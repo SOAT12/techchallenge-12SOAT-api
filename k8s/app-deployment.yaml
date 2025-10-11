@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: techchallenge-app-deployment
+  namespace: techchallenge
   labels:
     app.kubernetes.io/name: techchallenge-app
     app.kubernetes.io/version: "0.0.1"
@@ -41,7 +42,7 @@ spec:
               httpHeaders:
                 - name: Accept
                   value: application/json
-            initialDelaySeconds: 300
+            initialDelaySeconds: 45
             periodSeconds: 10
           livenessProbe:
             httpGet:
@@ -50,7 +51,7 @@ spec:
               httpHeaders:
                 - name: Accept
                   value: application/json
-            initialDelaySeconds: 300
+            initialDelaySeconds: 45
             periodSeconds: 15
           env:
             # Mapeia os secrets para variáveis de ambiente que o Spring Boot pode usar

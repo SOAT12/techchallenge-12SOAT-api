@@ -33,3 +33,6 @@ build/
 .vscode/
 /.metadata/
 htmlReport/**
+
+### Security ###
+k8s/secret.yaml

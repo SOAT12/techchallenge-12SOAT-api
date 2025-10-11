@@ -1,6 +1,7 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
+  namespace: techchallenge
   name: techchallenge-hpa
   labels:
     app.kubernetes.io/name: techchallenge-app

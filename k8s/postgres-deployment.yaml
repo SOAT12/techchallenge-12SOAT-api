@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres-deployment
+  namespace: techchallenge
   labels:
     app.kubernetes.io/part-of: techchallenge
 spec:
