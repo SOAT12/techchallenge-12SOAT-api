@@ -1,6 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.presenter;
 
-import com.fiap.soat12.tc_group_7.cleanarch.entity.VehicleService;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.VehicleService;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.VehicleServicePresenter;
 import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceResponseDTO;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,6 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicleservice;
 
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.VehicleServiceRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.VehicleServiceRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

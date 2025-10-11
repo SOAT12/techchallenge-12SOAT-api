@@ -1,8 +1,9 @@
 package com.fiap.soat12.tc_group_7.cleanarch.controller;
 
-import com.fiap.soat12.tc_group_7.cleanarch.entity.Customer;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.CustomerPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.CustomerUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Customer;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.CustomerUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.CustomerController;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.CustomerPresenter;
 import com.fiap.soat12.tc_group_7.dto.customer.CustomerRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.customer.CustomerResponseDTO;
 import org.junit.jupiter.api.BeforeEach;

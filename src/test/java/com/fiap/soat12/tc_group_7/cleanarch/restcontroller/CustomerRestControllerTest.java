@@ -1,7 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.restcontroller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiap.soat12.tc_group_7.cleanarch.controller.CustomerController;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.CustomerController;
 import com.fiap.soat12.tc_group_7.dto.customer.CustomerRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.customer.CustomerResponseDTO;
 import org.junit.jupiter.api.BeforeEach;

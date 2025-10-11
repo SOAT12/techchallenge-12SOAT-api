@@ -1,6 +1,6 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.employee;
 
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.EmployeeRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

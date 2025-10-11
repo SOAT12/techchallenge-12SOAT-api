@@ -1,6 +1,6 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.customer;
 
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.CustomerRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

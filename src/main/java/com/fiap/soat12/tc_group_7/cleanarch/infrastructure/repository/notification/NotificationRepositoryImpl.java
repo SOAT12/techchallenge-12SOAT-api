@@ -1,6 +1,6 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.notification;
 
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.NotificationRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

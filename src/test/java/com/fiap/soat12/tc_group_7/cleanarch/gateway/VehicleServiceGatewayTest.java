@@ -1,8 +1,8 @@
 package com.fiap.soat12.tc_group_7.cleanarch.gateway;
 
-import com.fiap.soat12.tc_group_7.cleanarch.entity.VehicleService;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.VehicleService;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.VehicleServiceRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicleservice.VehicleServiceJpaEntity;
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.VehicleServiceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

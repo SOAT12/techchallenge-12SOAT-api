@@ -1,6 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.controller;
 
-import com.fiap.soat12.tc_group_7.cleanarch.restcontroller.EmployeeFunctionRestController;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.api.EmployeeFunctionRestController;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.EmployeeFunctionController;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeFunctionRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeFunctionResponseDTO;
 import org.junit.jupiter.api.BeforeEach;

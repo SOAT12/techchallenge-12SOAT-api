@@ -1,7 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.restcontroller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiap.soat12.tc_group_7.cleanarch.controller.VehicleServiceController;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.VehicleServiceController;
 import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceResponseDTO;
 import org.junit.jupiter.api.Test;

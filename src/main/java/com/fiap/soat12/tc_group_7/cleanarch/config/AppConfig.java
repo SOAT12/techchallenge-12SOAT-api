@@ -1,16 +1,8 @@
 package com.fiap.soat12.tc_group_7.cleanarch.config;
 
-import com.fiap.soat12.tc_group_7.cleanarch.controller.*;
-import com.fiap.soat12.tc_group_7.cleanarch.gateway.CustomerGateway;
-import com.fiap.soat12.tc_group_7.cleanarch.gateway.NotificationGateway;
-import com.fiap.soat12.tc_group_7.cleanarch.gateway.VehicleGateway;
-import com.fiap.soat12.tc_group_7.cleanarch.gateway.VehicleServiceGateway;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.StockRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.ToolCategoryRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.StockUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.ToolCategoryUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.gateway.StockGateway;
-import com.fiap.soat12.tc_group_7.cleanarch.gateway.ToolCategoryGateway;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.*;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.*;
+import com.fiap.soat12.tc_group_7.cleanarch.gateway.*;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.StockRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.ToolCategoryRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.StockJpaRepository;
@@ -27,19 +19,8 @@ import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicle.Ve
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicle.VehicleRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicleservice.VehicleServiceJpaRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicleservice.VehicleServiceRepositoryImpl;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.StockController;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.ToolCategoryController;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.StockPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.ToolCategoryPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.*;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.CustomerPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.NotificationPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.VehiclePresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.VehicleServicePresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.CustomerUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.NotificationUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleServiceUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.*;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -180,12 +161,12 @@ public class AppConfig {
     }
 
     @Bean
-    public ToolCategoryUseCase toolCategoryUseCase(ToolCategoryGateway toolCategoryGateway){
+    public ToolCategoryUseCase toolCategoryUseCase(ToolCategoryGateway toolCategoryGateway) {
         return new ToolCategoryUseCase(toolCategoryGateway);
     }
 
     @Bean
-    public ToolCategoryPresenter toolCategoryPresenter(){
+    public ToolCategoryPresenter toolCategoryPresenter() {
         return new ToolCategoryPresenter();
     }
 
