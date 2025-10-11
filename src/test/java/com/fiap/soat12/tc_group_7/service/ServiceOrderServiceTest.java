@@ -9,6 +9,7 @@ import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.repository.*;
 import com.fiap.soat12.tc_group_7.util.Status;
+import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,7 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -235,7 +235,7 @@ class ServiceOrderServiceTest {
     @DisplayName("State Transition Tests")
     class StateTransitionTests {
         @Test
-        void waitOnApprove_whenStatusIsInDiagnosis_shouldThrowInvalidTransitionException() {
+        void waitOnApprove_whenStatusIsInDiagnosis_shouldThrowInvalidTransitionException() throws MessagingException {
             serviceOrder.setStatus(Status.IN_DIAGNOSIS);
             when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
             when(serviceOrderRepository.save(any(ServiceOrder.class))).thenReturn(serviceOrder);
@@ -309,7 +309,7 @@ class ServiceOrderServiceTest {
         }
 
         @Test
-        void finish_whenStatusIsInExecution_shouldSucceed() {
+        void finish_whenStatusIsInExecution_shouldSucceed() throws MessagingException {
             serviceOrder.setStatus(Status.IN_EXECUTION);
             when(serviceOrderRepository.findById(1L)).thenReturn(Optional.of(serviceOrder));
             when(serviceOrderRepository.save(any(ServiceOrder.class))).thenReturn(serviceOrder);

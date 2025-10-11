@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Serviço Finalizado e Pronto para Retirada</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #dddddd; border-radius: 5px; }
+        h1 { color: #28a745; }
+
+        .vehicle-box {
+            background-color: #f8f9fa;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border: 1px dashed #cccccc;
+            border-radius: 5px;
+            text-align: left;
+        }
+        .vehicle-box strong { font-size: 1.1em; color: #007bff; }
+
+        .pickup-info { background-color: #e6f7ff; border-left: 5px solid #007bff; padding: 15px; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 10px; border: 1px solid #cccccc; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .total-row td { background-color: #e9ecef; font-size: 1.1em; border-top: 2px solid #333333; }
+        .total-value { font-weight: bold; text-align: right; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🎉 Serviço Finalizado e Pronto para Retirada!</h1>
+    <p>Olá, <span th:text="${userName}">Nome do Cliente</span>!</p>
+
+    <p>Temos o prazer de informar que os serviços para o seu veículo foram concluídos com sucesso e estão **prontos para retirada**.</p>
+
+    <div class="vehicle-box">
+        <strong>Detalhes do Veículo:</strong><br>
+        Modelo: <span th:text="${vehicle.model}">[Modelo do Veículo]</span><br>
+        Placa: <span th:text="${vehicle.licensePlate}">[AAA-1234]</span><br>
+        Ordem de Serviço Ref: <span th:text="${orderId}">[ID_DA_OS]</span>
+    </div>
+
+    <p>Serviços Realizados:</p>
+    <table>
+        <thead>
+        <tr>
+            <th>Nome do Item</th>
+            <th style="text-align: right;">Valor</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="service : ${services}">
+            <td th:text="${service.name}">Nome do Serviço</td>
+            <td th:text="${#numbers.formatDecimal(service.value, 1, 'POINT', 2, 'COMMA')}" style="text-align: right;">123,45</td>
+        </tr>
+        </tbody>
+
+        <tfoot>
+        <tr class="total-row">
+            <td style="font-weight: bold; text-align: right; border-left: none;">Valor Total:</td>
+            <td th:text="${#numbers.formatDecimal(totalValue, 1, 'POINT', 2, 'COMMA')}"
+                class="total-value">
+                999,99
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+
+    <div class="pickup-info">
+        <p><strong>📍 Informações para Retirada:</strong></p>
+        <p>
+            O veículo pode ser retirado a partir de agora em nosso endereço:<br>
+            Rua dos Carros, 120<br>
+            Horário de Atendimento: 08:00 às 20:00<br>
+        </p>
+        <p>Por favor, apresente este e-mail ou o número da Ordem de Serviço (<span th:text="${orderId}">[ID_DA_OS]</span>) no balcão.</p>
+    </div>
+
+    <p style="margin-top: 30px;">Agradecemos a sua preferência!</p>
+    <p>Atenciosamente,<br>Sua Equipe de Serviços</p>
+</div>
+</body>
+</html>

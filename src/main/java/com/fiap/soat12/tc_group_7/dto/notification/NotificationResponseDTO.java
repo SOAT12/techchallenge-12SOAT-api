@@ -3,16 +3,14 @@ package com.fiap.soat12.tc_group_7.dto.notification;
 import com.fiap.soat12.tc_group_7.util.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,8 +26,7 @@ public class NotificationResponseDTO {
 
     private List<EmployeeDTO> employees;
 
-    @Getter
-    @Setter
+    @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
@@ -41,8 +38,7 @@ public class NotificationResponseDTO {
         private Date finishedAt;
     }
 
-    @Getter
-    @Setter
+    @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
