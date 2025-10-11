@@ -1,31 +1,28 @@
-package com.fiap.soat12.tc_group_7.controller;
+package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.api;
 
-import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryResponseDTO;
-import com.fiap.soat12.tc_group_7.service.ToolCategoryService;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.ToolCategoryController;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.ToolCategoryRequestDTO;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.ToolCategoryResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.UUID;
 
-/**
- * Controlador dos endpoints para CRUD de categorias de ferramentas.
- */
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/tool-categories")
+@RequestMapping("/clean-arch/tool-categories")
 @Tag(name = "Categorias de Ferramentas", description = "API para gerenciar categorias de ferramentas")
-public class ToolCategoryController {
+public class ToolCategoryApi {
 
-    private final ToolCategoryService toolCategoryService;
-
-    public ToolCategoryController(ToolCategoryService toolCategoryService) {
-        this.toolCategoryService = toolCategoryService;
-    }
+    private final ToolCategoryController toolCategoryController;
 
     @Operation(summary = "Cria uma nova categoria de ferramenta",
             description = "Cria uma nova categoria de ferramenta com base nos dados fornecidos.")
@@ -33,8 +30,12 @@ public class ToolCategoryController {
     @ApiResponse(responseCode = "400", description = "Requisição inválida")
     @PostMapping
     public ResponseEntity<ToolCategoryResponseDTO> createToolCategory(@Valid @RequestBody ToolCategoryRequestDTO requestDTO) {
-        ToolCategoryResponseDTO createdCategory = toolCategoryService.createToolCategory(requestDTO);
-        return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
+        try {
+            ToolCategoryResponseDTO createdToolCategory = toolCategoryController.createToolCategory(requestDTO);
+            return new ResponseEntity<>(createdToolCategory, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @Operation(summary = "Obtém uma categoria de ferramenta pelo ID",
@@ -42,28 +43,24 @@ public class ToolCategoryController {
     @ApiResponse(responseCode = "200", description = "Categoria encontrada com sucesso")
     @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     @GetMapping("/{id}")
-    public ResponseEntity<ToolCategoryResponseDTO> getToolCategoryById(@PathVariable Long id) {
-        return toolCategoryService.getToolCategoryById(id)
-                .map(category -> new ResponseEntity<>(category, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ToolCategoryResponseDTO getToolCategoryById(@PathVariable UUID id) {
+        return toolCategoryController.getToolCategoryById(id);
     }
 
     @Operation(summary = "Lista todas as categorias de ferramentas",
             description = "Retorna uma lista de todas as categorias de ferramentas cadastradas.")
     @ApiResponse(responseCode = "200", description = "Lista de categorias retornada com sucesso")
     @GetMapping("/all")
-    public ResponseEntity<List<ToolCategoryResponseDTO>> getAllToolCategories() {
-        List<ToolCategoryResponseDTO> categories = toolCategoryService.getAllToolCategories();
-        return new ResponseEntity<>(categories, HttpStatus.OK);
+    public List<ToolCategoryResponseDTO> getAllToolCategories() {
+        return toolCategoryController.getAllToolCategories();
     }
 
     @Operation(summary = "Lista todas as categorias de ferramentas ativas",
             description = "Retorna uma lista de todas as categorias de ferramentas cadastradas e com status ativo")
     @ApiResponse(responseCode = "200", description = "Lista de categorias ativas retornada com sucesso")
     @GetMapping
-    public ResponseEntity<List<ToolCategoryResponseDTO>> getAllToolCategoriesActive() {
-        List<ToolCategoryResponseDTO> categories = toolCategoryService.getAllToolCategoriesActive();
-        return new ResponseEntity<>(categories, HttpStatus.OK);
+    public List<ToolCategoryResponseDTO> getAllToolCategoriesActive() {
+        return toolCategoryController.getAllToolCategoriesActive();
     }
 
     @Operation(summary = "Atualiza uma categoria de ferramenta existente",
@@ -72,10 +69,12 @@ public class ToolCategoryController {
     @ApiResponse(responseCode = "400", description = "Requisição inválida")
     @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     @PutMapping("/{id}")
-    public ResponseEntity<ToolCategoryResponseDTO> updateToolCategory(@PathVariable Long id, @Valid @RequestBody ToolCategoryRequestDTO requestDTO) {
-        return toolCategoryService.updateToolCategory(id, requestDTO)
-                .map(updatedCategory -> new ResponseEntity<>(updatedCategory, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ToolCategoryResponseDTO updateToolCategory(@PathVariable UUID id, @Valid @RequestBody ToolCategoryRequestDTO requestDTO) {
+        try {
+            return toolCategoryController.updateToolCategory(id, requestDTO);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @Operation(summary = "Deleta uma categoria de ferramenta",
@@ -83,11 +82,8 @@ public class ToolCategoryController {
     @ApiResponse(responseCode = "204", description = "Categoria deletada com sucesso")
     @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteToolCategory(@PathVariable Long id) {
-        if (toolCategoryService.logicallyDeleteToolCategory(id)) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public void deleteToolCategory(@PathVariable UUID id) {
+        toolCategoryController.logicallyDeleteToolCategory(id);
     }
 
     @Operation(summary = "Reativa uma categoria de ferramenta",
@@ -95,9 +91,7 @@ public class ToolCategoryController {
     @ApiResponse(responseCode = "200", description = "Categoria reativada com sucesso")
     @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     @PatchMapping("/{id}/reactivate")
-    public ResponseEntity<ToolCategoryResponseDTO> reactivateToolCategory(@PathVariable Long id) {
-        return toolCategoryService.reactivateToolCategory(id)
-                .map(reactivatedCategory -> new ResponseEntity<>(reactivatedCategory, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ToolCategoryResponseDTO reactivateToolCategory(@PathVariable UUID id) {
+        return toolCategoryController.reactivateToolCategory(id);
     }
 }
