@@ -111,3 +111,17 @@ databaseChangeLog:
           - sqlFile:
               path: employee/alter-table-employee-add-columns.sql
               relativeToChangelogFile: true
+    - changeSet:
+        id: alter-table-tool-category-change-id-type
+        author: caiohnrq
+        changes:
+          - sqlFile:
+              path: toolCategory/alter-table-tool-category-change-id-type.sql
+              relativeToChangelogFile: true
+    - changeSet:
+        id: alter-table-stock-change-id-type
+        author: caiohnrq
+        changes:
+          - sqlFile:
+              path: stock/alter-table-stock-change-id-type.sql
+              relativeToChangelogFile: true

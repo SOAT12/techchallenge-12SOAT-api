@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-class StockControllerTest {
+class StockApiTest {
 
     @Autowired
     private MockMvc mockMvc;
