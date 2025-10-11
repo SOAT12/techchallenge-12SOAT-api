@@ -2,6 +2,7 @@ package com.fiap.soat12.tc_group_7.cleanarch.config;
 
 import com.fiap.soat12.tc_group_7.cleanarch.controller.*;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.CustomerGateway;
+import com.fiap.soat12.tc_group_7.cleanarch.gateway.NotificationGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.VehicleGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.VehicleServiceGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.EmployeeFunction.EmployeeFunctionJpaRepository;
@@ -10,15 +11,19 @@ import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.customer.C
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.customer.CustomerRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.employee.EmployeeJpaRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.employee.EmployeeRepositoryImpl;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.notification.NotificationJpaRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.notification.NotificationRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicle.VehicleJpaRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicle.VehicleRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicleservice.VehicleServiceJpaRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicleservice.VehicleServiceRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.interfaces.*;
 import com.fiap.soat12.tc_group_7.cleanarch.presenter.CustomerPresenter;
+import com.fiap.soat12.tc_group_7.cleanarch.presenter.NotificationPresenter;
 import com.fiap.soat12.tc_group_7.cleanarch.presenter.VehiclePresenter;
 import com.fiap.soat12.tc_group_7.cleanarch.presenter.VehicleServicePresenter;
 import com.fiap.soat12.tc_group_7.cleanarch.usecase.CustomerUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.usecase.NotificationUseCase;
 import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleServiceUseCase;
 import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleUseCase;
 import org.springframework.context.annotation.Bean;
@@ -125,5 +130,29 @@ public class AppConfig {
         return new EmployeeFunctionController(employeeFunctionRepository);
     }
 
+    @Bean
+    public NotificationRepository notificationDataSource(NotificationJpaRepository notificationJpaRepository) {
+        return new NotificationRepositoryImpl(notificationJpaRepository);
+    }
+
+    @Bean
+    public NotificationGateway notificationGateway(NotificationRepository notificationRepository) {
+        return new NotificationGateway(notificationRepository);
+    }
+
+    @Bean
+    public NotificationUseCase notificationUseCase(NotificationGateway notificationGateway) {
+        return new NotificationUseCase(notificationGateway);
+    }
+
+    @Bean
+    public NotificationPresenter notificationPresenter() {
+        return new NotificationPresenter();
+    }
+
+    @Bean
+    public NotificationController notificationController(NotificationUseCase notificationUseCase, NotificationPresenter notificationPresenter) {
+        return new NotificationController(notificationUseCase, notificationPresenter);
+    }
 
 }
