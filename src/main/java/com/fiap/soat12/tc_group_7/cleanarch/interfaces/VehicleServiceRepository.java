@@ -1,18 +1,18 @@
 package com.fiap.soat12.tc_group_7.cleanarch.interfaces;
 
-import com.fiap.soat12.tc_group_7.cleanarch.entity.VehicleService;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicleservice.VehicleServiceJpaEntity;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface VehicleServiceRepository {
 
-    List<VehicleService> findAll();
+    List<VehicleServiceJpaEntity> findAll();
 
-    Optional<VehicleService> findById(Long id);
+    Optional<VehicleServiceJpaEntity> findById(Long id);
 
-    Long save(VehicleService vehicleService);
+    Long save(VehicleServiceJpaEntity vehicleService);
 
-    void update(VehicleService service);
+    void update(VehicleServiceJpaEntity service);
 
 }
