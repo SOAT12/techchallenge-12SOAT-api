@@ -84,26 +84,33 @@ jobs:
 
 
   deploy:
-    name: Deploy and Test
+    name: Deploy to Environment
     runs-on: ubuntu-latest
     needs: publish
-    # Define o ambiente dinamicamente com base na branch
     environment:
       name: ${{ (github.ref == 'refs/heads/main' && 'prod') || (github.ref == 'refs/heads/develop' && 'stg') || 'pre' }}
-    # Só executa nas branches corretas
     if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/develop') || startsWith(github.ref, 'refs/heads/release')
     steps:
-      - name: Deploy to ${{ needs.publish.outputs.environment-name }}
-        run: echo "Deploying to environment..."
+      - name: Deploy to ${{ environment.name }}
+        run: echo "Deploying artifact to environment..."
+
+  post-deploy-tests:
+    name: Post-Deploy Validation Tests
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: success() && (github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release'))
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Run Smoke Tests
-        if: ${{ github.ref == 'refs/heads/develop' || github.ref_name == 'release' }}
+        if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release')
         run: sh 'src/main/scripts/smoktest.sh'
 
       - name: Run Integration Tests
-        if: ${{ github.ref == 'refs/heads/develop' }}
+        if: github.ref == 'refs/heads/develop'
         run: sh 'src/main/scripts/testeIntegrados.sh'
 
       - name: Run Functional Tests
-        if: ${{ github.ref_name == 'release' }}
+        if: startsWith(github.ref, 'refs/heads/release')
         run: sh 'src/main/scripts/testeFuncionais.sh'
