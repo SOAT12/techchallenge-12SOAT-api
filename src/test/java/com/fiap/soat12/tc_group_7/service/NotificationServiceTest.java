@@ -1,15 +1,15 @@
 package com.fiap.soat12.tc_group_7.service;
 
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.ServiceOrderJpaRepository;
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.Employee;
 import com.fiap.soat12.tc_group_7.entity.Notification;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.mapper.NotificationMapper;
 import com.fiap.soat12.tc_group_7.repository.EmployeeRepository;
 import com.fiap.soat12.tc_group_7.repository.NotificationRepository;
-import com.fiap.soat12.tc_group_7.repository.ServiceOrderRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,23 +17,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-import static com.fiap.soat12.tc_group_7.service.NotificationService.ATTENDANT_DESCRIPTION;
-import static com.fiap.soat12.tc_group_7.service.NotificationService.MANAGER_DESCRIPTION;
-import static com.fiap.soat12.tc_group_7.service.NotificationService.MESSAGE_ASSIGNED_TO_OS;
-import static com.fiap.soat12.tc_group_7.service.NotificationService.MESSAGE_OS_APPROVED;
-import static com.fiap.soat12.tc_group_7.service.NotificationService.MESSAGE_OS_COMPLETED;
-import static com.fiap.soat12.tc_group_7.service.NotificationService.MESSAGE_OUT_OF_STOCK;
+import static com.fiap.soat12.tc_group_7.service.NotificationService.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationServiceTest {
@@ -43,7 +32,7 @@ public class NotificationServiceTest {
     @Mock
     private NotificationRepository notificationRepository;
     @Mock
-    private ServiceOrderRepository serviceOrderRepository;
+    private ServiceOrderJpaRepository serviceOrderRepository;
     @Mock
     private EmployeeRepository employeeRepository;
     @Mock
@@ -123,7 +112,7 @@ public class NotificationServiceTest {
                 .employeeIds(Set.of(1L, 2L))
                 .build();
 
-        ServiceOrder serviceOrder = new ServiceOrder();
+        ServiceOrderEntity serviceOrder = new ServiceOrderEntity();
         serviceOrder.setId(99L);
 
         Employee employee1 = new Employee();
@@ -166,7 +155,7 @@ public class NotificationServiceTest {
                 .employeeIds(Set.of(1L, 2L))
                 .build();
 
-        ServiceOrder serviceOrder = new ServiceOrder();
+        ServiceOrderEntity serviceOrder = new ServiceOrderEntity();
         serviceOrder.setId(99L);
 
         Employee employee1 = new Employee();
@@ -217,7 +206,7 @@ public class NotificationServiceTest {
     @Test
     public void notifyMechanicAssignedToOS_withSuccess() {
         // Arrange
-        ServiceOrder serviceOrder = new ServiceOrder();
+        ServiceOrderEntity serviceOrder = new ServiceOrderEntity();
         serviceOrder.setId(1L);
 
         Employee employee = new Employee();
@@ -235,7 +224,7 @@ public class NotificationServiceTest {
     @Test
     public void notifyMechanicOSApproved_withSuccess() {
         // Arrange
-        ServiceOrder serviceOrder = new ServiceOrder();
+        ServiceOrderEntity serviceOrder = new ServiceOrderEntity();
         serviceOrder.setId(2L);
 
         Employee employee = new Employee();
@@ -253,7 +242,7 @@ public class NotificationServiceTest {
     @Test
     public void notifyManagersOutOfStock_withSuccess() {
         // Arrange
-        ServiceOrder serviceOrder = new ServiceOrder();
+        ServiceOrderEntity serviceOrder = new ServiceOrderEntity();
         serviceOrder.setId(1L);
 
         Employee manager1 = new Employee();
@@ -283,7 +272,7 @@ public class NotificationServiceTest {
     @Test
     public void notifyManagersOutOfStock_whenNoManagers() {
         // Arrange
-        ServiceOrder serviceOrder = new ServiceOrder();
+        ServiceOrderEntity serviceOrder = new ServiceOrderEntity();
         serviceOrder.setId(3L);  // Simulando um ID de OS
 
         when(employeeRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(MANAGER_DESCRIPTION))
@@ -299,7 +288,7 @@ public class NotificationServiceTest {
     @Test
     public void notifyAttendantsOSCompleted_withSuccess() {
         // Arrange
-        ServiceOrder serviceOrder = new ServiceOrder();
+        ServiceOrderEntity serviceOrder = new ServiceOrderEntity();
         serviceOrder.setId(2L);
 
         Employee attendant1 = new Employee();
@@ -329,7 +318,7 @@ public class NotificationServiceTest {
     @Test
     public void notifyAttendantsOSCompleted_whenNoAttendants() {
         // Arrange
-        ServiceOrder serviceOrder = new ServiceOrder();
+        ServiceOrderEntity serviceOrder = new ServiceOrderEntity();
         serviceOrder.setId(4L);  // Simulando um ID de OS
 
         when(employeeRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(ATTENDANT_DESCRIPTION))

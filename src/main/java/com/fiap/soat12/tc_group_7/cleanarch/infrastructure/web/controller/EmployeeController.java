@@ -39,9 +39,7 @@ public class EmployeeController {
         EmployeeFunctionGateway employeeFunctionGateway = new EmployeeFunctionGateway(employeeFunctionRepository);
         EmployeeUseCase employeeUseCase = new EmployeeUseCase(employeeGateway, employeeFunctionGateway, employeePresenter);
         var employee = employeeUseCase.getEmployeeById(id);
-        return employee
-                .map(employeePresenter::toEmployeeResponseDTO)
-                .orElseThrow(() -> new NotFoundException("Funcionário não encontrado: " + id));
+        return employeePresenter.toEmployeeResponseDTO(employee);
     }
 
     public List<EmployeeResponseDTO> getAllEmployees() {

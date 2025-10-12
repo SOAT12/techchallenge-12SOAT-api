@@ -1,4 +1,4 @@
-package com.fiap.soat12.tc_group_7.entity;
+package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,19 +10,19 @@ import java.io.Serializable;
 @Table(name = "service_order_stock")
 @Getter
 @Setter
-public class ServiceOrderStock implements Serializable {
+public class ServiceOrderStockEntity implements Serializable {
 
     @EmbeddedId
-    private ServiceOrderStockId id;
+    private ServiceOrderStockIdEntity id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("serviceOrderId")
     @JoinColumn(name = "service_order_id")
-    private ServiceOrder serviceOrder;
+    private ServiceOrderEntity serviceOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("stockId")
     @JoinColumn(name = "stock_id")
-    private Stock stock;
+    private StockEntity stock;
 
 }

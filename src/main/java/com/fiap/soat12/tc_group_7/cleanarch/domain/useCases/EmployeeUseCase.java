@@ -6,6 +6,7 @@ import com.fiap.soat12.tc_group_7.cleanarch.gateway.EmployeeFunctionGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.EmployeeGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.EmployeePresenter;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeRequestDTO;
+import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Date;
@@ -29,8 +30,9 @@ public class EmployeeUseCase {
                 .toList();
     }
 
-    public Optional<Employee> getEmployeeById(Long id) {
-        return employeeGateway.findById(id);
+    public Employee getEmployeeById(Long id) {
+        return employeeGateway.findById(id)
+                .orElseThrow(() -> new NotFoundException("Funcionário não encontrado"));
     }
 
     public Employee createEmployee(EmployeeRequestDTO requestDTO) {

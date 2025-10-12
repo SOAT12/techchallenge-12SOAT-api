@@ -1,10 +1,10 @@
 package com.fiap.soat12.tc_group_7.cleanarch.presenter;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Notification;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderEntity;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.NotificationPresenter;
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.Employee;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
 import com.fiap.soat12.tc_group_7.util.Status;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ public class NotificationPresenterTest {
     @Test
     void toNotificationResponseDTO_withSuccess() {
         // Arrange
-        ServiceOrder serviceOrder = ServiceOrder.builder()
+        ServiceOrderEntity serviceOrder = ServiceOrderEntity.builder()
                 .id(100L)
                 .status(Status.FINISHED)
                 .totalValue(new BigDecimal("250.00"))

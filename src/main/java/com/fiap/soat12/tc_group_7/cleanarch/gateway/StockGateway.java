@@ -13,7 +13,6 @@ public class StockGateway {
 
     private final StockRepository stockRepository;
 
-
     public Optional<Stock> findByName(String toolName) {
         return stockRepository.findByName(toolName);
     }
@@ -26,9 +25,15 @@ public class StockGateway {
         return stockRepository.findActiveById(id);
     }
 
-    public List<Stock> findAll() { return stockRepository.findAll(); }
+    public List<Stock> findAll() {
+        return stockRepository.findAll();
+    }
 
-    public List<Stock> findAllActive() { return stockRepository.findAllActive(); }
+    public List<Stock> findAllActive() {
+        return stockRepository.findAllActive();
+    }
 
-    public Optional<Stock> findById(UUID id) { return stockRepository.findById(id); }
+    public Optional<Stock> findById(UUID id) {
+        return stockRepository.findById(id);
+    }
 }

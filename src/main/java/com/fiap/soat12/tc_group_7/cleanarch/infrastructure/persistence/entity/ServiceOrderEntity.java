@@ -1,5 +1,6 @@
-package com.fiap.soat12.tc_group_7.entity;
+package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity;
 
+import com.fiap.soat12.tc_group_7.entity.Audit;
 import com.fiap.soat12.tc_group_7.util.Status;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,7 +16,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceOrder extends Audit {
+public class ServiceOrderEntity extends Audit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,40 +39,20 @@ public class ServiceOrder extends Audit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    private CustomerJpaEntity customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", nullable = false)
-    private Vehicle vehicle;
+    private VehicleJpaEntity vehicle;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id")
-    private Employee employee;
+    private EmployeeJpaEntity employee;
 
     @OneToMany(mappedBy = "serviceOrder", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<ServiceOrderVehicleService> services;
+    private Set<ServiceOrderVehicleServiceEntity> services;
 
     @OneToMany(mappedBy = "serviceOrder", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<ServiceOrderStock> stockItems;
+    private Set<ServiceOrderStockEntity> stockItems;
 
-    public BigDecimal calculateTotalValue(Set<ServiceOrderVehicleService> services, Set<ServiceOrderStock> stockItems) {
-        BigDecimal totalValue = BigDecimal.ZERO;
-        if (services == null && stockItems == null) {
-            return totalValue;
-        }
-        if (services != null) {
-            totalValue.add(services.stream()
-                    .map(service -> service.getVehicleService().getValue())
-                    .reduce(BigDecimal.ZERO, BigDecimal::add));
-        }
-
-        if (stockItems != null) {
-            // Calculate total from stock items (value * quantity)
-            totalValue.add(stockItems.stream()
-                    .map(item -> item.getStock().getValue().multiply(new BigDecimal(item.getStock().getQuantity())))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add));
-        }
-
-        return totalValue;
-    }
 }

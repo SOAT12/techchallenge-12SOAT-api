@@ -2,7 +2,6 @@ package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity;
 
 import com.fiap.soat12.tc_group_7.entity.Audit;
 import com.fiap.soat12.tc_group_7.entity.Employee;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,7 +29,7 @@ public class NotificationJpaEntity extends Audit {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "service_order_id", nullable = false)
-    private ServiceOrder serviceOrder;
+    private ServiceOrderEntity serviceOrder;
 
     @ManyToMany
     @JoinTable(

@@ -1,11 +1,11 @@
 package com.fiap.soat12.tc_group_7.service;
 
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderStockEntity;
 import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.stock.StockRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.stock.StockResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.toolCategory.ToolCategoryResponseDTO;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrderStock;
 import com.fiap.soat12.tc_group_7.entity.Stock;
 import com.fiap.soat12.tc_group_7.entity.ToolCategory;
 import com.fiap.soat12.tc_group_7.repository.StockRepository;
@@ -101,10 +101,10 @@ public class StockService {
                 });
     }
 
-    public StockAvailabilityResponseDTO checkStockAvailability(ServiceOrder order) {
+    public StockAvailabilityResponseDTO checkStockAvailability(ServiceOrderEntity order) {
         List<StockAvailabilityResponseDTO.MissingItemDTO> missingItems = new ArrayList<>();
 
-        for (ServiceOrderStock requiredItem : order.getStockItems()) {
+        for (ServiceOrderStockEntity requiredItem : order.getStockItems()) {
 
             Stock availableStock = stockRepository.findByIdAndActiveTrue(requiredItem.getStock().getId());
 

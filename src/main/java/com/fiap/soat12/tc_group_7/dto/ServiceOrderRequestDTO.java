@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -43,7 +44,7 @@ public class ServiceOrderRequestDTO {
     @AllArgsConstructor
     public static class StockItemDTO {
         @NotNull
-        private Long stockId;
+        private UUID stockId;
 
         @NotNull
         private Integer requiredQuantity;

@@ -25,6 +25,11 @@ public class CustomerUseCase {
         return customerGateway.findAll();
     }
 
+    public Customer getCustomerById(Long id) {
+        return customerGateway.findById(id)
+                .orElseThrow(() -> new NotFoundException(CUSTOMER_NOT_FOUND_MESSAGE));
+    }
+
     public Customer getCustomerByCpf(String cpf) {
         return customerGateway.findByCpf(cpf)
                 .orElseThrow(() -> new NotFoundException(CUSTOMER_NOT_FOUND_MESSAGE));

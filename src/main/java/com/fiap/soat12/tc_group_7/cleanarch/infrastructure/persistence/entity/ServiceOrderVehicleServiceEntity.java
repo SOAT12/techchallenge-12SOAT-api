@@ -1,4 +1,4 @@
-package com.fiap.soat12.tc_group_7.entity;
+package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,19 +10,19 @@ import java.io.Serializable;
 @Table(name = "service_order_vehicle_service")
 @Getter
 @Setter
-public class ServiceOrderVehicleService implements Serializable {
+public class ServiceOrderVehicleServiceEntity implements Serializable {
 
     @EmbeddedId
-    private ServiceOrderVehicleServiceId id;
+    private ServiceOrderVehicleServiceIdEntity id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("serviceOrderId")
     @JoinColumn(name = "service_order_id")
-    private ServiceOrder serviceOrder;
+    private ServiceOrderEntity serviceOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("vehicleServiceId")
     @JoinColumn(name = "vehicle_service_id")
-    private VehicleService vehicleService;
+    private VehicleServiceJpaEntity vehicleService;
 
 }

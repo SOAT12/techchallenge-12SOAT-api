@@ -44,8 +44,8 @@ public class NotificationGateway {
                 .id(notificationJpaEntity.getId())
                 .message(notificationJpaEntity.getMessage())
                 .isRead(notificationJpaEntity.isRead())
-                .serviceOrder(notificationJpaEntity.getServiceOrder())
-                .employees(notificationJpaEntity.getEmployees())
+                //.serviceOrder(notificationJpaEntity.getServiceOrder())
+                //.employees(notificationJpaEntity.getEmployees())
                 .createdAt(notificationJpaEntity.getCreatedAt())
                 .updatedAt(notificationJpaEntity.getUpdatedAt())
                 .build();
@@ -56,8 +56,8 @@ public class NotificationGateway {
                 .id(notification.getId())
                 .message(notification.getMessage())
                 .isRead(notification.isRead())
-                .serviceOrder(notification.getServiceOrder())
-                .employees(notification.getEmployees())
+                //.serviceOrder(notification.getServiceOrder())
+                //.employees(notification.getEmployees())
                 .build();
     }
 }

@@ -1,6 +1,6 @@
 package com.fiap.soat12.tc_group_7.specification;
 
-import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderEntity;
 import jakarta.persistence.criteria.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,15 +15,15 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class ServiceOrderSpecificationTest {
+public class ServiceOrderEntitySpecificationTest {
 
     @Test
     public void testWithFilters_noFilters() {
-        Specification<ServiceOrder> spec = ServiceOrderSpecification.withFilters(null, null, null);
+        Specification<ServiceOrderEntity> spec = ServiceOrderSpecification.withFilters(null, null, null);
 
         CriteriaBuilder cb = Mockito.mock(CriteriaBuilder.class);
         CriteriaQuery<?> query = Mockito.mock(CriteriaQuery.class);
-        Root<ServiceOrder> root = Mockito.mock(Root.class);
+        Root<ServiceOrderEntity> root = Mockito.mock(Root.class);
 
         Path<Object> finishedAtPath = Mockito.mock(Path.class);
 
@@ -50,11 +50,11 @@ public class ServiceOrderSpecificationTest {
         Date endDate = new Date();
         List<Long> serviceIds = Arrays.asList(1L, 2L, 3L);
 
-        Specification<ServiceOrder> spec = ServiceOrderSpecification.withFilters(startDate, endDate, serviceIds);
+        Specification<ServiceOrderEntity> spec = ServiceOrderSpecification.withFilters(startDate, endDate, serviceIds);
 
         CriteriaBuilder cb = Mockito.mock(CriteriaBuilder.class);
         CriteriaQuery<?> query = Mockito.mock(CriteriaQuery.class);
-        Root<ServiceOrder> root = Mockito.mock(Root.class);
+        Root<ServiceOrderEntity> root = Mockito.mock(Root.class);
 
         Path<Date> finishedAtPath = Mockito.mock(Path.class);
         Path<Date> createdAtPath = Mockito.mock(Path.class);

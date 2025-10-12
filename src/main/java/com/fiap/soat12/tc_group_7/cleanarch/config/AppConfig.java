@@ -3,6 +3,7 @@ package com.fiap.soat12.tc_group_7.cleanarch.config;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.*;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.*;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.*;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.mapper.*;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.*;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.*;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.*;
@@ -97,6 +98,21 @@ public class AppConfig {
     }
 
     @Bean
+    public EmployeeGateway employeeGateway(EmployeeRepository employeeRepository) {
+        return new EmployeeGateway(employeeRepository);
+    }
+
+    @Bean
+    public EmployeePresenter employeePresenter(EmployeeFunctionPresenter employeeFunctionPresenter) {
+        return new EmployeePresenter(employeeFunctionPresenter);
+    }
+
+    @Bean
+    public EmployeeUseCase employeeUseCase(EmployeeGateway employeeGateway, EmployeeFunctionGateway employeeFunctionGateway, EmployeePresenter employeePresenter) {
+        return new EmployeeUseCase(employeeGateway, employeeFunctionGateway, employeePresenter);
+    }
+
+    @Bean
     public EmployeeController employeeController(EmployeeRepository employeeRepository, EmployeeFunctionRepository employeeFunctionRepository) {
         return new EmployeeController(employeeRepository, employeeFunctionRepository);
     }
@@ -104,6 +120,16 @@ public class AppConfig {
     @Bean
     public EmployeeFunctionRepository employeeFunctionDataSource(EmployeeFunctionJpaRepository employeeFunctionJpaRepository) {
         return new EmployeeFunctionRepositoryImpl(employeeFunctionJpaRepository);
+    }
+
+    @Bean
+    public EmployeeFunctionGateway employeeFunctionGateway(EmployeeFunctionRepository employeeFunctionRepository) {
+        return new EmployeeFunctionGateway(employeeFunctionRepository);
+    }
+
+    @Bean
+    public EmployeeFunctionPresenter employeeFunctionPresenter() {
+        return new EmployeeFunctionPresenter();
     }
 
     @Bean
@@ -184,5 +210,76 @@ public class AppConfig {
     @Bean
     public StockController stockController(StockUseCase stockUseCase, StockPresenter stockPresenter) {
         return new StockController(stockUseCase, stockPresenter);
+    }
+
+    @Bean
+    public CustomerMapper customerMapperBean() {
+        return new CustomerMapper();
+    }
+
+    @Bean
+    public VehicleMapper vehicleMapper() {
+        return new VehicleMapper();
+    }
+
+    @Bean
+    public EmployeeMapper employeeMapperBean() {
+        return new EmployeeMapper();
+    }
+
+    @Bean
+    public VehicleServiceMapper vehicleServiceMapperBean() {
+        return new VehicleServiceMapper();
+    }
+
+    @Bean
+    public StockMapper stockMapper() {
+        return new StockMapper();
+    }
+
+    @Bean
+    public ServiceOrderMapper serviceOrderMapper(
+            CustomerMapper customerMapper,
+            VehicleMapper vehicleMapper,
+            EmployeeMapper employeeMapper,
+            VehicleServiceMapper vehicleServiceMapper,
+            StockMapper stockMapper
+    ) {
+        return new ServiceOrderMapper(customerMapper, vehicleMapper, employeeMapper, vehicleServiceMapper, stockMapper);
+    }
+
+    @Bean
+    public ServiceOrderRepository serviceOrderDataSource(ServiceOrderJpaRepository serviceOrderJpaRepository,
+                                                         ServiceOrderMapper serviceOrderMapper,
+                                                         EmployeeMapper employeeMapper,
+                                                         CustomerMapper customerMapper,
+                                                         VehicleMapper vehicleMapper) {
+        return new ServiceOrderRepositoryImpl(serviceOrderJpaRepository, serviceOrderMapper, employeeMapper, customerMapper, vehicleMapper);
+    }
+
+    @Bean
+    public ServiceOrderGateway serviceOrderGateway(ServiceOrderRepository serviceOrderRepository) {
+        return new ServiceOrderGateway(serviceOrderRepository);
+    }
+
+    @Bean
+    public ServiceOrderUseCase serviceOrderUseCase(ServiceOrderGateway serviceOrderGateway,
+                                                   EmployeeUseCase employeeUseCase,
+                                                   CustomerUseCase customerUseCase,
+                                                   NotificationUseCase notificationUseCase,
+                                                   VehicleUseCase vehicleUseCase,
+                                                   VehicleServiceUseCase vehicleServiceUseCase,
+                                                   StockUseCase stockUseCase) {
+        return new ServiceOrderUseCase(serviceOrderGateway, employeeUseCase, customerUseCase, notificationUseCase, vehicleUseCase, vehicleServiceUseCase, stockUseCase);
+    }
+
+    @Bean
+    public ServiceOrderPresenter serviceOrderPresenter() {
+        return new ServiceOrderPresenter();
+    }
+
+    @Bean
+    public ServiceOrderController serviceOrderController(ServiceOrderUseCase serviceOrderUseCase, ServiceOrderPresenter serviceOrderPresenter) {
+        return new ServiceOrderController(serviceOrderUseCase, serviceOrderPresenter);
     }
 }

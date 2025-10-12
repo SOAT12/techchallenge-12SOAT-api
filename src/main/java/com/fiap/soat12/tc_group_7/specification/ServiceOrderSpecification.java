@@ -1,7 +1,7 @@
 package com.fiap.soat12.tc_group_7.specification;
 
-import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrderVehicleService;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderVehicleServiceEntity;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ServiceOrderSpecification {
 
-    public static Specification<ServiceOrder> withFilters(Date startDate, Date endDate, List<Long> serviceIds) {
+    public static Specification<ServiceOrderEntity> withFilters(Date startDate, Date endDate, List<Long> serviceIds) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -27,7 +27,7 @@ public class ServiceOrderSpecification {
             }
 
             if (serviceIds != null && !serviceIds.isEmpty()) {
-                Join<ServiceOrder, ServiceOrderVehicleService> servicesJoin = root.join("services");
+                Join<ServiceOrderEntity, ServiceOrderVehicleServiceEntity> servicesJoin = root.join("services");
                 predicates.add(servicesJoin.get("vehicleService").get("id").in(serviceIds));
             }
 
