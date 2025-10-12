@@ -60,6 +60,7 @@ Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simuland
     ```
    * Este comando utiliza o Docker para criar um node Kubernetes local em sua máquina.
 
+
 4. No controller do cluster deverá ser instalado algumas features. Estes são pré-requisitos para a aplicação rodar corretamente.
    * Instale o Sealed Secrets para gerenciamento seguro de segredos para a primeira vez que for rodar a aplicação
    ```bash
@@ -89,11 +90,14 @@ Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simuland
    minikube kubectl -- get pods -n techchallenge --watch
     ```
 
-7. Abra um túnel de rede (em um novo terminal).
+7. Para testes locais, é necessário que seja feito um proxy para as portas do Banco de dados e da aplicação (em um novo terminal).
     ```bash
-   minikube tunnel
+   kubectl port-forward svc/techchallenge-service 8080:8080 -n techchallenge
     ```
-    #### OBS: Para este comando o terminal deverá permanecer aberto para manter o acesso à aplicação.
+   ```bash
+   kubectl port-forward svc/postgres-service 5432:5432 -n techchallenge
+    ```
+    #### OBS: Para estes comandos funcionarem, os terminais deverão permanecer abertos para manter o acesso à aplicação.
 
 8. Acesse a aplicação. Após o túnel estar ativo, a aplicação estará disponível em seu navegador no seguinte endereço:
    http://127.0.0.1
