@@ -2,9 +2,9 @@ name: pipeline
 
 on:
   push:
-    branches: [ main, develop, 'release/*' ]
+    branches: [ mTest, dTest, 'release/*' ]
   pull_request:
-    branches: [ main, develop, 'release/*' ]
+    branches: [ mTest, dTest, 'release/*' ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -89,21 +89,21 @@ jobs:
     needs: publish
     # Define o ambiente dinamicamente com base na branch
     environment:
-      name: ${{ (github.ref == 'refs/heads/main' && 'prod') || (github.ref == 'refs/heads/develop' && 'stg') || 'pre' }}
+      name: ${{ (github.ref == 'refs/heads/mTest' && 'prod') || (github.ref == 'refs/heads/dTest' && 'stg') || 'pre' }}
     # Só executa nas branches corretas
-    if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/develop') || startsWith(github.ref, 'refs/heads/release')
+    if: startsWith(github.ref, 'refs/heads/mTest') || startsWith(github.ref, 'refs/heads/dTest') || startsWith(github.ref, 'refs/heads/release')
     steps:
       - name: Deploy to ${{ needs.publish.outputs.environment-name }}
         run: echo "Deploying to environment..."
 
       - name: Run Smoke Tests
-        if: ${{ github.ref == 'refs/heads/develop' || github.ref_name == 'release' }}
-        run: sh 'src/main/scripts/smoktest.sh'
+        if: ${{ github.ref == 'refs/heads/dTest' || github.ref_name == 'release' }}
+        run: sh 'src/mTest/scripts/smoktest.sh'
 
       - name: Run Integration Tests
-        if: ${{ github.ref == 'refs/heads/develop' }}
-        run: sh 'src/main/scripts/testeIntegrados.sh'
+        if: ${{ github.ref == 'refs/heads/dTest' }}
+        run: sh 'src/mTest/scripts/testeIntegrados.sh'
 
       - name: Run Functional Tests
         if: ${{ github.ref_name == 'release' }}
-        run: sh 'src/main/scripts/testeFuncionais.sh'
+        run: sh 'src/mTest/scripts/testeFuncionais.sh'
