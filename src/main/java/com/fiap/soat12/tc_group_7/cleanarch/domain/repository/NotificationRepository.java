@@ -1,20 +1,20 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.repository;
 
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.NotificationJpaEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Notification;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface NotificationRepository {
 
-    List<NotificationJpaEntity> findAll();
+    List<Notification> findAll();
 
-    Optional<NotificationJpaEntity> findById(Long id);
+    Optional<Notification> findById(Long id);
 
-    List<NotificationJpaEntity> findByEmployees_Id(Long employeeId);
+    List<Notification> findByEmployees_Id(Long employeeId);
 
-    NotificationJpaEntity save(NotificationJpaEntity notification);
+    Notification save(Notification notification);
 
-    void delete(NotificationJpaEntity notificationJpaEntity);
+    void delete(Notification notification);
 
 }

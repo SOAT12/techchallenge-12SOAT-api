@@ -139,8 +139,16 @@ public class AppConfig {
     }
 
     @Bean
-    public NotificationRepository notificationDataSource(NotificationJpaRepository notificationJpaRepository) {
-        return new NotificationRepositoryImpl(notificationJpaRepository);
+    public NotificationRepository notificationDataSource(NotificationJpaRepository notificationJpaRepository, NotificationMapper notificationMapper, EntityManager entityManager) {
+        return new NotificationRepositoryImpl(entityManager, notificationMapper, notificationJpaRepository);
+    }
+
+    @Bean
+    public NotificationMapper notificationMapperBean(
+            ServiceOrderMapper serviceOrderMapper,
+            EmployeeMapper employeeMapper
+    ) {
+        return new NotificationMapper(serviceOrderMapper, employeeMapper);
     }
 
     @Bean

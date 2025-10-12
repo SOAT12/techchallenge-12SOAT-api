@@ -52,7 +52,7 @@ public class ServiceOrderUseCase {
         serviceOrder.setTotalValue(serviceOrder.calculateTotalValue(serviceOrder.getServices(), serviceOrder.getStockItems()));
 
         ServiceOrder savedOrder = serviceOrderGateway.save(serviceOrder);
-        //notificationUseCase.notifyMechanicAssignedToOS(savedOrder, employee);
+        notificationUseCase.notifyMechanicAssignedToOS(savedOrder, employee);
         return savedOrder;
     }
 

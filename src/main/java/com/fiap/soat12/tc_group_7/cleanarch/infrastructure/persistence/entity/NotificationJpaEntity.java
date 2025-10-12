@@ -1,7 +1,6 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity;
 
 import com.fiap.soat12.tc_group_7.entity.Audit;
-import com.fiap.soat12.tc_group_7.entity.Employee;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,6 +36,6 @@ public class NotificationJpaEntity extends Audit {
             joinColumns = @JoinColumn(name = "notification_id"),
             inverseJoinColumns = @JoinColumn(name = "employee_id")
     )
-    private Set<Employee> employees = new HashSet<>();
+    private Set<EmployeeJpaEntity> employees = new HashSet<>();
 
 }
