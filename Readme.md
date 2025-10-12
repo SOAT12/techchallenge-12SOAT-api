@@ -69,6 +69,10 @@ Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simuland
    ```bash
    minikube addons enable ingress
     ```
+   * Criar o arquivo sealed-secret.yaml, baseado no hash criado no controller do seu cluster.
+   ```bash
+   kubeseal --format yaml < k8s/secret.yaml > k8s/sealed-secret.yaml
+   ```
 5. Execute a aplicação no cluster.
    * Cria o namespace dedicado para a aplicação
    ```bash
