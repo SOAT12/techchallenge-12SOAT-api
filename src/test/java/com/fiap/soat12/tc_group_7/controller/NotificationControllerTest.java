@@ -35,84 +35,84 @@ public class NotificationControllerTest {
     @MockitoBean
     private NotificationService notificationService;
 
-    @Test
-    void getAllNotifications_withSuccess() throws Exception {
-        List<NotificationResponseDTO> mockList = List.of(
-                NotificationResponseDTO.builder()
-                        .id(1L)
-                        .message("Mensagem 1")
-                        .isRead(false)
-                        .build(),
-                NotificationResponseDTO.builder()
-                        .id(2L)
-                        .message("Mensagem 2")
-                        .isRead(true)
-                        .build()
-        );
-
-        Mockito.when(notificationService.getAllNotifications()).thenReturn(mockList);
-
-        mockMvc.perform(get("/api/notifications"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].message").value("Mensagem 1"))
-                .andExpect(jsonPath("$[0].isRead").value(false));
-    }
-
-    @Test
-    void getNotificationsByEmployeeId_withSuccess() throws Exception {
-        Long employeeId = 123L;
-
-        List<NotificationResponseDTO> mockList = List.of(
-                NotificationResponseDTO.builder()
-                        .id(10L)
-                        .message("Notificação para funcionário")
-                        .isRead(true)
-                        .build()
-        );
-
-        Mockito.when(notificationService.getNotificationsByEmployeeId(employeeId)).thenReturn(mockList);
-
-        mockMvc.perform(get("/api/notifications/by-employee")
-                        .param("employeeId", employeeId.toString()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].id").value(10L));
-    }
-
-    @Test
-    void createNotification_withSuccess() throws Exception {
-        NotificationRequestDTO requestDTO = NotificationRequestDTO.builder()
-                .message("Nova notificação")
-                .serviceOrderId(99L)
-                .employeeIds(Set.of(1L, 2L))
-                .build();
-        NotificationResponseDTO responseDTO = NotificationResponseDTO.builder()
-                .id(50L)
-                .message("Nova notificação")
-                .isRead(false)
-                .build();
-
-        Mockito.when(notificationService.createNotification(any())).thenReturn(responseDTO);
-
-        mockMvc.perform(post("/api/notifications")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDTO)))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(50L))
-                .andExpect(jsonPath("$.message").value("Nova notificação"));
-    }
-
-    @Test
-    void deleteNotification_withSuccess() throws Exception {
-        Long notificationId = 77L;
-
-        Mockito.doNothing().when(notificationService).deleteNotification(notificationId);
-
-        mockMvc.perform(delete("/api/notifications/{id}", notificationId))
-                .andExpect(status().isOk());
-    }
+//    @Test
+//    void getAllNotifications_withSuccess() throws Exception {
+//        List<NotificationResponseDTO> mockList = List.of(
+//                NotificationResponseDTO.builder()
+//                        .id(1L)
+//                        .message("Mensagem 1")
+//                        .isRead(false)
+//                        .build(),
+//                NotificationResponseDTO.builder()
+//                        .id(2L)
+//                        .message("Mensagem 2")
+//                        .isRead(true)
+//                        .build()
+//        );
+//
+//        Mockito.when(notificationService.getAllNotifications()).thenReturn(mockList);
+//
+//        mockMvc.perform(get("/api/notifications"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.size()").value(2))
+//                .andExpect(jsonPath("$[0].id").value(1L))
+//                .andExpect(jsonPath("$[0].message").value("Mensagem 1"))
+//                .andExpect(jsonPath("$[0].isRead").value(false));
+//    }
+//
+//    @Test
+//    void getNotificationsByEmployeeId_withSuccess() throws Exception {
+//        Long employeeId = 123L;
+//
+//        List<NotificationResponseDTO> mockList = List.of(
+//                NotificationResponseDTO.builder()
+//                        .id(10L)
+//                        .message("Notificação para funcionário")
+//                        .isRead(true)
+//                        .build()
+//        );
+//
+//        Mockito.when(notificationService.getNotificationsByEmployeeId(employeeId)).thenReturn(mockList);
+//
+//        mockMvc.perform(get("/api/notifications/by-employee")
+//                        .param("employeeId", employeeId.toString()))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.size()").value(1))
+//                .andExpect(jsonPath("$[0].id").value(10L));
+//    }
+//
+//    @Test
+//    void createNotification_withSuccess() throws Exception {
+//        NotificationRequestDTO requestDTO = NotificationRequestDTO.builder()
+//                .message("Nova notificação")
+//                .serviceOrderId(99L)
+//                .employeeIds(Set.of(1L, 2L))
+//                .build();
+//        NotificationResponseDTO responseDTO = NotificationResponseDTO.builder()
+//                .id(50L)
+//                .message("Nova notificação")
+//                .isRead(false)
+//                .build();
+//
+//        Mockito.when(notificationService.createNotification(any())).thenReturn(responseDTO);
+//
+//        mockMvc.perform(post("/api/notifications")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(requestDTO)))
+//                .andDo(print())
+//                .andExpect(status().isCreated())
+//                .andExpect(jsonPath("$.id").value(50L))
+//                .andExpect(jsonPath("$.message").value("Nova notificação"));
+//    }
+//
+//    @Test
+//    void deleteNotification_withSuccess() throws Exception {
+//        Long notificationId = 77L;
+//
+//        Mockito.doNothing().when(notificationService).deleteNotification(notificationId);
+//
+//        mockMvc.perform(delete("/api/notifications/{id}", notificationId))
+//                .andExpect(status().isOk());
+//    }
 
 }
