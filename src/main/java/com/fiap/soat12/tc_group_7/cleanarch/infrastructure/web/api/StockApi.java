@@ -22,7 +22,7 @@ import java.util.UUID;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/clean-arch/stock")
+@RequestMapping("/api/stock")
 @Tag(name = "Estoque", description = "API para gerenciar itens em estoque")
 public class StockApi {
 

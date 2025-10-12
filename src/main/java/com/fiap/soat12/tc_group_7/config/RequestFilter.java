@@ -2,7 +2,7 @@ package com.fiap.soat12.tc_group_7.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiap.soat12.tc_group_7.util.JwtTokenUtil;
+import com.fiap.soat12.tc_group_7.cleanarch.util.JwtTokenUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,103 +27,103 @@ import java.util.*;
 @RequiredArgsConstructor
 public class RequestFilter extends OncePerRequestFilter {
 
-	@Lazy
-	private final SessionToken sessionToken;
+    @Lazy
+    private final SessionToken sessionToken;
 
-	private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
 
-//	@Value("${white.list.ipaddress}")
-	private String whiteListValue = "";
+    //	@Value("${white.list.ipaddress}")
+    private String whiteListValue = "";
 
-//	@Value("${white.list.path}")
-	private String pathWhiteListValue = "";
+    //	@Value("${white.list.path}")
+    private String pathWhiteListValue = "";
 
-	private Set<String> whiteList = new HashSet<String>();
+    private Set<String> whiteList = new HashSet<String>();
 
-	private Set<String> pathWhiteList = new HashSet<String>();
+    private Set<String> pathWhiteList = new HashSet<String>();
 
-	@PostConstruct
-	public void init() {
+    @PostConstruct
+    public void init() {
 
-		whiteList.addAll(Arrays.asList(whiteListValue.split(";")));
+        whiteList.addAll(Arrays.asList(whiteListValue.split(";")));
 
-		pathWhiteList.addAll(Arrays.asList(pathWhiteListValue.split(";")));
+        pathWhiteList.addAll(Arrays.asList(pathWhiteListValue.split(";")));
 
-	}
+    }
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-			throws JsonProcessingException, IOException {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws JsonProcessingException, IOException {
 
-		try {
+        try {
 
-			String authorizationHeader = request.getHeader("Authorization");
+            String authorizationHeader = request.getHeader("Authorization");
 
-			if (authorizationHeader != null) {
+            if (authorizationHeader != null) {
 
-				String token = authorizationHeader.substring(7);
+                String token = authorizationHeader.substring(7);
 
-				String subject = jwtTokenUtil.getSubject(token);
+                String subject = jwtTokenUtil.getSubject(token);
 
-				if (SecurityContextHolder.getContext().getAuthentication() == null
-						&& sessionToken.getTransactions().get(subject) != null) {
-					
-					ObjectMapper mapper = new ObjectMapper();
+                if (SecurityContextHolder.getContext().getAuthentication() == null
+                        && sessionToken.getTransactions().get(subject) != null) {
 
-					@SuppressWarnings("unchecked")
-					Map<String, Object> claims = mapper.convertValue(jwtTokenUtil.getAllClaimsFromToken(token),
-							Map.class);
+                    ObjectMapper mapper = new ObjectMapper();
 
-					@SuppressWarnings("unchecked")
-					List<String> authorities = (List<String>) claims.get("authorities");
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> claims = mapper.convertValue(jwtTokenUtil.getAllClaimsFromToken(token),
+                            Map.class);
 
-					String login = sessionToken.getTransactions().get(subject);
+                    @SuppressWarnings("unchecked")
+                    List<String> authorities = (List<String>) claims.get("authorities");
 
-					UserBuilder builder = org.springframework.security.core.userdetails.User.withUsername(login);
-					builder.password(token);
-					builder.authorities(authorities.toArray(new String[0]));
+                    String login = sessionToken.getTransactions().get(subject);
 
-					UserDetails userDetails = builder.build();
+                    UserBuilder builder = org.springframework.security.core.userdetails.User.withUsername(login);
+                    builder.password(token);
+                    builder.authorities(authorities.toArray(new String[0]));
 
-					UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-							userDetails, null, userDetails.getAuthorities());
-					usernamePasswordAuthenticationToken
-							.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    UserDetails userDetails = builder.build();
 
-					SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    usernamePasswordAuthenticationToken
+                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-				}
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
-			}
+                }
 
-			String path = request.getServletPath();
+            }
 
-			if (pathWhiteList.contains(path)) {
+            String path = request.getServletPath();
 
-				WebAuthenticationDetails details = new WebAuthenticationDetailsSource().buildDetails(request);
+            if (pathWhiteList.contains(path)) {
 
-				String userIp = details.getRemoteAddress();
+                WebAuthenticationDetails details = new WebAuthenticationDetailsSource().buildDetails(request);
 
-				if (!whiteList.contains(userIp)) {
-					throw new BadCredentialsException("Invalid IP Address: " + userIp);
-				}
+                String userIp = details.getRemoteAddress();
 
-			}
+                if (!whiteList.contains(userIp)) {
+                    throw new BadCredentialsException("Invalid IP Address: " + userIp);
+                }
 
-			chain.doFilter(request, response);
+            }
 
-		} catch (Exception e) {
-			logger.error(e.getMessage());
+            chain.doFilter(request, response);
 
-			ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
 
-			response.setHeader("Content-Type", "application/json;charset=UTF-8");
-			response.setStatus(HttpStatus.BAD_REQUEST.value());
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage(), e);
 
-			response.getWriter().write(new ObjectMapper().writeValueAsString(apiError));
+            response.setHeader("Content-Type", "application/json;charset=UTF-8");
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
 
-		}
+            response.getWriter().write(new ObjectMapper().writeValueAsString(apiError));
 
-	}
+        }
+
+    }
 
 }

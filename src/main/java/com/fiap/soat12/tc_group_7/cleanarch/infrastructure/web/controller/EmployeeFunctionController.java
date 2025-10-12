@@ -2,11 +2,11 @@ package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.EmployeeFunctionRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.EmployeeFunctionUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.EmployeeFunctionGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.EmployeeFunctionPresenter;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeFunctionRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeFunctionResponseDTO;
-import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;

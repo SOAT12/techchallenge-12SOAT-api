@@ -20,7 +20,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/clean-arch/service-orders")
+@RequestMapping("/api/service-orders")
 @Tag(name = "Ordem de Serviço", description = "API para gerenciar ordem de serviço")
 public class ServiceOrderApi {
 

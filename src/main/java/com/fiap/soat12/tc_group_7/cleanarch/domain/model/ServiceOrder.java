@@ -1,6 +1,6 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.model;
 
-import com.fiap.soat12.tc_group_7.util.Status;
+import com.fiap.soat12.tc_group_7.cleanarch.util.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -15,7 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/clean-arch/employees")
+@RequestMapping("/api/employees")
 @RequiredArgsConstructor
 @Tag(name = "Funcionário", description = "API para gerenciar funcionários")
 public class EmployeeRestController {

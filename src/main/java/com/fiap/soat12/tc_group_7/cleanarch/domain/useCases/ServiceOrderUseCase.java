@@ -1,12 +1,12 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.useCases;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.*;
+import com.fiap.soat12.tc_group_7.cleanarch.exception.InvalidTransitionException;
+import com.fiap.soat12.tc_group_7.cleanarch.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.ServiceOrderGateway;
+import com.fiap.soat12.tc_group_7.cleanarch.util.Status;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
-import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
-import com.fiap.soat12.tc_group_7.exception.NotFoundException;
-import com.fiap.soat12.tc_group_7.util.Status;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
