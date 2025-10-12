@@ -61,7 +61,7 @@ Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simuland
    * Este comando utiliza o Docker para criar um node Kubernetes local em sua máquina.
 
 4. No controller do cluster deverá ser instalado algumas features. Estes são pré-requisitos para a aplicação rodar corretamente.
-   * Instale o Sealed Secrets para gerenciamento seguro de segredos
+   * Instale o Sealed Secrets para gerenciamento seguro de segredos para a primeira vez que for rodar a aplicação
    ```bash
    minikube kubectl -- apply -f https://github.com/bitnami-labs/sealed-secrets/releases/latest/download/controller.yaml
     ```

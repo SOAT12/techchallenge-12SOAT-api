@@ -35,6 +35,8 @@ import com.fiap.soat12.tc_group_7.cleanarch.usecase.CustomerUseCase;
 import com.fiap.soat12.tc_group_7.cleanarch.usecase.NotificationUseCase;
 import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleServiceUseCase;
 import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.api.StockApi;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.api.ToolCategoryApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -190,6 +192,11 @@ public class AppConfig {
     }
 
     @Bean
+    public ToolCategoryApi toolCategoryApi(ToolCategoryController toolCategoryController) {
+        return new ToolCategoryApi(toolCategoryController);
+    }
+
+    @Bean
     public StockRepository stockDataSource(StockJpaRepository stockJpaRepository) {
         return new StockRepositoryImpl(stockJpaRepository);
     }
@@ -212,5 +219,10 @@ public class AppConfig {
     @Bean
     public StockController stockController(StockUseCase stockUseCase, StockPresenter stockPresenter) {
         return new StockController(stockUseCase, stockPresenter);
+    }
+
+    @Bean
+    public StockApi stockApi(StockController stockController) {
+        return new StockApi(stockController);
     }
 }

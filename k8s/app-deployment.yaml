@@ -9,7 +9,6 @@ metadata:
     app.kubernetes.io/component: web
     app.kubernetes.io/part-of: techchallenge
 spec:
-  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: techchallenge-app
