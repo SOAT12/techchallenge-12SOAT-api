@@ -36,6 +36,12 @@ jobs:
           name: workspace
           path: .
 
+      - name: Upload application artifact (.jar) for publishing
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-jar
+          path: target/*.jar
+
   code-analysis:
     name: Code Quality Analysis
     runs-on: ubuntu-latest
