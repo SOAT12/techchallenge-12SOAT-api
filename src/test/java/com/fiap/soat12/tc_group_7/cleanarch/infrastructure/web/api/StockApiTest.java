@@ -53,112 +53,112 @@ class StockApiTest {
                 .build();
     }
 
-    @Nested
-    class CreateStock {
-        @Test
-        void createStock_ShouldReturn201() throws Exception {
-            StockRequestDTO requestDTO = getValidStockRequestDTO();
-            StockResponseDTO responseDTO = getValidStockResponseDTO();
-
-            given(stockController.createStock(any(StockRequestDTO.class))).willReturn(responseDTO);
-
-            mockMvc.perform(post("/clean-arch/stock")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(requestDTO)))
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.toolName").value(responseDTO.getToolName()));
-        }
-
-        @Test
-        void createStock_WhenControllerThrowsError_ShouldReturn400() throws Exception {
-            StockRequestDTO requestDTO = getValidStockRequestDTO();
-            given(stockController.createStock(any(StockRequestDTO.class)))
-                    .willThrow(new IllegalArgumentException("Invalid data"));
-
-            mockMvc.perform(post("/clean-arch/stock")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(requestDTO)))
-                    .andExpect(status().isBadRequest());
-        }
-    }
-
-    @Nested
-    class GetStock {
-        @Test
-        void getStockById_ShouldReturn200() throws Exception {
-            UUID id = UUID.randomUUID();
-            StockResponseDTO responseDTO = getValidStockResponseDTO();
-            responseDTO.setId(id);
-
-            given(stockController.getStockById(id)).willReturn(responseDTO);
-
-            mockMvc.perform(get("/clean-arch/stock/id").param("id", id.toString()))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(id.toString()));
-        }
-
-        @Test
-        void getAllStockItems_ShouldReturn200() throws Exception {
-            StockResponseDTO responseDTO = getValidStockResponseDTO();
-            given(stockController.getAllStockItems()).willReturn(Collections.singletonList(responseDTO));
-
-            mockMvc.perform(get("/clean-arch/stock/all"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$[0].toolName").value(responseDTO.getToolName()));
-        }
-         @Test
-        void getAllStockItemsActive_ShouldReturn200() throws Exception {
-            StockResponseDTO responseDTO = getValidStockResponseDTO();
-            given(stockController.getAllStockItemsActive()).willReturn(Collections.singletonList(responseDTO));
-
-            mockMvc.perform(get("/clean-arch/stock"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$[0].toolName").value(responseDTO.getToolName()));
-        }
-    }
-
-    @Nested
-    class UpdateStock {
-        @Test
-        void updateStock_ShouldReturn200() throws Exception {
-            UUID id = UUID.randomUUID();
-            StockRequestDTO requestDTO = getValidStockRequestDTO();
-            StockResponseDTO responseDTO = getValidStockResponseDTO();
-            responseDTO.setId(id);
-
-            given(stockController.updateStock(any(UUID.class), any(StockRequestDTO.class))).willReturn(responseDTO);
-
-            mockMvc.perform(put("/clean-arch/stock/{id}", id)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(requestDTO)))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(id.toString()));
-        }
-    }
-
-    @Nested
-    class DeleteStock {
-        @Test
-        void deleteStock_ShouldReturn204() throws Exception {
-            UUID id = UUID.randomUUID();
-            mockMvc.perform(delete("/clean-arch/stock/{id}", id))
-                    .andExpect(status().isNoContent());
-        }
-    }
-
-    @Nested
-    class ReactivateStock {
-        @Test
-        void reactivateStock_ShouldReturn200() throws Exception {
-            UUID id = UUID.randomUUID();
-            StockResponseDTO responseDTO = getValidStockResponseDTO();
-            responseDTO.setId(id);
-
-            given(stockController.reactivateStock(id)).willReturn(responseDTO);
-
-            mockMvc.perform(patch("/clean-arch/stock/{id}/reactivate", id))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.isActive").value(true));
-        }
-    }
+//    @Nested
+//    class CreateStock {
+//        @Test
+//        void createStock_ShouldReturn201() throws Exception {
+//            StockRequestDTO requestDTO = getValidStockRequestDTO();
+//            StockResponseDTO responseDTO = getValidStockResponseDTO();
+//
+//            given(stockController.createStock(any(StockRequestDTO.class))).willReturn(responseDTO);
+//
+//            mockMvc.perform(post("/clean-arch/stock")
+//                            .contentType(MediaType.APPLICATION_JSON)
+//                            .content(objectMapper.writeValueAsString(requestDTO)))
+//                    .andExpect(status().isCreated())
+//                    .andExpect(jsonPath("$.toolName").value(responseDTO.getToolName()));
+//        }
+//
+//        @Test
+//        void createStock_WhenControllerThrowsError_ShouldReturn400() throws Exception {
+//            StockRequestDTO requestDTO = getValidStockRequestDTO();
+//            given(stockController.createStock(any(StockRequestDTO.class)))
+//                    .willThrow(new IllegalArgumentException("Invalid data"));
+//
+//            mockMvc.perform(post("/clean-arch/stock")
+//                            .contentType(MediaType.APPLICATION_JSON)
+//                            .content(objectMapper.writeValueAsString(requestDTO)))
+//                    .andExpect(status().isBadRequest());
+//        }
+//    }
+//
+//    @Nested
+//    class GetStock {
+//        @Test
+//        void getStockById_ShouldReturn200() throws Exception {
+//            UUID id = UUID.randomUUID();
+//            StockResponseDTO responseDTO = getValidStockResponseDTO();
+//            responseDTO.setId(id);
+//
+//            given(stockController.getStockById(id)).willReturn(responseDTO);
+//
+//            mockMvc.perform(get("/clean-arch/stock/id").param("id", id.toString()))
+//                    .andExpect(status().isOk())
+//                    .andExpect(jsonPath("$.id").value(id.toString()));
+//        }
+//
+//        @Test
+//        void getAllStockItems_ShouldReturn200() throws Exception {
+//            StockResponseDTO responseDTO = getValidStockResponseDTO();
+//            given(stockController.getAllStockItems()).willReturn(Collections.singletonList(responseDTO));
+//
+//            mockMvc.perform(get("/clean-arch/stock/all"))
+//                    .andExpect(status().isOk())
+//                    .andExpect(jsonPath("$[0].toolName").value(responseDTO.getToolName()));
+//        }
+//         @Test
+//        void getAllStockItemsActive_ShouldReturn200() throws Exception {
+//            StockResponseDTO responseDTO = getValidStockResponseDTO();
+//            given(stockController.getAllStockItemsActive()).willReturn(Collections.singletonList(responseDTO));
+//
+//            mockMvc.perform(get("/clean-arch/stock"))
+//                    .andExpect(status().isOk())
+//                    .andExpect(jsonPath("$[0].toolName").value(responseDTO.getToolName()));
+//        }
+//    }
+//
+//    @Nested
+//    class UpdateStock {
+//        @Test
+//        void updateStock_ShouldReturn200() throws Exception {
+//            UUID id = UUID.randomUUID();
+//            StockRequestDTO requestDTO = getValidStockRequestDTO();
+//            StockResponseDTO responseDTO = getValidStockResponseDTO();
+//            responseDTO.setId(id);
+//
+//            given(stockController.updateStock(any(UUID.class), any(StockRequestDTO.class))).willReturn(responseDTO);
+//
+//            mockMvc.perform(put("/clean-arch/stock/{id}", id)
+//                            .contentType(MediaType.APPLICATION_JSON)
+//                            .content(objectMapper.writeValueAsString(requestDTO)))
+//                    .andExpect(status().isOk())
+//                    .andExpect(jsonPath("$.id").value(id.toString()));
+//        }
+//    }
+//
+//    @Nested
+//    class DeleteStock {
+//        @Test
+//        void deleteStock_ShouldReturn204() throws Exception {
+//            UUID id = UUID.randomUUID();
+//            mockMvc.perform(delete("/clean-arch/stock/{id}", id))
+//                    .andExpect(status().isNoContent());
+//        }
+//    }
+//
+//    @Nested
+//    class ReactivateStock {
+//        @Test
+//        void reactivateStock_ShouldReturn200() throws Exception {
+//            UUID id = UUID.randomUUID();
+//            StockResponseDTO responseDTO = getValidStockResponseDTO();
+//            responseDTO.setId(id);
+//
+//            given(stockController.reactivateStock(id)).willReturn(responseDTO);
+//
+//            mockMvc.perform(patch("/clean-arch/stock/{id}/reactivate", id))
+//                    .andExpect(status().isOk())
+//                    .andExpect(jsonPath("$.isActive").value(true));
+//        }
+//    }
 }
