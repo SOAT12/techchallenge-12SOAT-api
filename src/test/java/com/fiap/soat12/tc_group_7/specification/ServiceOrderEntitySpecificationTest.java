@@ -1,6 +1,7 @@
 package com.fiap.soat12.tc_group_7.specification;
 
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.specification.ServiceOrderSpecification;
 import jakarta.persistence.criteria.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

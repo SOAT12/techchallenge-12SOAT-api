@@ -157,8 +157,8 @@ public class AppConfig {
     }
 
     @Bean
-    public NotificationUseCase notificationUseCase(NotificationGateway notificationGateway) {
-        return new NotificationUseCase(notificationGateway);
+    public NotificationUseCase notificationUseCase(NotificationGateway notificationGateway, EmployeeUseCase employeeUseCase) {
+        return new NotificationUseCase(notificationGateway, employeeUseCase);
     }
 
     @Bean

@@ -1,8 +1,10 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ServiceOrder;
+import com.fiap.soat12.tc_group_7.dto.AverageExecutionTimeResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,6 +72,14 @@ public class ServiceOrderPresenter {
         dto.setStockItems(stockItemsMap);
 
         return dto;
+    }
+
+    public AverageExecutionTimeResponseDTO toAverageExecutionTimeResponseDTO(Duration duration) {
+        if (duration.isZero()) {
+            return new AverageExecutionTimeResponseDTO(0L, "0 horas, 0 minutos");
+        }
+
+        return new AverageExecutionTimeResponseDTO(duration.toHours(), String.format("%d horas, %d minutos", duration.toHours(), duration.toMinutesPart()));
     }
 
 }

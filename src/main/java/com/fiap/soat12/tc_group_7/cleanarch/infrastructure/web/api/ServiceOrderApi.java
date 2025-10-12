@@ -4,19 +4,17 @@ import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.Servic
 import com.fiap.soat12.tc_group_7.dto.AverageExecutionTimeResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
-import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -66,23 +64,19 @@ public class ServiceOrderApi {
             @ApiResponse(responseCode = "404", description = "Nenhuma ordem de serviço encontrada para os parâmetros informados.")
     })
     @GetMapping("/consult")
-    public ResponseEntity<List<ServiceOrderResponseDTO>> consultOrder(
+    public List<ServiceOrderResponseDTO> consultOrder(
             @RequestParam(required = false) String document,
             @RequestParam(required = false) String licensePlate) {
 
-//        if (document != null) {
-//            return service.findByCustomerInfo(document)
-//                    .map(ResponseEntity::ok)
-//                    .orElseGet(() -> ResponseEntity.notFound().build());
-//        }
-//
-//        if (licensePlate != null) {
-//            return service.findByVehicleInfo(licensePlate)
-//                    .map(order -> ResponseEntity.ok(Collections.singletonList(order)))
-//                    .orElseGet(() -> ResponseEntity.notFound().build());
-//        }
+        if (document != null) {
+            return serviceOrderController.findByCustomerInfo(document);
+        }
 
-        return ResponseEntity.badRequest().build();
+        if (licensePlate != null) {
+            return serviceOrderController.findByVehicleInfo(licensePlate);
+        }
+
+        return new ArrayList<>();
     }
 
     @Operation(summary = "Cancela uma ordem de serviço",
@@ -100,89 +94,57 @@ public class ServiceOrderApi {
     @ApiResponse(responseCode = "400", description = "Requisição inválida ou categoria não encontrada")
     @ApiResponse(responseCode = "404", description = "Ordem de serviço não encontrada")
     @PutMapping("/{id}")
-    public ResponseEntity<ServiceOrderResponseDTO> updateOrder(@PathVariable Long id, @Valid @RequestBody ServiceOrderRequestDTO request) {
-        try {
-            return null;
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public ServiceOrderResponseDTO updateOrder(@PathVariable Long id, @Valid @RequestBody ServiceOrderRequestDTO request) {
+        return serviceOrderController.updateServiceOrder(id, request);
     }
 
     @Operation(summary = "Atualiza a ordem de serviço para: Em diagnóstico.",
             description = "Atualiza a ordem de serviço para: Em diagnóstico.")
     @PatchMapping("/{id}/diagnose")
-    public ResponseEntity<ServiceOrderResponseDTO> diagnose(@PathVariable Long id, @RequestParam(required = false) Long employeeId) {
-        try {
-            return null;
-        } catch (InvalidTransitionException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public ServiceOrderResponseDTO diagnose(@PathVariable Long id, @RequestParam(required = false) Long employeeId) {
+        return serviceOrderController.diagnose(id, employeeId);
     }
 
     @Operation(summary = "Atualiza a ordem de serviço para: Aguardando aprovação.",
             description = "Atualiza a ordem de serviço para: Aguardando aprovação.")
     @PatchMapping("/{id}/wait-for-approval")
-    public ResponseEntity<ServiceOrderResponseDTO> waitForApproval(@PathVariable Long id) {
-        try {
-            return null;
-        } catch (InvalidTransitionException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public ServiceOrderResponseDTO waitForApproval(@PathVariable Long id) throws MessagingException {
+        return serviceOrderController.waitForApproval(id);
     }
 
     @Operation(summary = "Atualiza a ordem de serviço para: Aprovada.",
             description = "Atualiza a ordem de serviço para: Aprovada.")
     @PatchMapping("/{id}/approve")
-    public ResponseEntity<ServiceOrderResponseDTO> approve(@PathVariable Long id, @RequestParam(required = false) Long employeeId) {
-        try {
-            return null;
-        } catch (InvalidTransitionException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public ServiceOrderResponseDTO approve(@PathVariable Long id, @RequestParam(required = false) Long employeeId) {
+        return serviceOrderController.approve(id, employeeId);
     }
 
     @Operation(summary = "Atualiza a ordem de serviço para: Rejeitada.",
             description = "Atualiza a ordem de serviço para: Rejeitada.")
     @PatchMapping("/{id}/reject")
-    public ResponseEntity<ServiceOrderResponseDTO> reject(@PathVariable Long id, @RequestParam(required = false) String reason) {
-        try {
-            return null;
-        } catch (InvalidTransitionException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public ServiceOrderResponseDTO reject(@PathVariable Long id, @RequestParam(required = false) String reason) {
+        return serviceOrderController.reject(id, reason);
     }
 
     @Operation(summary = "Atualiza a ordem de serviço para: Em execução ou Aguardando Peças.",
             description = "Atualiza a ordem de serviço para Em execução ou Aguardando Peças a depender da validação do estoque.")
     @PatchMapping("/{id}/execute")
-    public ResponseEntity<ServiceOrderResponseDTO> startServiceOrderExecution(@PathVariable Long id) {
-        try {
-            return null;
-        } catch (InvalidTransitionException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public ServiceOrderResponseDTO startServiceOrderExecution(@PathVariable Long id) {
+        return serviceOrderController.startOrderExecution(id);
     }
 
     @Operation(summary = "Atualiza a ordem de serviço para: Finalizada.",
             description = "Atualiza a ordem de serviço para: Finalizada.")
     @PatchMapping("/{id}/finish")
-    public ResponseEntity<ServiceOrderResponseDTO> finish(@PathVariable Long id) {
-        try {
-            return null;
-        } catch (InvalidTransitionException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public ServiceOrderResponseDTO finish(@PathVariable Long id) throws MessagingException {
+        return serviceOrderController.finish(id);
     }
 
     @Operation(summary = "Atualiza a ordem de serviço para: Entregue.",
             description = "Atualiza a ordem de serviço para: Entregue.")
     @PatchMapping("/{id}/deliver")
-    public ResponseEntity<ServiceOrderResponseDTO> deliver(@PathVariable Long id) {
-        try {
-            return null;
-        } catch (InvalidTransitionException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public ServiceOrderResponseDTO deliver(@PathVariable Long id) {
+        return serviceOrderController.deliver(id);
     }
 
     @Operation(
@@ -194,7 +156,7 @@ public class ServiceOrderApi {
     public AverageExecutionTimeResponseDTO getAverageExecutionTime(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
                                                                    @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
                                                                    @RequestParam(required = false) List<Long> serviceIds) {
-        return null;
+        return serviceOrderController.calculateAverageExecutionTime(startDate, endDate, serviceIds);
     }
 
 }

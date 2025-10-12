@@ -8,6 +8,7 @@ import com.fiap.soat12.tc_group_7.dto.notification.NotificationRequestDTO;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,9 +16,15 @@ import java.util.Set;
 public class NotificationUseCase {
 
     protected static final String MESSAGE_ASSIGNED_TO_OS = "Você foi atribuído à OS %d.";
+    protected static final String MESSAGE_OS_APPROVED = "A OS %d foi aprovada.";
+    protected static final String MESSAGE_OUT_OF_STOCK = "As peças da OS %d não estão disponíveis no estoque.";
+    protected static final String MESSAGE_OS_COMPLETED = "A OS %d foi finalizada.";
+    protected static final String FUNCTION_ATTENDANT_DESCRIPTION = "Atendente";
+    protected static final String FUNCTION_MANAGER_DESCRIPTION = "Gestor";
     protected static final String NOTIFICATION_NOT_FOUND_MESSAGE = "Notificação não encontrada.";
 
     private final NotificationGateway notificationGateway;
+    private final EmployeeUseCase employeeUseCase;
 
     public List<Notification> getAllNotifications() {
         return notificationGateway.findAll();
@@ -49,6 +56,39 @@ public class NotificationUseCase {
         notification.setEmployees(Set.of(employee));
         notification.setMessage(String.format(MESSAGE_ASSIGNED_TO_OS, serviceOrder.getId()));
         notificationGateway.save(notification);
+    }
+
+    public void notifyMechanicOSApproved(ServiceOrder serviceOrder, Employee employee) {
+        Notification notification = new Notification();
+        notification.setServiceOrder(serviceOrder);
+        notification.setEmployees(Set.of(employee));
+        notification.setMessage(String.format(MESSAGE_OS_APPROVED, serviceOrder.getId()));
+        notificationGateway.save(notification);
+    }
+
+    // TODO - Adicionar chamada no fluxo de notificar gestor
+    public void notifyManagersOutOfStock(ServiceOrder serviceOrder) {
+        Set<Employee> activeEmployees = new HashSet<>(employeeUseCase.getByEmployeeFunction(FUNCTION_MANAGER_DESCRIPTION));
+
+        if (!activeEmployees.isEmpty()) {
+            Notification notification = new Notification();
+            notification.setServiceOrder(serviceOrder);
+            notification.setEmployees(activeEmployees);
+            notification.setMessage(String.format(MESSAGE_OUT_OF_STOCK, serviceOrder.getId()));
+            notificationGateway.save(notification);
+        }
+    }
+
+    public void notifyAttendantsOSCompleted(ServiceOrder serviceOrder) {
+        Set<Employee> activeEmployees = new HashSet<>(employeeUseCase.getByEmployeeFunction(FUNCTION_ATTENDANT_DESCRIPTION));
+
+        if (!activeEmployees.isEmpty()) {
+            Notification notification = new Notification();
+            notification.setServiceOrder(serviceOrder);
+            notification.setEmployees(activeEmployees);
+            notification.setMessage(String.format(MESSAGE_OS_COMPLETED, serviceOrder.getId()));
+            notificationGateway.save(notification);
+        }
     }
 
 }

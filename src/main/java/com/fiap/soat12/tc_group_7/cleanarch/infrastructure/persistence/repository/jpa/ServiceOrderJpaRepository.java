@@ -20,5 +20,5 @@ public interface ServiceOrderJpaRepository extends JpaRepository<ServiceOrderEnt
 
     List<ServiceOrderEntity> findByCustomerAndFinishedAtIsNull(CustomerJpaEntity customer);
 
-    ServiceOrderEntity findByVehicleAndFinishedAtIsNull(VehicleJpaEntity vehicle);
+    List<ServiceOrderEntity> findByVehicleAndFinishedAtIsNull(VehicleJpaEntity vehicle);
 }

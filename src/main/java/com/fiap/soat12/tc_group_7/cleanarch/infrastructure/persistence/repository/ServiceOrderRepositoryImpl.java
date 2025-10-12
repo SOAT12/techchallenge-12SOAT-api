@@ -11,10 +11,12 @@ import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.mapper.Em
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.mapper.ServiceOrderMapper;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.mapper.VehicleMapper;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.ServiceOrderJpaRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.specification.ServiceOrderSpecification;
 import com.fiap.soat12.tc_group_7.util.Status;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -33,6 +35,15 @@ public class ServiceOrderRepositoryImpl implements ServiceOrderRepository {
     @Override
     public List<ServiceOrder> findAll() {
         return serviceOrderJpaRepository.findAll().stream()
+                .map(serviceOrderMapper::toServiceOrder)
+                .toList();
+    }
+
+    @Override
+    public List<ServiceOrder> findAllWithFilters(Date startDate, Date endDate, List<Long> serviceIds) {
+        return serviceOrderJpaRepository.findAll(
+                        ServiceOrderSpecification.withFilters(startDate, endDate, serviceIds)
+                ).stream()
                 .map(serviceOrderMapper::toServiceOrder)
                 .toList();
     }
@@ -65,9 +76,10 @@ public class ServiceOrderRepositoryImpl implements ServiceOrderRepository {
     }
 
     @Override
-    public ServiceOrder findByVehicleAndFinishedAtIsNull(Vehicle vehicle) {
-        var savedServiceOrder = serviceOrderJpaRepository.findByVehicleAndFinishedAtIsNull(vehicleMapper.toVehicleJpaEntity(vehicle));
-        return serviceOrderMapper.toServiceOrder(savedServiceOrder);
+    public List<ServiceOrder> findByVehicleAndFinishedAtIsNull(Vehicle vehicle) {
+        return serviceOrderJpaRepository.findByVehicleAndFinishedAtIsNull(vehicleMapper.toVehicleJpaEntity(vehicle)).stream()
+                .map(serviceOrderMapper::toServiceOrder)
+                .toList();
     }
 
     @Override
@@ -90,7 +102,7 @@ public class ServiceOrderRepositoryImpl implements ServiceOrderRepository {
                     var id = new ServiceOrderStockIdEntity(null, stock.getId());
                     return new ServiceOrderStockEntity(id, null, stockJpa);
                 }).collect(Collectors.toSet());
-        
+
         var entity = serviceOrderMapper.toServiceOrderEntity(serviceOrder, customer, vehicle, employee, services, stockItems);
         var savedServiceOrder = serviceOrderJpaRepository.save(entity);
         return serviceOrderMapper.toServiceOrder(savedServiceOrder);

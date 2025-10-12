@@ -8,6 +8,7 @@ import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.ServiceOrderReposi
 import com.fiap.soat12.tc_group_7.util.Status;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,10 @@ public class ServiceOrderGateway {
 
     public List<ServiceOrder> findAll() {
         return serviceOrderRepository.findAll();
+    }
+
+    public List<ServiceOrder> findAllWithFilters(Date startDate, Date endDate, List<Long> serviceIds) {
+        return serviceOrderRepository.findAllWithFilters(startDate, endDate, serviceIds);
     }
 
     public Optional<ServiceOrder> findById(Long id) {
@@ -36,7 +41,7 @@ public class ServiceOrderGateway {
         return serviceOrderRepository.findByCustomerAndFinishedAtIsNull(customer);
     }
 
-    public ServiceOrder findByVehicleAndFinishedAtIsNull(Vehicle vehicle) {
+    public List<ServiceOrder> findByVehicleAndFinishedAtIsNull(Vehicle vehicle) {
         return serviceOrderRepository.findByVehicleAndFinishedAtIsNull(vehicle);
     }
 

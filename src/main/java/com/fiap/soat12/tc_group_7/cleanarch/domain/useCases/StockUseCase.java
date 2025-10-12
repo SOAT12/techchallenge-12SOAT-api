@@ -1,13 +1,17 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.useCases;
 
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ServiceOrder;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Stock;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.StockGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.ToolCategoryGateway;
+import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
+import com.fiap.soat12.tc_group_7.exception.StockUnavailableException;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,7 +35,7 @@ public class StockUseCase {
         return stockGateway.save(newStock);
     }
 
-    public Stock updateStockItem(UUID id, String toolName, BigDecimal value, Integer quantity, Boolean isActive,  UUID toolCategoryId) {
+    public Stock updateStockItem(UUID id, String toolName, BigDecimal value, Integer quantity, Boolean isActive, UUID toolCategoryId) {
         Stock existingItem = stockGateway.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_STOCK_ITEM_MSG));
 
         if (!existingItem.getToolName().equalsIgnoreCase(toolName)) {
@@ -58,11 +62,11 @@ public class StockUseCase {
         return stockGateway.save(existingItem);
     }
 
-    public List<Stock> getAllStock(){
+    public List<Stock> getAllStock() {
         return stockGateway.findAll();
     }
 
-    public List<Stock> getAllActiveStockItems(){
+    public List<Stock> getAllActiveStockItems() {
         return stockGateway.findAllActive();
     }
 
@@ -84,5 +88,40 @@ public class StockUseCase {
 
         Stock activatedStock = stock.activate();
         return stockGateway.save(activatedStock);
+    }
+
+    public void checkStockAvailability(ServiceOrder order) {
+        for (Stock requiredItem : order.getStockItems()) {
+            Stock availableStock = findStockItemById(requiredItem.getId());
+
+            int requiredQuantity = requiredItem.getQuantity();
+            int availableQuantity = availableStock.getQuantity();
+
+            if (availableQuantity < requiredQuantity) {
+                throw new StockUnavailableException("Item indisponível no estoque: " + requiredItem.getToolName());
+            }
+        }
+    }
+
+    public StockAvailabilityResponseDTO getStockAvailability(ServiceOrder order) {
+        List<StockAvailabilityResponseDTO.MissingItemDTO> missingItems = new ArrayList<>();
+        for (Stock requiredItem : order.getStockItems()) {
+            Stock availableStock = findStockItemById(requiredItem.getId());
+
+            int requiredQuantity = requiredItem.getQuantity();
+            int availableQuantity = availableStock.getQuantity();
+
+            if (availableQuantity < requiredQuantity) {
+                missingItems.add(new StockAvailabilityResponseDTO.MissingItemDTO(
+                        availableStock.getId(),
+                        availableStock.getToolName(),
+                        requiredQuantity,
+                        availableQuantity
+                ));
+            }
+        }
+
+        boolean allItemsAvailable = missingItems.isEmpty();
+        return new StockAvailabilityResponseDTO(allItemsAvailable, missingItems);
     }
 }

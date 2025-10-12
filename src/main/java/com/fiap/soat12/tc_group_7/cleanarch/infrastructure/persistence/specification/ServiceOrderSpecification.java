@@ -1,4 +1,4 @@
-package com.fiap.soat12.tc_group_7.specification;
+package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.specification;
 
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderEntity;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderVehicleServiceEntity;
