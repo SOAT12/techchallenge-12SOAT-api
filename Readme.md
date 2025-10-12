@@ -52,7 +52,8 @@ O projeto utiliza Docker e Docker Compose para orquestrar a aplicação e seu ba
 
 Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simulando um ambiente mais próximo ao de produção e permitindo a validação das configurações de orquestração.
 
-1. Certifique-se de ter o Docker (https://www.docker.com/get-started) e o Minikube (https://minikube.sigs.k8s.io/docs/start/) instalados em sua máquina.
+1. Certifique-se de ter o Docker (https://www.docker.com/get-started), o Minikube (https://minikube.sigs.k8s.io/docs/start/), e o [kubeseal](https://github.com/bitnami-labs/sealed-secrets/releases) instalado. 
+   * (Scoop install kubeseal / choco install kubeseal) Lembre-se de executar os comandos como administrador.
 2. Navegue até a pasta raiz do projeto.
 3. Inicie o cluster Minikube com o seguinte comando:
    ```bash
@@ -62,18 +63,11 @@ Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simuland
 
 
 4. No controller do cluster deverá ser instalado algumas features. Estes são pré-requisitos para a aplicação rodar corretamente.
-   * Instale o Sealed Secrets para gerenciamento seguro de segredos para a primeira vez que for rodar a aplicação
-   ```bash
-   minikube kubectl -- apply -f https://github.com/bitnami-labs/sealed-secrets/releases/latest/download/controller.yaml
-    ```
+
    * Habilita o addon do Ingress para roteamento de tráfego externo
    ```bash
    minikube addons enable ingress
     ```
-   * Criar o arquivo sealed-secret.yaml, baseado no hash criado no controller do seu cluster.
-   ```bash
-   kubeseal --format yaml < k8s/secret.yaml > k8s/sealed-secret.yaml
-   ```
 5. Execute a aplicação no cluster.
    * Cria o namespace dedicado para a aplicação
    ```bash
@@ -93,9 +87,6 @@ Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simuland
 7. Para testes locais, é necessário que seja feito um proxy para as portas do Banco de dados e da aplicação (em um novo terminal).
     ```bash
    kubectl port-forward svc/techchallenge-service 8080:8080 -n techchallenge
-    ```
-   ```bash
-   kubectl port-forward svc/postgres-service 5432:5432 -n techchallenge
     ```
     #### OBS: Para estes comandos funcionarem, os terminais deverão permanecer abertos para manter o acesso à aplicação.
 
