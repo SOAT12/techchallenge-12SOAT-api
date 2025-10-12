@@ -35,6 +35,10 @@ public class EmployeeUseCase {
                 .orElseThrow(() -> new NotFoundException("Funcionário não encontrado"));
     }
 
+    public List<Employee> getByEmployeeFunction(String function) {
+        return employeeGateway.findAllByEmployeeFunction(function);
+    }
+
     public Employee createEmployee(EmployeeRequestDTO requestDTO) {
         EmployeeFunction function = employeeFunctionGateway.findById(requestDTO.getEmployeeFunctionId())
                 .orElseThrow(() -> new IllegalArgumentException("Função não encontrada"));

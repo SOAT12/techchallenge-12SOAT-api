@@ -8,6 +8,7 @@ import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repositor
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.*;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.*;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.*;
+import jakarta.persistence.EntityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -253,8 +254,9 @@ public class AppConfig {
                                                          ServiceOrderMapper serviceOrderMapper,
                                                          EmployeeMapper employeeMapper,
                                                          CustomerMapper customerMapper,
-                                                         VehicleMapper vehicleMapper) {
-        return new ServiceOrderRepositoryImpl(serviceOrderJpaRepository, serviceOrderMapper, employeeMapper, customerMapper, vehicleMapper);
+                                                         VehicleMapper vehicleMapper,
+                                                         EntityManager entityManager) {
+        return new ServiceOrderRepositoryImpl(serviceOrderJpaRepository, entityManager, serviceOrderMapper, employeeMapper, customerMapper, vehicleMapper);
     }
 
     @Bean

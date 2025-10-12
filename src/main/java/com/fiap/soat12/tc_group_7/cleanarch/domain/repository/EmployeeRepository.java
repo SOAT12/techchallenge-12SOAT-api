@@ -13,6 +13,8 @@ public interface EmployeeRepository {
 
     Optional<EmployeeJpaEntity> findByCpf(String cpf);
 
+    List<EmployeeJpaEntity> findByEmployeeFunction(String function);
+
     EmployeeJpaEntity save(EmployeeJpaEntity employee);
 
 }

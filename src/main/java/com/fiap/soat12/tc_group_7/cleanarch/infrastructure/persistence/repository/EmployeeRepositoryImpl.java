@@ -29,6 +29,11 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     }
 
     @Override
+    public List<EmployeeJpaEntity> findByEmployeeFunction(String function) {
+        return employeeJpaRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(function);
+    }
+
+    @Override
     public EmployeeJpaEntity save(EmployeeJpaEntity employee) {
         return employeeJpaRepository.save(employee);
     }

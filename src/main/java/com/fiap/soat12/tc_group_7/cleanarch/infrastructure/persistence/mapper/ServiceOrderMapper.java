@@ -7,6 +7,7 @@ import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.*;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class ServiceOrderMapper {
@@ -50,50 +51,36 @@ public class ServiceOrderMapper {
         return serviceOrder;
     }
 
-    public ServiceOrderEntity toServiceOrderEntity(ServiceOrder dto) {
+    public ServiceOrderEntity toServiceOrderEntity(ServiceOrder serviceOrder,
+                                                   CustomerJpaEntity customer,
+                                                   VehicleJpaEntity vehicle,
+                                                   EmployeeJpaEntity employee,
+                                                   Set<ServiceOrderVehicleServiceEntity> services,
+                                                   Set<ServiceOrderStockEntity> stockItems) {
+
         ServiceOrderEntity entity = ServiceOrderEntity.builder()
-                .id(dto.getId())
-                .finishedAt(dto.getFinishedAt())
-                .status(dto.getStatus())
-                .totalValue(dto.getTotalValue())
-                .notes(dto.getNotes())
-                .customer(customerMapper.toCustomerJpaEntity(dto.getCustomer()))
-                .vehicle(vehicleMapper.toVehicleJpaEntity(dto.getVehicle()))
-                .employee(employeeMapper.toEmployeeJpaEntity(dto.getEmployee()))
+                .id(serviceOrder.getId())
+                .finishedAt(serviceOrder.getFinishedAt())
+                .status(serviceOrder.getStatus())
+                .totalValue(serviceOrder.getTotalValue())
+                .notes(serviceOrder.getNotes())
+                .customer(customer)
+                .vehicle(vehicle)
+                .employee(employee)
                 .services(new HashSet<>())
                 .stockItems(new HashSet<>())
                 .build();
 
-        if (dto.getServices() != null) {
-            for (VehicleService service : dto.getServices()) {
-                ServiceOrderVehicleServiceEntity serviceEntity = new ServiceOrderVehicleServiceEntity();
-
-                ServiceOrderVehicleServiceIdEntity id = new ServiceOrderVehicleServiceIdEntity();
-                id.setServiceOrderId(dto.getId());
-                id.setVehicleServiceId(service.getId());
-
-                serviceEntity.setId(id);
-                serviceEntity.setServiceOrder(entity);
-                serviceEntity.setVehicleService(vehicleServiceMapper.toVehicleServiceJpaEntity(service));
-
-                entity.getServices().add(serviceEntity);
-            }
+        for (var service : services) {
+            service.setServiceOrder(entity);
+            service.getId().setServiceOrderId(serviceOrder.getId());
+            entity.getServices().add(service);
         }
 
-        if (dto.getStockItems() != null) {
-            for (Stock stock : dto.getStockItems()) {
-                ServiceOrderStockEntity stockEntity = new ServiceOrderStockEntity();
-
-                ServiceOrderStockIdEntity id = new ServiceOrderStockIdEntity();
-                id.setServiceOrderId(dto.getId());
-                id.setStockId(stock.getId());
-
-                stockEntity.setId(id);
-                stockEntity.setServiceOrder(entity);
-                stockEntity.setStock(stockMapper.toEntity(stock));
-
-                entity.getStockItems().add(stockEntity);
-            }
+        for (var stock : stockItems) {
+            stock.setServiceOrder(entity);
+            stock.getId().setServiceOrderId(serviceOrder.getId());
+            entity.getStockItems().add(stock);
         }
 
         return entity;

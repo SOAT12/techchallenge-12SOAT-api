@@ -31,6 +31,12 @@ public class EmployeeGateway {
                 .map(this::toEmployee);
     }
 
+    public List<Employee> findAllByEmployeeFunction(String function) {
+        return employeeRepository.findByEmployeeFunction(function).stream()
+                .map(this::toEmployee)
+                .toList();
+    }
+
     public Employee save(Employee employee) {
         var employeeJpaEntity = employeeRepository.save(this.toEmployeeJpaEntity(employee));
         return this.toEmployee(employeeJpaEntity);

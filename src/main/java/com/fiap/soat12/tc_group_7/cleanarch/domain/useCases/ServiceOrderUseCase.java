@@ -7,6 +7,8 @@ import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.util.Status;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +16,8 @@ import static java.util.Objects.nonNull;
 
 @RequiredArgsConstructor
 public class ServiceOrderUseCase {
+
+    protected static final String FUNCTION_MECHANIC_DESCRIPTION = "Mecânico";
 
     private final ServiceOrderGateway serviceOrderGateway;
     private final EmployeeUseCase employeeUseCase;
@@ -32,10 +36,9 @@ public class ServiceOrderUseCase {
         Employee employee = null;
         if (nonNull(requestDTO.getEmployeeId())) {
             employee = employeeUseCase.getEmployeeById(requestDTO.getEmployeeId());
+        } else {
+            employee = this.findMostAvailableEmployee();
         }
-//        } else {
-//            employee = this.findMostAvailableEmployee();
-//        }
 
         serviceOrder.setCustomer(customer);
         serviceOrder.setVehicle(vehicle);
@@ -49,7 +52,7 @@ public class ServiceOrderUseCase {
         serviceOrder.setTotalValue(serviceOrder.calculateTotalValue(serviceOrder.getServices(), serviceOrder.getStockItems()));
 
         ServiceOrder savedOrder = serviceOrderGateway.save(serviceOrder);
-        notificationUseCase.notifyMechanicAssignedToOS(savedOrder, employee);
+        //notificationUseCase.notifyMechanicAssignedToOS(savedOrder, employee);
         return savedOrder;
     }
 
@@ -101,9 +104,43 @@ public class ServiceOrderUseCase {
                     .forEach(dto -> {
                         Stock stock = stockUseCase.findStockItemById(dto.getStockId());
                         stock.setQuantity(stock.getQuantity() - dto.getRequiredQuantity());
+                        stockUseCase.updateStockItem(stock.getId(),
+                                stock.getToolName(),
+                                stock.getValue(),
+                                stock.getQuantity(),
+                                stock.isActive(),
+                                stock.getToolCategory().getId());
                         order.getStockItems().add(stock);
                     });
         }
+    }
+
+    protected Employee findMostAvailableEmployee() {
+        List<Status> activeStatuses = Status.getStatusesForPendingOrders();
+
+        List<Employee> activeEmployees = employeeUseCase.getByEmployeeFunction(FUNCTION_MECHANIC_DESCRIPTION);
+
+        if (activeEmployees.isEmpty()) {
+            throw new NotFoundException("Nenhum mecânico disponível");
+        }
+
+        return activeEmployees.stream()
+                .min(Comparator
+                        .comparingLong((Employee employee) -> serviceOrderGateway.countByEmployeeAndStatusIn(employee, activeStatuses))
+                        .thenComparing(employee -> {
+                            Date oldestOrderDate = findOldestOrderDateForEmployee(employee, activeStatuses);
+                            return oldestOrderDate == null ? Long.MIN_VALUE : oldestOrderDate.getTime();
+                        })
+                )
+                .orElseThrow(() -> new NotFoundException("Nenhum mecânico disponível"));
+    }
+
+    protected Date findOldestOrderDateForEmployee(Employee employee, List<Status> activeStatuses) {
+        List<ServiceOrder> activeOrders = serviceOrderGateway.findByEmployeeAndStatusIn(employee, activeStatuses);
+        return activeOrders.stream()
+                .map(ServiceOrder::getCreatedAt)
+                .min(Comparator.naturalOrder())
+                .orElse(null);
     }
 
 }

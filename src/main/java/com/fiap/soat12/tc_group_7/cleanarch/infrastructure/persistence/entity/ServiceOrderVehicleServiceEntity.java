@@ -1,6 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.io.Serializable;
 @Table(name = "service_order_vehicle_service")
 @Getter
 @Setter
+@AllArgsConstructor
 public class ServiceOrderVehicleServiceEntity implements Serializable {
 
     @EmbeddedId
