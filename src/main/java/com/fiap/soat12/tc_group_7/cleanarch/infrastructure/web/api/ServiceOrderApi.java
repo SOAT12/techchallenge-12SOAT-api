@@ -169,4 +169,14 @@ public class ServiceOrderApi {
         return serviceOrderController.getServiceOrderStatus(id);
     }
 
+    @Operation(
+            summary = "Aprovação ou recusa de ordem de serviço através de serviço externo",
+            description = "Aprova ou recusa ordem de serviço."
+    )
+    @GetMapping("/{id}/webhook/approval")
+    public void approval(@PathVariable Long id,
+                         @RequestParam Boolean approval) {
+        serviceOrderController.approval(id, approval);
+    }
+
 }

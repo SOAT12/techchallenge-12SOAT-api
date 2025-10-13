@@ -102,4 +102,7 @@ public class ServiceOrderController {
         return serviceOrderPresenter.toServiceOrderStatusResponseDTO(serviceOrder.getStatus());
     }
 
+    public void approval(Long id, Boolean approval) {
+        serviceOrderUseCase.approval(id, approval);
+    }
 }

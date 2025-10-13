@@ -20,6 +20,7 @@ import static java.util.Objects.nonNull;
 public class ServiceOrderUseCase {
 
     protected static final String FUNCTION_MECHANIC_DESCRIPTION = "Mecânico";
+    protected static final String DEFAULT_REJECT_REASON = "Recusada através de notificação externa";
 
     private final ServiceOrderGateway serviceOrderGateway;
     private final EmployeeUseCase employeeUseCase;
@@ -236,6 +237,14 @@ public class ServiceOrderUseCase {
 
         long avgMillis = totalMillis / finishedOrders.size();
         return Duration.ofMillis(avgMillis);
+    }
+
+    public void approval(Long id, Boolean approval) {
+        if (approval) {
+            this.approve(id, null);
+        } else {
+            this.reject(id, DEFAULT_REJECT_REASON);
+        }
     }
 
     private void mapServicesDetail(ServiceOrderRequestDTO request, ServiceOrder order) {

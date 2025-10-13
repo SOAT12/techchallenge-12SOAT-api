@@ -263,4 +263,18 @@ public class ServiceOrderControllerTest {
         assertEquals(dto, result);
     }
 
+
+    @Test
+    void approval_shouldCallUseCaseWithCorrectParameters() {
+        // Arrange
+        Long id = 1L;
+        Boolean approval = true;
+
+        // Act
+        controller.approval(id, approval);
+
+        // Assert
+        verify(serviceOrderUseCase, times(1)).approval(id, approval);
+    }
+
 }
