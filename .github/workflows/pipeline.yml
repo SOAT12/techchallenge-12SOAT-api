@@ -2,9 +2,9 @@ name: pipeline
 
 on:
   push:
-    branches: [ mTest, dTest, 'release/*' ]
+    branches: [ main, develop, 'release/*' ]
   pull_request:
-    branches: [ mTest, dTest, 'release/*' ]
+    branches: [ main, develop, 'release/*' ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
