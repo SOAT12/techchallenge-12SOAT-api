@@ -24,6 +24,11 @@ public class VehicleServiceRepositoryImpl implements VehicleServiceRepository {
     }
 
     @Override
+    public Optional<VehicleServiceJpaEntity> findByName(String name) {
+        return vehicleServiceJpaRepository.findByName(name);
+    }
+
+    @Override
     public Long save(VehicleServiceJpaEntity vehicleService) {
         var vehicleServiceJpaEntity = vehicleServiceJpaRepository.save(vehicleService);
         return vehicleServiceJpaEntity.getId();

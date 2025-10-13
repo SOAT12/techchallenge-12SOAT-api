@@ -11,7 +11,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomerUseCase {
 
-    public static final String CUSTOMER_NOT_FOUND_MESSAGE = "Cliente não encontrado.";
+    protected static final String CUSTOMER_NOT_FOUND_MESSAGE = "Cliente não encontrado.";
+    protected static final String CUSTOMER_ALREADY_EXISTS_MESSAGE = "Já existe um cliente cadastrado com o documento informado.";
 
     private final CustomerGateway customerGateway;
 
@@ -36,6 +37,10 @@ public class CustomerUseCase {
     }
 
     public Customer createCustomer(CustomerRequestDTO requestDTO) {
+        if (customerGateway.findByCpf(requestDTO.getCpf()).isPresent()) {
+            throw new IllegalArgumentException(CUSTOMER_ALREADY_EXISTS_MESSAGE);
+        }
+
         Customer customer = Customer.builder()
                 .cpf(requestDTO.getCpf())
                 .name(requestDTO.getName())

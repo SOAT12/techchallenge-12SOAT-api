@@ -11,11 +11,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VehicleUseCase {
 
-    public static final String VEHICLE_NOT_FOUND_MESSAGE = "Veículo não encontrado.";
+    protected static final String VEHICLE_NOT_FOUND_MESSAGE = "Veículo não encontrado.";
+    protected static final String VEHICLE_ALREADY_EXISTS_MESSAGE = "Já existe um veículo cadastrado com a placa informada.";
 
     private final VehicleGateway vehicleGateway;
 
     public Vehicle create(VehicleRequestDTO requestDTO) {
+        if (vehicleGateway.findByLicensePlate(requestDTO.getLicensePlate()).isPresent()) {
+            throw new IllegalArgumentException(VEHICLE_ALREADY_EXISTS_MESSAGE);
+        }
+
         Vehicle vehicle = Vehicle.builder()
                 .licensePlate(requestDTO.getLicensePlate())
                 .brand(requestDTO.getBrand())
@@ -23,7 +28,6 @@ public class VehicleUseCase {
                 .year(requestDTO.getYear())
                 .color(requestDTO.getColor())
                 .build();
-
         return vehicleGateway.save(vehicle);
     }
 

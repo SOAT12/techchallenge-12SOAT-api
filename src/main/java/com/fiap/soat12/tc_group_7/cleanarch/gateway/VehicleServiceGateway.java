@@ -25,6 +25,11 @@ public class VehicleServiceGateway {
                 .map(this::toVehicleService);
     }
 
+    public Optional<VehicleService> findByName(String name) {
+        return vehicleServiceRepository.findByName(name)
+                .map(this::toVehicleService);
+    }
+
     public Long save(VehicleService vehicleService) {
         return vehicleServiceRepository.save(this.toVehicleServiceJpaEntity(vehicleService));
     }

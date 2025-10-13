@@ -3,10 +3,7 @@ package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.ServiceOrderUseCase;
 import com.fiap.soat12.tc_group_7.cleanarch.exception.InvalidTransitionException;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.ServiceOrderPresenter;
-import com.fiap.soat12.tc_group_7.dto.serviceorder.AverageExecutionTimeResponseDTO;
-import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderResponseDTO;
-import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderStatusResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.*;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +20,11 @@ public class ServiceOrderController {
     public ServiceOrderResponseDTO createOrder(ServiceOrderRequestDTO requestDTO) {
         var serviceOrder = serviceOrderUseCase.createServiceOrder(requestDTO);
         return serviceOrderPresenter.toServiceOrderResponseDTO(serviceOrder);
+    }
+
+    public ServiceOrderFullCreationResponseDTO createOrder(ServiceOrderFullCreationRequestDTO requestDTO) {
+        var serviceOrder = serviceOrderUseCase.createServiceOrder(requestDTO);
+        return serviceOrderPresenter.toServiceOrderFullCreationResponseDTO(serviceOrder.getId());
     }
 
     public List<ServiceOrderResponseDTO> findAllOrders() {
