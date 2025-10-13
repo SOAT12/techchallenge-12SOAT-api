@@ -1,4 +1,4 @@
-package com.fiap.soat12.tc_group_7.dto;
+package com.fiap.soat12.tc_group_7.dto.serviceorder;
 
 import com.fiap.soat12.tc_group_7.cleanarch.util.Status;
 import lombok.*;

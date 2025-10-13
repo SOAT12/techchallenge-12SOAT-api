@@ -1,9 +1,10 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.api;
 
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.ServiceOrderController;
-import com.fiap.soat12.tc_group_7.dto.AverageExecutionTimeResponseDTO;
-import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.AverageExecutionTimeResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderStatusResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -157,6 +158,25 @@ public class ServiceOrderApi {
                                                                    @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
                                                                    @RequestParam(required = false) List<Long> serviceIds) {
         return serviceOrderController.calculateAverageExecutionTime(startDate, endDate, serviceIds);
+    }
+
+    @Operation(
+            summary = "Consulta de status da ordem de serviço",
+            description = "Retorna o status atual da ordem de serviço."
+    )
+    @GetMapping("/status")
+    public ServiceOrderStatusResponseDTO getServiceOrderStatus(@RequestParam Long id) {
+        return serviceOrderController.getServiceOrderStatus(id);
+    }
+
+    @Operation(
+            summary = "Aprovação ou recusa de ordem de serviço através de serviço externo",
+            description = "Aprova ou recusa ordem de serviço."
+    )
+    @GetMapping("/{id}/webhook/approval")
+    public void approval(@PathVariable Long id,
+                         @RequestParam Boolean approval) {
+        serviceOrderController.approval(id, approval);
     }
 
 }

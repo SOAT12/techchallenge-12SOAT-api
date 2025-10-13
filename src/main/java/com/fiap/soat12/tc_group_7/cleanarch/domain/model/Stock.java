@@ -1,10 +1,13 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.model;
 
+import lombok.Builder;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
+@Builder
 public class Stock {
 
     private UUID id;
