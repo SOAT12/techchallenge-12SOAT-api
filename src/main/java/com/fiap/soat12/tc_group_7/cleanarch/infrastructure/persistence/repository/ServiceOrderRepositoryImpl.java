@@ -40,6 +40,13 @@ public class ServiceOrderRepositoryImpl implements ServiceOrderRepository {
     }
 
     @Override
+    public List<ServiceOrder> findAllFilteredAndSorted() {
+        return serviceOrderJpaRepository.findAllFilteredAndSorted().stream()
+                .map(serviceOrderMapper::toServiceOrder)
+                .toList();
+    }
+
+    @Override
     public List<ServiceOrder> findAllWithFilters(Date startDate, Date endDate, List<Long> serviceIds) {
         return serviceOrderJpaRepository.findAll(
                         ServiceOrderSpecification.withFilters(startDate, endDate, serviceIds)

@@ -14,6 +14,8 @@ public interface ServiceOrderRepository {
 
     List<ServiceOrder> findAll();
 
+    List<ServiceOrder> findAllFilteredAndSorted();
+
     List<ServiceOrder> findAllWithFilters(Date startDate, Date endDate, List<Long> serviceIds);
 
     Optional<ServiceOrder> findById(Long id);

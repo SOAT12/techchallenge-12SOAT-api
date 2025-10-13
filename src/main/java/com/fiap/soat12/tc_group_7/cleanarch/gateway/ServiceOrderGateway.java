@@ -18,7 +18,11 @@ public class ServiceOrderGateway {
     private final ServiceOrderRepository serviceOrderRepository;
 
     public List<ServiceOrder> findAll() {
-        return serviceOrderRepository.findAll();
+        return this.findAllFilteredAndSorted();
+    }
+
+    public List<ServiceOrder> findAllFilteredAndSorted() {
+        return serviceOrderRepository.findAllFilteredAndSorted();
     }
 
     public List<ServiceOrder> findAllWithFilters(Date startDate, Date endDate, List<Long> serviceIds) {
