@@ -6,7 +6,7 @@ import com.fiap.soat12.tc_group_7.cleanarch.interfaces.EncryptionPort;
 import com.fiap.soat12.tc_group_7.cleanarch.interfaces.TokenServicePort;
 import com.fiap.soat12.tc_group_7.dto.LoginRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.LoginResponseDTO;
-import com.fiap.soat12.tc_group_7.exception.BadCredentialsException;
+import org.springframework.security.authentication.BadCredentialsException;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.util.DateUtils;
 import lombok.RequiredArgsConstructor;
