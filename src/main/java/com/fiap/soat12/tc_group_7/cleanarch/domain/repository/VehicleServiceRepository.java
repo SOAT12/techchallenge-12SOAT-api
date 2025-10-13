@@ -11,6 +11,8 @@ public interface VehicleServiceRepository {
 
     Optional<VehicleServiceJpaEntity> findById(Long id);
 
+    Optional<VehicleServiceJpaEntity> findByName(String name);
+
     Long save(VehicleServiceJpaEntity vehicleService);
 
     void update(VehicleServiceJpaEntity service);

@@ -1,10 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.api;
 
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.ServiceOrderController;
-import com.fiap.soat12.tc_group_7.dto.serviceorder.AverageExecutionTimeResponseDTO;
-import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderResponseDTO;
-import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderStatusResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -37,6 +34,16 @@ public class ServiceOrderApi {
     @ApiResponse(responseCode = "400", description = "Requisição inválida ou categoria não encontrada")
     @PostMapping
     public ServiceOrderResponseDTO createOrder(@Valid @RequestBody ServiceOrderRequestDTO request) {
+        return serviceOrderController.createOrder(request);
+    }
+
+    @Operation(summary = "Cria uma nova Ordem de Serviço com dados completos",
+            description = "Cria uma nova Ordem de Serviço (OS) informando os dados do cliente, veículo, serviços e peças (itens de estoque)" +
+                    "sem depender de registros previamente existentes.")
+    @ApiResponse(responseCode = "201", description = "Ordem de serviço criada com sucesso")
+    @ApiResponse(responseCode = "400", description = "Requisição inválida ou categoria não encontrada")
+    @PostMapping("/full")
+    public ServiceOrderResponseDTO createOrder(@Valid @RequestBody ServiceOrderFullCreationRequestDTO request) {
         return serviceOrderController.createOrder(request);
     }
 
