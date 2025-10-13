@@ -151,4 +151,4 @@ jobs:
           sarif_file: 'trivy-image-results.sarif'
 
       - name: Push Docker image to GHCR
-        run: docker push --all-tags ghcr.io/${{ github.repository }}
+        run: docker push --all-tags ghcr.io/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
