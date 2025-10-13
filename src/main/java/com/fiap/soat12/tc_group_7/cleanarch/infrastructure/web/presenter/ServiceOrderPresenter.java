@@ -3,6 +3,7 @@ package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ServiceOrder;
 import com.fiap.soat12.tc_group_7.cleanarch.util.Status;
 import com.fiap.soat12.tc_group_7.dto.serviceorder.AverageExecutionTimeResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderFullCreationResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderResponseDTO;
 import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderStatusResponseDTO;
 
@@ -87,6 +88,12 @@ public class ServiceOrderPresenter {
     public ServiceOrderStatusResponseDTO toServiceOrderStatusResponseDTO(Status status) {
         return ServiceOrderStatusResponseDTO.builder()
                 .status(status.getLabel())
+                .build();
+    }
+
+    public ServiceOrderFullCreationResponseDTO toServiceOrderFullCreationResponseDTO(Long id) {
+        return ServiceOrderFullCreationResponseDTO.builder()
+                .serviceOrderIdentifier(id)
                 .build();
     }
 

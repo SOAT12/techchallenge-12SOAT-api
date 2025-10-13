@@ -43,7 +43,7 @@ public class ServiceOrderApi {
     @ApiResponse(responseCode = "201", description = "Ordem de serviço criada com sucesso")
     @ApiResponse(responseCode = "400", description = "Requisição inválida ou categoria não encontrada")
     @PostMapping("/full")
-    public ServiceOrderResponseDTO createOrder(@Valid @RequestBody ServiceOrderFullCreationRequestDTO request) {
+    public ServiceOrderFullCreationResponseDTO createOrder(@Valid @RequestBody ServiceOrderFullCreationRequestDTO request) {
         return serviceOrderController.createOrder(request);
     }
 

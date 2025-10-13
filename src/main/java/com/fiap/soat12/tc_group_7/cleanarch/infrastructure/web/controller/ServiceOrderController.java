@@ -22,9 +22,9 @@ public class ServiceOrderController {
         return serviceOrderPresenter.toServiceOrderResponseDTO(serviceOrder);
     }
 
-    public ServiceOrderResponseDTO createOrder(ServiceOrderFullCreationRequestDTO requestDTO) {
+    public ServiceOrderFullCreationResponseDTO createOrder(ServiceOrderFullCreationRequestDTO requestDTO) {
         var serviceOrder = serviceOrderUseCase.createServiceOrder(requestDTO);
-        return serviceOrderPresenter.toServiceOrderResponseDTO(serviceOrder);
+        return serviceOrderPresenter.toServiceOrderFullCreationResponseDTO(serviceOrder.getId());
     }
 
     public List<ServiceOrderResponseDTO> findAllOrders() {
