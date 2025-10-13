@@ -3,9 +3,10 @@ package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.ServiceOrderUseCase;
 import com.fiap.soat12.tc_group_7.cleanarch.exception.InvalidTransitionException;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.ServiceOrderPresenter;
-import com.fiap.soat12.tc_group_7.dto.AverageExecutionTimeResponseDTO;
-import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.AverageExecutionTimeResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderStatusResponseDTO;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 
@@ -94,6 +95,11 @@ public class ServiceOrderController {
     public AverageExecutionTimeResponseDTO calculateAverageExecutionTime(Date startDate, Date endDate, List<Long> serviceIds) {
         Duration duration = serviceOrderUseCase.calculateAverageExecutionTime(startDate, endDate, serviceIds);
         return serviceOrderPresenter.toAverageExecutionTimeResponseDTO(duration);
+    }
+
+    public ServiceOrderStatusResponseDTO getServiceOrderStatus(Long id) {
+        var serviceOrder = serviceOrderUseCase.findById(id);
+        return serviceOrderPresenter.toServiceOrderStatusResponseDTO(serviceOrder.getStatus());
     }
 
 }

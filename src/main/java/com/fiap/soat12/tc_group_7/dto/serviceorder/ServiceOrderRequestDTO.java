@@ -1,4 +1,4 @@
-package com.fiap.soat12.tc_group_7.dto;
+package com.fiap.soat12.tc_group_7.dto.serviceorder;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
