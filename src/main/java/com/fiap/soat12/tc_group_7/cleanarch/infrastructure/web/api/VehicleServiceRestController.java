@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/clean-arch/vehicle-services")
+@RequestMapping("/api/vehicle-services")
 @RequiredArgsConstructor
 @Tag(name = "Serviço", description = "API para gerenciar serviços")
 public class VehicleServiceRestController {

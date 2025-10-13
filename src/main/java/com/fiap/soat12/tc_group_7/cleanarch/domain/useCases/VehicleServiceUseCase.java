@@ -1,9 +1,9 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.useCases;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.VehicleService;
+import com.fiap.soat12.tc_group_7.cleanarch.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.VehicleServiceGateway;
 import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceRequestDTO;
-import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

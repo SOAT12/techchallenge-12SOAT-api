@@ -2,9 +2,9 @@ package com.fiap.soat12.tc_group_7.cleanarch.domain.useCases;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Stock;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
+import com.fiap.soat12.tc_group_7.cleanarch.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.StockGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.ToolCategoryGateway;
-import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

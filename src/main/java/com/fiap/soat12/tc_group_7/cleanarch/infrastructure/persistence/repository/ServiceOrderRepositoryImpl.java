@@ -12,7 +12,7 @@ import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.mapper.Se
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.mapper.VehicleMapper;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.ServiceOrderJpaRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.specification.ServiceOrderSpecification;
-import com.fiap.soat12.tc_group_7.util.Status;
+import com.fiap.soat12.tc_group_7.cleanarch.util.Status;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 

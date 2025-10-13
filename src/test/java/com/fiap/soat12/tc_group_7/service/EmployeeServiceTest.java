@@ -1,5 +1,8 @@
 package com.fiap.soat12.tc_group_7.service;
 
+import com.fiap.soat12.tc_group_7.cleanarch.util.CodeGenerator;
+import com.fiap.soat12.tc_group_7.cleanarch.util.CryptUtil;
+import com.fiap.soat12.tc_group_7.cleanarch.util.DateUtils;
 import com.fiap.soat12.tc_group_7.dto.ChangePasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ForgotPasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.LoginRequestDTO;
@@ -10,9 +13,6 @@ import com.fiap.soat12.tc_group_7.entity.EmployeeFunction;
 import com.fiap.soat12.tc_group_7.mapper.EmployeeMapper;
 import com.fiap.soat12.tc_group_7.repository.EmployeeFunctionRepository;
 import com.fiap.soat12.tc_group_7.repository.EmployeeRepository;
-import com.fiap.soat12.tc_group_7.util.CodeGenerator;
-import com.fiap.soat12.tc_group_7.util.CryptUtil;
-import com.fiap.soat12.tc_group_7.util.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,9 +1,9 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.useCases;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Customer;
+import com.fiap.soat12.tc_group_7.cleanarch.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.CustomerGateway;
 import com.fiap.soat12.tc_group_7.dto.customer.CustomerRequestDTO;
-import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

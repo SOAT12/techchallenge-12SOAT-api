@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/clean-arch/employee-functions")
+@RequestMapping("/api/employee-functions")
 @RequiredArgsConstructor
 @Tag(name = "Função de Funcionário", description = "API para gerenciar funções de funcionários")
 public class EmployeeFunctionRestController {
