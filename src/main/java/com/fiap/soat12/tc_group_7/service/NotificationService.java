@@ -1,15 +1,15 @@
 package com.fiap.soat12.tc_group_7.service;
 
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.ServiceOrderJpaRepository;
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.Employee;
 import com.fiap.soat12.tc_group_7.entity.Notification;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.mapper.NotificationMapper;
 import com.fiap.soat12.tc_group_7.repository.EmployeeRepository;
 import com.fiap.soat12.tc_group_7.repository.NotificationRepository;
-import com.fiap.soat12.tc_group_7.repository.ServiceOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +29,7 @@ public class NotificationService {
     protected static final String MANAGER_DESCRIPTION = "Gestor";
 
     private final NotificationRepository notificationRepository;
-    private final ServiceOrderRepository serviceOrderRepository;
+    private final ServiceOrderJpaRepository serviceOrderRepository;
     private final EmployeeRepository employeeRepository;
     private final NotificationMapper notificationMapper;
 
@@ -66,7 +66,7 @@ public class NotificationService {
         notificationRepository.delete(notification);
     }
 
-    public void notifyMechanicAssignedToOS(ServiceOrder serviceOrder, Employee employee) {
+    public void notifyMechanicAssignedToOS(ServiceOrderEntity serviceOrder, Employee employee) {
         Notification notification = new Notification();
         notification.setServiceOrder(serviceOrder);
         notification.setEmployees(Set.of(employee));
@@ -74,7 +74,7 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public void notifyMechanicOSApproved(ServiceOrder serviceOrder, Employee employee) {
+    public void notifyMechanicOSApproved(ServiceOrderEntity serviceOrder, Employee employee) {
         Notification notification = new Notification();
         notification.setServiceOrder(serviceOrder);
         notification.setEmployees(Set.of(employee));
@@ -83,11 +83,11 @@ public class NotificationService {
     }
 
     // TODO - Adicionar chamada no fluxo de notificar gestor
-    public void notifyManagersOutOfStock(ServiceOrder serviceOrder) {
+    public void notifyManagersOutOfStock(ServiceOrderEntity serviceOrder) {
         Set<Employee> activeEmployees = employeeRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(MANAGER_DESCRIPTION)
                 .stream().collect(Collectors.toSet());
 
-        if(!activeEmployees.isEmpty()) {
+        if (!activeEmployees.isEmpty()) {
             Notification notification = new Notification();
             notification.setServiceOrder(serviceOrder);
             notification.setEmployees(activeEmployees);
@@ -96,11 +96,11 @@ public class NotificationService {
         }
     }
 
-    public void notifyAttendantsOSCompleted(ServiceOrder serviceOrder) {
+    public void notifyAttendantsOSCompleted(ServiceOrderEntity serviceOrder) {
         Set<Employee> activeEmployees = employeeRepository.findAllByEmployeeFunction_descriptionAndActiveTrue(ATTENDANT_DESCRIPTION)
                 .stream().collect(Collectors.toSet());
 
-        if(!activeEmployees.isEmpty()) {
+        if (!activeEmployees.isEmpty()) {
             Notification notification = new Notification();
             notification.setServiceOrder(serviceOrder);
             notification.setEmployees(activeEmployees);

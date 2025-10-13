@@ -1,10 +1,10 @@
 package com.fiap.soat12.tc_group_7.cleanarch.gateway;
 
-import com.fiap.soat12.tc_group_7.cleanarch.entity.Employee;
-import com.fiap.soat12.tc_group_7.cleanarch.entity.EmployeeFunction;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.EmployeeFunction.EmployeeFunctionJpaEntity;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.employee.EmployeeJpaEntity;
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.EmployeeRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Employee;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.EmployeeFunction;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.EmployeeRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.EmployeeFunctionJpaEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.EmployeeJpaEntity;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -29,6 +29,12 @@ public class EmployeeGateway {
     public Optional<Employee> findByCpf(String cpf) {
         return employeeRepository.findByCpf(cpf)
                 .map(this::toEmployee);
+    }
+
+    public List<Employee> findAllByEmployeeFunction(String function) {
+        return employeeRepository.findByEmployeeFunction(function).stream()
+                .map(this::toEmployee)
+                .toList();
     }
 
     public Employee save(Employee employee) {

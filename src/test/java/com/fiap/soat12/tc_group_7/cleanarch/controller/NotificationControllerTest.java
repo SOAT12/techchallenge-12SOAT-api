@@ -1,8 +1,9 @@
 package com.fiap.soat12.tc_group_7.cleanarch.controller;
 
-import com.fiap.soat12.tc_group_7.cleanarch.entity.Notification;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.NotificationPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.NotificationUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Notification;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.NotificationUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.NotificationController;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.NotificationPresenter;
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationResponseDTO;
 import org.junit.jupiter.api.BeforeEach;

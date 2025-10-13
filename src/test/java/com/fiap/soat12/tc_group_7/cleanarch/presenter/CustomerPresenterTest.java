@@ -1,6 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.presenter;
 
-import com.fiap.soat12.tc_group_7.cleanarch.entity.Customer;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Customer;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.CustomerPresenter;
 import com.fiap.soat12.tc_group_7.dto.customer.CustomerResponseDTO;
 import org.junit.jupiter.api.Test;
 

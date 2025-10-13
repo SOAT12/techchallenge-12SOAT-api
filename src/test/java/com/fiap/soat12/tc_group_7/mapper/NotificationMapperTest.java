@@ -1,10 +1,10 @@
 package com.fiap.soat12.tc_group_7.mapper;
 
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderEntity;
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.Employee;
 import com.fiap.soat12.tc_group_7.entity.Notification;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +24,7 @@ public class NotificationMapperTest {
     @Test
     void toNotificationResponseDTO_withSuccess() {
         // Arrange
-        ServiceOrder serviceOrder = new ServiceOrder();
+        ServiceOrderEntity serviceOrder = new ServiceOrderEntity();
         serviceOrder.setId(1L);
         serviceOrder.setTotalValue(BigDecimal.valueOf(100.0));
 
@@ -60,7 +60,7 @@ public class NotificationMapperTest {
     @Test
     void toNotification_withSuccess() {
         // Arrange
-        ServiceOrder serviceOrder = new ServiceOrder();
+        ServiceOrderEntity serviceOrder = new ServiceOrderEntity();
         serviceOrder.setId(1L);
 
         Employee employee1 = new Employee();

@@ -1,6 +1,6 @@
 package com.fiap.soat12.tc_group_7.util;
 
-import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ServiceOrder;
 import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
 
 import java.util.Arrays;

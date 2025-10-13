@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -45,8 +46,8 @@ class StockServiceTest {
     @BeforeEach
     void setUp() {
         categoryPecas = new ToolCategory(1L, "Pecas", true);
-        activeStockItem = new Stock(101L, "Chave de Fenda", new BigDecimal("15.50"), true, 100, categoryPecas);
-        inactiveStockItem = new Stock(102L, "Parafuso", new BigDecimal("0.75"), false, 5000, categoryPecas);
+        activeStockItem = new Stock(UUID.randomUUID(), "Chave de Fenda", new BigDecimal("15.50"), true, 100, categoryPecas);
+        inactiveStockItem = new Stock(UUID.randomUUID(), "Parafuso", new BigDecimal("0.75"), false, 5000, categoryPecas);
         stockRequestDTO = new StockRequestDTO("Martelo", new BigDecimal("30.00"), true, 50, 1L);
     }
 
@@ -153,7 +154,7 @@ class StockServiceTest {
         StockRequestDTO updateRequest = new StockRequestDTO(
                 "Martelo de Borracha", new BigDecimal("35.00"), false, 60, 1L
         );
-        Stock updatedStockItem = new Stock(101L, "Martelo de Borracha", new BigDecimal("35.00"), false, 60, categoryPecas);
+        Stock updatedStockItem = new Stock(UUID.randomUUID(), "Martelo de Borracha", new BigDecimal("35.00"), false, 60, categoryPecas);
 
         when(stockRepository.findById(101L)).thenReturn(Optional.of(activeStockItem));
         when(toolCategoryService.getToolCategoryEntityById(1L)).thenReturn(Optional.of(categoryPecas));

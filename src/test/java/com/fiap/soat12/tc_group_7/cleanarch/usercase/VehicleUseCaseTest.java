@@ -1,8 +1,8 @@
 package com.fiap.soat12.tc_group_7.cleanarch.usercase;
 
-import com.fiap.soat12.tc_group_7.cleanarch.entity.Vehicle;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Vehicle;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.VehicleUseCase;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.VehicleGateway;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleUseCase;
 import com.fiap.soat12.tc_group_7.dto.vehicle.VehicleRequestDTO;
 import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;

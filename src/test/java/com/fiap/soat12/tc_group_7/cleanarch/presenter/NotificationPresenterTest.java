@@ -1,9 +1,10 @@
 package com.fiap.soat12.tc_group_7.cleanarch.presenter;
 
-import com.fiap.soat12.tc_group_7.cleanarch.entity.Notification;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Employee;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Notification;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ServiceOrder;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.NotificationPresenter;
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationResponseDTO;
-import com.fiap.soat12.tc_group_7.entity.Employee;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
 import com.fiap.soat12.tc_group_7.util.Status;
 import org.junit.jupiter.api.Test;
 

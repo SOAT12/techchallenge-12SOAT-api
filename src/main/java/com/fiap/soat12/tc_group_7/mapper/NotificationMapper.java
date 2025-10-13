@@ -1,10 +1,10 @@
 package com.fiap.soat12.tc_group_7.mapper;
 
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderEntity;
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.Employee;
 import com.fiap.soat12.tc_group_7.entity.Notification;
-import com.fiap.soat12.tc_group_7.entity.ServiceOrder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public class NotificationMapper {
                 .build();
     }
 
-    public Notification toNotification(NotificationRequestDTO requestDTO, ServiceOrder serviceOrder, Set<Employee> employees) {
+    public Notification toNotification(NotificationRequestDTO requestDTO, ServiceOrderEntity serviceOrder, Set<Employee> employees) {
         return Notification.builder()
                 .message(requestDTO.getMessage())
                 .isRead(false)

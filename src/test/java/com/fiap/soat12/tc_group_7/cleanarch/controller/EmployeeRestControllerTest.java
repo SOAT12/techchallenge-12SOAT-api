@@ -1,6 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.EmployeeController;
 import com.fiap.soat12.tc_group_7.dto.ChangePasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.ForgotPasswordRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.LoginRequestDTO;
