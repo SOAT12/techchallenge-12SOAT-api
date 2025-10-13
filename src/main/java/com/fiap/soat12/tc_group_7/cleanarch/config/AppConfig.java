@@ -6,6 +6,10 @@ import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.ToolCategoryReposi
 import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.StockUseCase;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.ToolCategoryUseCase;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.*;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.adapter.BCryptAdapter;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.adapter.CodeGeneratorAdapter;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.adapter.JwtAdapter;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.adapter.MailClientAdapter;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.StockRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.ToolCategoryRepositoryImpl;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.StockJpaRepository;
@@ -27,14 +31,11 @@ import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.ToolCa
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.StockPresenter;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.ToolCategoryPresenter;
 import com.fiap.soat12.tc_group_7.cleanarch.interfaces.*;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.CustomerPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.NotificationPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.VehiclePresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.VehicleServicePresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.CustomerUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.NotificationUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleServiceUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.presenter.*;
+import com.fiap.soat12.tc_group_7.cleanarch.usecase.*;
+import com.fiap.soat12.tc_group_7.config.SessionToken;
+import com.fiap.soat12.tc_group_7.service.MailClient;
+import com.fiap.soat12.tc_group_7.util.JwtTokenUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -212,5 +213,75 @@ public class AppConfig {
     @Bean
     public StockController stockController(StockUseCase stockUseCase, StockPresenter stockPresenter) {
         return new StockController(stockUseCase, stockPresenter);
+    }
+
+    @Bean
+    public EncryptionPort encryptionPort() {
+        return new BCryptAdapter();
+    }
+
+    @Bean
+    public TokenServicePort tokenServicePort(JwtTokenUtil jwtTokenUtil, SessionToken sessionToken) {
+        return new JwtAdapter(jwtTokenUtil, sessionToken);
+    }
+
+    @Bean
+    public NotificationPort notificationPort(MailClient mailClient) {
+        return new MailClientAdapter(mailClient);
+    }
+
+    @Bean
+    public CodeGeneratorPort codeGeneratorPort() {
+        return new CodeGeneratorAdapter();
+    }
+
+    @Bean
+    public PasswordManagementUseCase passwordManagementUseCase(
+            EmployeeGateway employeeGateway,
+            EncryptionPort encryptionPort,
+            CodeGeneratorPort codeGeneratorPort,
+            NotificationPort notificationPort) {
+        return new PasswordManagementUseCase(
+                employeeGateway,
+                encryptionPort,
+                codeGeneratorPort,
+                notificationPort);
+    }
+
+    @Bean
+    public EmployeeAuthUseCase employeeAuthUseCase(
+            EmployeeGateway employeeGateway,
+            EncryptionPort encryptionPort,
+            TokenServicePort tokenServicePort,
+            PasswordManagementUseCase passwordManagementUseCase) {
+        return new EmployeeAuthUseCase(
+                employeeGateway,
+                encryptionPort,
+                tokenServicePort);
+    }
+
+    @Bean
+    public EmployeeGateway employeeGateway(EmployeeRepository employeeRepository) {
+        return new EmployeeGateway(employeeRepository);
+    }
+
+    @Bean
+    public EmployeeFunctionGateway employeeFunctionGateway(EmployeeFunctionRepository employeeFunctionRepository) {
+        return new EmployeeFunctionGateway(employeeFunctionRepository);
+    }
+
+    @Bean
+    public EmployeePresenter employeePresenter(EmployeeFunctionPresenter employeeFunctionPresenter) {
+        return new EmployeePresenter(employeeFunctionPresenter);
+    }
+
+    @Bean
+    public EmployeeFunctionPresenter employeeFunctionPresenter() {
+        return new EmployeeFunctionPresenter();
+    }
+
+    @Bean
+    public EmployeeUseCase employeeUseCase(EmployeeGateway employeeGateway, EmployeeFunctionGateway employeeFunctionGateway, EmployeePresenter employeePresenter) {
+        return new EmployeeUseCase(employeeGateway, employeeFunctionGateway, employeePresenter);
     }
 }

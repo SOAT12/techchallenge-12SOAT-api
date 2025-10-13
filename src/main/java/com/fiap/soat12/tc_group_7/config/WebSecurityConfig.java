@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity(debug = false)
 public class WebSecurityConfig {
 
-    private static final String[] AUTHORIZED_ROLES = {"GESTOR", "ATENDENTE", "MECANICO"};
+    private static final String[] AUTHORIZED_ROLES = {"GESTOR", "ATENDENTE", "MECÂNICO"};
     private static final String STOCK_ID_PATH = "/api/stock/{id}";
     private static final String EMPLOYEE_ID_PATH = "/api/employees/{id}";
     private static final String EMPLOYEE_FUNCTION_ID_PATH = "/api/employee-functions/{id}";
@@ -72,7 +72,8 @@ public class WebSecurityConfig {
                                 "/swagger-ui/**",
                                 "/api-docs/**",
                                 "/api/employees/login",
-                                "/api/employees/forgot-password",
+                                "/clean-arch/auth/login",
+                                "/clean-arch/auth/forgot-password",
                                 "/clean-arch/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/employees").permitAll()
@@ -134,11 +135,11 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/v1/vehicle-services/{id}/deactivate").hasAnyRole(AUTHORIZED_ROLES)
 
                         // Endpoints do CustomerController
-                        .requestMatchers(HttpMethod.GET, "/v1/customers").hasAnyRole(AUTHORIZED_ROLES)
-                        .requestMatchers(HttpMethod.GET, "/v1/customers/cpf").hasAnyRole(AUTHORIZED_ROLES)
-                        .requestMatchers(HttpMethod.POST, "/v1/customers").hasAnyRole(AUTHORIZED_ROLES)
-                        .requestMatchers(HttpMethod.PUT, "/v1/customers/{id}").hasAnyRole(AUTHORIZED_ROLES)
-                        .requestMatchers(HttpMethod.DELETE, "/v1/customers/{id}").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.GET, "/api/customers/all").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.GET, "/api/customers/cpf").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.POST, "/api/customers").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.PUT, "/api/customers/{id}").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.DELETE, "/api/customers/{id}").hasAnyRole(AUTHORIZED_ROLES)
 
                         // Endpoints do VehicleController
                         .requestMatchers(HttpMethod.POST, "/api/vehicle").hasAnyRole(AUTHORIZED_ROLES)
