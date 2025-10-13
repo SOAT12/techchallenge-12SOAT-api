@@ -1,8 +1,8 @@
 package com.fiap.soat12.tc_group_7.cleanarch.gateway;
 
-import com.fiap.soat12.tc_group_7.cleanarch.entity.VehicleService;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicleservice.VehicleServiceJpaEntity;
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.VehicleServiceRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.VehicleService;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.VehicleServiceRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.VehicleServiceJpaEntity;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -22,6 +22,11 @@ public class VehicleServiceGateway {
 
     public Optional<VehicleService> findById(Long id) {
         return vehicleServiceRepository.findById(id)
+                .map(this::toVehicleService);
+    }
+
+    public Optional<VehicleService> findByName(String name) {
+        return vehicleServiceRepository.findByName(name)
                 .map(this::toVehicleService);
     }
 

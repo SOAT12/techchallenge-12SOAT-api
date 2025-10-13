@@ -1,42 +1,14 @@
 package com.fiap.soat12.tc_group_7.cleanarch.config;
 
-import com.fiap.soat12.tc_group_7.cleanarch.controller.*;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.StockRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.ToolCategoryRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.StockUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.ToolCategoryUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.*;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.*;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.*;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.StockRepositoryImpl;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.ToolCategoryRepositoryImpl;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.StockJpaRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.ToolCategoryJpaRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.EmployeeFunction.EmployeeFunctionJpaRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.EmployeeFunction.EmployeeFunctionRepositoryImpl;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.customer.CustomerJpaRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.customer.CustomerRepositoryImpl;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.employee.EmployeeJpaRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.employee.EmployeeRepositoryImpl;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.notification.NotificationJpaRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.notification.NotificationRepositoryImpl;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicle.VehicleJpaRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicle.VehicleRepositoryImpl;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicleservice.VehicleServiceJpaRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicleservice.VehicleServiceRepositoryImpl;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.StockController;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.ToolCategoryController;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.StockPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.ToolCategoryPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.*;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.CustomerPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.NotificationPresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.VehiclePresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.presenter.VehicleServicePresenter;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.CustomerUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.NotificationUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleServiceUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.usecase.VehicleUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.api.StockApi;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.api.ToolCategoryApi;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.mapper.*;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.*;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.*;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.*;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.*;
+import jakarta.persistence.EntityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -127,6 +99,21 @@ public class AppConfig {
     }
 
     @Bean
+    public EmployeeGateway employeeGateway(EmployeeRepository employeeRepository) {
+        return new EmployeeGateway(employeeRepository);
+    }
+
+    @Bean
+    public EmployeePresenter employeePresenter(EmployeeFunctionPresenter employeeFunctionPresenter) {
+        return new EmployeePresenter(employeeFunctionPresenter);
+    }
+
+    @Bean
+    public EmployeeUseCase employeeUseCase(EmployeeGateway employeeGateway, EmployeeFunctionGateway employeeFunctionGateway, EmployeePresenter employeePresenter) {
+        return new EmployeeUseCase(employeeGateway, employeeFunctionGateway, employeePresenter);
+    }
+
+    @Bean
     public EmployeeController employeeController(EmployeeRepository employeeRepository, EmployeeFunctionRepository employeeFunctionRepository) {
         return new EmployeeController(employeeRepository, employeeFunctionRepository);
     }
@@ -137,13 +124,31 @@ public class AppConfig {
     }
 
     @Bean
+    public EmployeeFunctionGateway employeeFunctionGateway(EmployeeFunctionRepository employeeFunctionRepository) {
+        return new EmployeeFunctionGateway(employeeFunctionRepository);
+    }
+
+    @Bean
+    public EmployeeFunctionPresenter employeeFunctionPresenter() {
+        return new EmployeeFunctionPresenter();
+    }
+
+    @Bean
     public EmployeeFunctionController employeeFunctionController(EmployeeFunctionRepository employeeFunctionRepository) {
         return new EmployeeFunctionController(employeeFunctionRepository);
     }
 
     @Bean
-    public NotificationRepository notificationDataSource(NotificationJpaRepository notificationJpaRepository) {
-        return new NotificationRepositoryImpl(notificationJpaRepository);
+    public NotificationRepository notificationDataSource(NotificationJpaRepository notificationJpaRepository, NotificationMapper notificationMapper, EntityManager entityManager) {
+        return new NotificationRepositoryImpl(entityManager, notificationMapper, notificationJpaRepository);
+    }
+
+    @Bean
+    public NotificationMapper notificationMapperBean(
+            ServiceOrderMapper serviceOrderMapper,
+            EmployeeMapper employeeMapper
+    ) {
+        return new NotificationMapper(serviceOrderMapper, employeeMapper);
     }
 
     @Bean
@@ -152,8 +157,8 @@ public class AppConfig {
     }
 
     @Bean
-    public NotificationUseCase notificationUseCase(NotificationGateway notificationGateway) {
-        return new NotificationUseCase(notificationGateway);
+    public NotificationUseCase notificationUseCase(NotificationGateway notificationGateway, EmployeeUseCase employeeUseCase) {
+        return new NotificationUseCase(notificationGateway, employeeUseCase);
     }
 
     @Bean
@@ -177,23 +182,18 @@ public class AppConfig {
     }
 
     @Bean
-    public ToolCategoryUseCase toolCategoryUseCase(ToolCategoryGateway toolCategoryGateway){
+    public ToolCategoryUseCase toolCategoryUseCase(ToolCategoryGateway toolCategoryGateway) {
         return new ToolCategoryUseCase(toolCategoryGateway);
     }
 
     @Bean
-    public ToolCategoryPresenter toolCategoryPresenter(){
+    public ToolCategoryPresenter toolCategoryPresenter() {
         return new ToolCategoryPresenter();
     }
 
     @Bean
     public ToolCategoryController toolCategoryController(ToolCategoryUseCase toolCategoryUseCase, ToolCategoryPresenter toolCategoryPresenter) {
         return new ToolCategoryController(toolCategoryUseCase, toolCategoryPresenter);
-    }
-
-    @Bean
-    public ToolCategoryApi toolCategoryApi(ToolCategoryController toolCategoryController) {
-        return new ToolCategoryApi(toolCategoryController);
     }
 
     @Bean
@@ -222,7 +222,74 @@ public class AppConfig {
     }
 
     @Bean
-    public StockApi stockApi(StockController stockController) {
-        return new StockApi(stockController);
+    public CustomerMapper customerMapperBean() {
+        return new CustomerMapper();
+    }
+
+    @Bean
+    public VehicleMapper vehicleMapper() {
+        return new VehicleMapper();
+    }
+
+    @Bean
+    public EmployeeMapper employeeMapperBean() {
+        return new EmployeeMapper();
+    }
+
+    @Bean
+    public VehicleServiceMapper vehicleServiceMapperBean() {
+        return new VehicleServiceMapper();
+    }
+
+    @Bean
+    public StockMapper stockMapper() {
+        return new StockMapper();
+    }
+
+    @Bean
+    public ServiceOrderMapper serviceOrderMapper(
+            CustomerMapper customerMapper,
+            VehicleMapper vehicleMapper,
+            EmployeeMapper employeeMapper,
+            VehicleServiceMapper vehicleServiceMapper,
+            StockMapper stockMapper
+    ) {
+        return new ServiceOrderMapper(customerMapper, vehicleMapper, employeeMapper, vehicleServiceMapper, stockMapper);
+    }
+
+    @Bean
+    public ServiceOrderRepository serviceOrderDataSource(ServiceOrderJpaRepository serviceOrderJpaRepository,
+                                                         ServiceOrderMapper serviceOrderMapper,
+                                                         EmployeeMapper employeeMapper,
+                                                         CustomerMapper customerMapper,
+                                                         VehicleMapper vehicleMapper,
+                                                         EntityManager entityManager) {
+        return new ServiceOrderRepositoryImpl(serviceOrderJpaRepository, entityManager, serviceOrderMapper, employeeMapper, customerMapper, vehicleMapper);
+    }
+
+    @Bean
+    public ServiceOrderGateway serviceOrderGateway(ServiceOrderRepository serviceOrderRepository) {
+        return new ServiceOrderGateway(serviceOrderRepository);
+    }
+
+    @Bean
+    public ServiceOrderUseCase serviceOrderUseCase(ServiceOrderGateway serviceOrderGateway,
+                                                   EmployeeUseCase employeeUseCase,
+                                                   CustomerUseCase customerUseCase,
+                                                   NotificationUseCase notificationUseCase,
+                                                   VehicleUseCase vehicleUseCase,
+                                                   VehicleServiceUseCase vehicleServiceUseCase,
+                                                   StockUseCase stockUseCase) {
+        return new ServiceOrderUseCase(serviceOrderGateway, employeeUseCase, customerUseCase, notificationUseCase, vehicleUseCase, vehicleServiceUseCase, stockUseCase);
+    }
+
+    @Bean
+    public ServiceOrderPresenter serviceOrderPresenter() {
+        return new ServiceOrderPresenter();
+    }
+
+    @Bean
+    public ServiceOrderController serviceOrderController(ServiceOrderUseCase serviceOrderUseCase, ServiceOrderPresenter serviceOrderPresenter) {
+        return new ServiceOrderController(serviceOrderUseCase, serviceOrderPresenter);
     }
 }

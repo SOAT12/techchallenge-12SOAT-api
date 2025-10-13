@@ -1,13 +1,13 @@
 package com.fiap.soat12.tc_group_7.service;
 
+import com.fiap.soat12.tc_group_7.cleanarch.exception.BadCredentialsException;
+import com.fiap.soat12.tc_group_7.cleanarch.util.JwtTokenUtil;
+import com.fiap.soat12.tc_group_7.cleanarch.util.UUIDGeneratorUtil;
 import com.fiap.soat12.tc_group_7.config.SessionToken;
 import com.fiap.soat12.tc_group_7.dto.LoginRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.LoginResponseDTO;
 import com.fiap.soat12.tc_group_7.entity.Employee;
-import com.fiap.soat12.tc_group_7.exception.BadCredentialsException;
 import com.fiap.soat12.tc_group_7.repository.EmployeeRepository;
-import com.fiap.soat12.tc_group_7.util.JwtTokenUtil;
-import com.fiap.soat12.tc_group_7.util.UUIDGeneratorUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

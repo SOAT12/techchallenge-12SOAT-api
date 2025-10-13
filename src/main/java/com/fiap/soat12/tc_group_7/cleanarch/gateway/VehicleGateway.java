@@ -1,8 +1,8 @@
 package com.fiap.soat12.tc_group_7.cleanarch.gateway;
 
-import com.fiap.soat12.tc_group_7.cleanarch.entity.Vehicle;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.repository.vehicle.VehicleJpaEntity;
-import com.fiap.soat12.tc_group_7.cleanarch.interfaces.VehicleRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Vehicle;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.VehicleRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.VehicleJpaEntity;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

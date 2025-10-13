@@ -1,10 +1,13 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.model;
 
+import lombok.Builder;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
+@Builder
 public class Stock {
 
     private UUID id;
@@ -40,16 +43,16 @@ public class Stock {
 
     /* FACTORY */
     public static Stock create(String toolName, BigDecimal value, Integer quantity, ToolCategory toolCategory) {
-        if(toolName == null || toolName.isBlank()) {
+        if (toolName == null || toolName.isBlank()) {
             throw new IllegalArgumentException("Nome do item não pode ser nulo ou vazio.");
         }
-        if(value == null || value.compareTo(BigDecimal.ZERO) < 0) {
+        if (value == null || value.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Valor não pode ser nulo ou menor que zero.");
         }
-        if(quantity == null || quantity < 0) {
+        if (quantity == null || quantity < 0) {
             throw new IllegalArgumentException("Quantidade não pode ser nula ou menor que zero.");
         }
-        if(toolCategory == null) {
+        if (toolCategory == null) {
             throw new IllegalArgumentException("Uma categoria válida é necessária.");
         }
 
@@ -58,7 +61,7 @@ public class Stock {
 
     /* BUSINESS LOGIC METHODS */
     public Stock addStock(Integer newQuantity) {
-        if(Objects.isNull(newQuantity) ||  newQuantity < 0) {
+        if (Objects.isNull(newQuantity) || newQuantity < 0) {
             throw new IllegalArgumentException("Quantidade não pode ser nula ou menor do que zero.");
         }
         this.quantity += newQuantity;
@@ -68,11 +71,11 @@ public class Stock {
         return this;
     }
 
-    public Stock removingStock(Integer removingQuantity){
-        if(Objects.isNull(removingQuantity) || removingQuantity < 1) {
+    public Stock removingStock(Integer removingQuantity) {
+        if (Objects.isNull(removingQuantity) || removingQuantity < 1) {
             throw new IllegalArgumentException("Quantidade não pode ser nula ou menor do que zero.");
         }
-        if(removingQuantity > this.quantity) {
+        if (removingQuantity > this.quantity) {
             throw new IllegalArgumentException("Quantidade em estoque menor do que a informada.");
         }
         this.quantity -= removingQuantity;
@@ -100,7 +103,7 @@ public class Stock {
         return this;
     }
 
-    public Stock updateDetails(String newName, BigDecimal newValue, Boolean isActive, ToolCategory newCategory){
+    public Stock updateDetails(String newName, BigDecimal newValue, Boolean isActive, ToolCategory newCategory) {
         changeName(newName);
         changeValue(newValue);
         changeCategory(newCategory);
@@ -111,7 +114,7 @@ public class Stock {
     }
 
     private Stock changeCategory(ToolCategory newToolCategory) {
-        if(Objects.isNull(newToolCategory)) {
+        if (Objects.isNull(newToolCategory)) {
             throw new IllegalArgumentException("Categoria não pode ser nula");
         }
         this.toolCategory = newToolCategory;
@@ -121,7 +124,7 @@ public class Stock {
     }
 
     private Stock changeName(String newName) {
-        if(Objects.isNull(newName)) {
+        if (Objects.isNull(newName)) {
             throw new IllegalArgumentException("Nome do item não pode ser nulo.");
         }
         this.toolName = newName;
@@ -132,7 +135,7 @@ public class Stock {
     }
 
     private Stock changeValue(BigDecimal newValue) {
-        if(Objects.isNull(newValue) || newValue.compareTo(BigDecimal.ZERO) < 0) {
+        if (Objects.isNull(newValue) || newValue.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Valor não pode ser nulo ou menor que zero.");
         }
         this.value = newValue;
@@ -158,6 +161,10 @@ public class Stock {
         return quantity;
     }
 
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
     public ToolCategory getToolCategory() {
         return toolCategory;
     }
@@ -166,9 +173,13 @@ public class Stock {
         return isActive;
     }
 
-    public Date getCreatedAt() { return createdAt; }
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 
-    public Date getUpdatedAt() { return updatedAt; }
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
 
     // --- DEFAULT OBJECT METHODS (equals, hashCode, toString) ---
     @Override

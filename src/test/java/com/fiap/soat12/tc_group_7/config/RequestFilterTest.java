@@ -1,7 +1,7 @@
 package com.fiap.soat12.tc_group_7.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fiap.soat12.tc_group_7.util.JwtTokenUtil;
+import com.fiap.soat12.tc_group_7.cleanarch.util.JwtTokenUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 @Tag(name = "Funcionário", description = "API para gerenciar funcionários")
 public class EmployeeControllerAuth {
+    
     private final EmployeeService employeeService;
     private final AuthEmployeeService authEmployeeService;
 
