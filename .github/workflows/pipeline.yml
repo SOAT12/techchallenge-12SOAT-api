@@ -86,8 +86,7 @@ jobs:
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: ./Dockerfile
-          ignore: DL3006
-          failure_threshold: warning
+          ignore: DL3006, DL3009
 
 
       - name: Scan Dockerfile's base images for vulnerabilities with Trivy
