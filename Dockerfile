@@ -14,7 +14,8 @@ FROM openjdk:21-jdk-slim
 
 WORKDIR /app
 
-RUN apt-get update
+RUN apt-get update \
+    && rm -rf /var/lib/apt/lists/* COPY --from=builder /app/target/techchallenge-12SOAT-0.0.1-SNAPSHOT.jar app.jar
 
 COPY --from=builder /app/target/techchallenge-12SOAT-0.0.1-SNAPSHOT.jar app.jar
 
