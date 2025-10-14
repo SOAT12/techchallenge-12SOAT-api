@@ -2,12 +2,10 @@ package com.fiap.soat12.tc_group_7.cleanarch.gateway;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.VehicleService;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.VehicleServiceRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.VehicleServiceJpaEntity;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class VehicleServiceGateway {
@@ -15,47 +13,23 @@ public class VehicleServiceGateway {
     private final VehicleServiceRepository vehicleServiceRepository;
 
     public List<VehicleService> findAll() {
-        return vehicleServiceRepository.findAll().stream()
-                .map(this::toVehicleService)
-                .collect(Collectors.toList());
+        return vehicleServiceRepository.findAll();
     }
 
     public Optional<VehicleService> findById(Long id) {
-        return vehicleServiceRepository.findById(id)
-                .map(this::toVehicleService);
+        return vehicleServiceRepository.findById(id);
     }
 
     public Optional<VehicleService> findByName(String name) {
-        return vehicleServiceRepository.findByName(name)
-                .map(this::toVehicleService);
+        return vehicleServiceRepository.findByName(name);
     }
 
     public Long save(VehicleService vehicleService) {
-        return vehicleServiceRepository.save(this.toVehicleServiceJpaEntity(vehicleService));
+        return vehicleServiceRepository.save(vehicleService);
     }
 
     public void update(VehicleService vehicleService) {
-        vehicleServiceRepository.update(this.toVehicleServiceJpaEntity(vehicleService));
-    }
-
-    private VehicleServiceJpaEntity toVehicleServiceJpaEntity(VehicleService service) {
-        return VehicleServiceJpaEntity.builder()
-                .id(service.getId())
-                .name(service.getName())
-                .value(service.getValue())
-                .active(service.getActive())
-                .build();
-    }
-
-    private VehicleService toVehicleService(VehicleServiceJpaEntity entity) {
-        return VehicleService.builder()
-                .id(entity.getId())
-                .name(entity.getName())
-                .value(entity.getValue())
-                .active(entity.getActive())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
-                .build();
+        vehicleServiceRepository.update(vehicleService);
     }
 
 }

@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/vehicles")
 @Tag(name = "Veículo", description = "API para gerenciar veículos")
-public class VehicleRestController {
+public class VehicleApi {
 
     private final VehicleController vehicleController;
 

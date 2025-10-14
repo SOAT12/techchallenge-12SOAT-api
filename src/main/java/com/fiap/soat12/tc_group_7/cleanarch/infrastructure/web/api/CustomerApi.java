@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/api/customers")
 @RequiredArgsConstructor
 @Tag(name = "Cliente", description = "API para gerenciar clientes")
-public class CustomerRestController {
+public class CustomerApi {
 
     private final CustomerController customerController;
 

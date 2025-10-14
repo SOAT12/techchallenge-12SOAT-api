@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api/employee-functions")
 @RequiredArgsConstructor
 @Tag(name = "Função de Funcionário", description = "API para gerenciar funções de funcionários")
-public class EmployeeFunctionRestController {
+public class EmployeeFunctionApi {
     private final EmployeeFunctionController employeeFunctionController;
 
     @Operation(summary = "Cria uma nova função de funcionário",
