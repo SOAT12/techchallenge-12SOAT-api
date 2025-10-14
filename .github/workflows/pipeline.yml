@@ -47,6 +47,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-test
     steps:
+      - name: Checkout code (for SonarCloud SCM)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -84,6 +88,7 @@ jobs:
           dockerfile: ./Dockerfile
           ignore: DL3006
 
+
       - name: Scan Dockerfile's base images for vulnerabilities with Trivy
         uses: aquasecurity/trivy-action@0.22.0
         with:
@@ -99,8 +104,8 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-  build-and-push-image:
-    name: Build, Scan & Push Docker Image
+  build-image:
+    name: Build & Scan Docker Image
     runs-on: ubuntu-latest
     needs: [code-analysis, validate-dockerfile]
     permissions:
@@ -108,13 +113,16 @@ jobs:
       packages: write
       security-events: write
 
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }} 
+      
     steps:
       - name: Download workspace
         uses: actions/download-artifact@v4
         with:
           name: workspace
       
-      - name: Log in to GitHub Container Registry (GHCR)
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -125,9 +133,14 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: |
+            ghcr.io/${{ github.repository }} 
+            747132/${{ github.event.repository.name }} 
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref_name == github.event.repository.default_branch || startsWith(github.ref, 'refs/tags/v') }}
+            type=sha,prefix=,suffix=-${{ github.sha }},format=short
 
-      - name: Build Docker image
+      - name: Build Docker image and Load
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -139,6 +152,7 @@ jobs:
       - name: Scan built image for vulnerabilities with Trivy
         uses: aquasecurity/trivy-action@0.22.0
         with:
+
           image-ref: ${{ steps.meta.outputs.tags }}
           format: 'sarif'
           output: 'trivy-image-results.sarif'
@@ -150,5 +164,33 @@ jobs:
         with:
           sarif_file: 'trivy-image-results.sarif'
 
-      - name: Push Docker image to GHCR
-        run: docker push --all-tags ghcr.io/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+  push-to-ghcr:
+    name: Push to GHCR
+    runs-on: ubuntu-latest
+    needs: build-image
+    permissions:
+      packages: write
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Push GHCR Image
+        run: docker push ghcr.io/${{ github.repository }} --all-tags
+
+  push-to-dockerhub:
+    name: Push to Docker Hub
+    runs-on: ubuntu-latest
+    needs: build-image
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: 747132
+          password: ${{ secrets.DOCKER_HUB_TOKEN }} 
+      
+      - name: Push Docker Hub Image
+        run: docker push 747132/${{ github.event.repository.name }} --all-tags

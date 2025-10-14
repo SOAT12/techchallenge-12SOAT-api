@@ -38,6 +38,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<sonar.projectKey>AlexPires1_techchallenge-12SOAT</sonar.projectKey>
 	 	<sonar.organization>techchallenge-12soat</sonar.organization>
+		<sonar.scm.provider>git</sonar.scm.provider>
 	</properties>
 	<dependencies>
 		<dependency>
