@@ -60,8 +60,17 @@ public class ServiceOrderApi {
             description = "Retorna uma lista de todas as ordens de serviço cadastradas.")
     @ApiResponse(responseCode = "200", description = "Lista das ordens de serviço retornada com sucesso")
     @GetMapping
+    @Deprecated
     public List<ServiceOrderResponseDTO> getAllOrders() {
         return serviceOrderController.findAllOrders();
+    }
+
+    @Operation(summary = "Lista todas as ordens de serviço filtradas por status e prioridades",
+            description = "Retorna uma lista de todas as ordens de serviço cadastradas filtradas por status e prioridades.")
+    @ApiResponse(responseCode = "200", description = "Lista das ordens de serviço filtradas por status e prioridades retornada com sucesso")
+    @GetMapping("/filtered")
+    public List<ServiceOrderResponseDTO> getAllOrdersFiltered() {
+        return serviceOrderController.findAllOrdersFiltered();
     }
 
     @Operation(summary = "Lista ordens de serviço por CPF ou Placa",

@@ -33,6 +33,12 @@ public class ServiceOrderController {
                 .toList();
     }
 
+    public List<ServiceOrderResponseDTO> findAllOrdersFiltered() {
+        return serviceOrderUseCase.findAllOrdersFiltered().stream()
+                .map(serviceOrderPresenter::toServiceOrderResponseDTO)
+                .toList();
+    }
+
     public ServiceOrderResponseDTO findOrderById(Long id) {
         var serviceOrder = serviceOrderUseCase.findById(id);
         return serviceOrderPresenter.toServiceOrderResponseDTO(serviceOrder);

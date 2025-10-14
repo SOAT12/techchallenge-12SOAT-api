@@ -115,6 +115,17 @@ public class ServiceOrderUseCase {
         return serviceOrderGateway.findAll();
     }
 
+    public List<ServiceOrder> findAllOrdersFiltered() {
+        List<Status> activeStatuses = Arrays.asList(
+                Status.OPENED,
+                Status.IN_DIAGNOSIS,
+                Status.WAITING_FOR_APPROVAL,
+                Status.APPROVED,
+                Status.WAITING_ON_STOCK,
+                Status.IN_EXECUTION);
+        return serviceOrderGateway.findAllFilteredAndSorted(activeStatuses);
+    }
+
     public List<ServiceOrder> findByCustomerInfo(String document) {
         Customer customer = customerUseCase.getCustomerByCpf(document);
 
@@ -309,13 +320,8 @@ public class ServiceOrderUseCase {
             request.getStockItems()
                     .forEach(dto -> {
                         Stock stock = stockUseCase.findStockItemById(dto.getStockId());
-                        stock.setQuantity(stock.getQuantity() - dto.getRequiredQuantity());
-                        stockUseCase.updateStockItem(stock.getId(),
-                                stock.getToolName(),
-                                stock.getValue(),
-                                stock.getQuantity(),
-                                stock.isActive(),
-                                stock.getToolCategory().getId());
+                        stock.removingStock(dto.getRequiredQuantity());
+                        stock.setQuantity(dto.getRequiredQuantity());
                         order.getStockItems().add(stock);
                     });
         }

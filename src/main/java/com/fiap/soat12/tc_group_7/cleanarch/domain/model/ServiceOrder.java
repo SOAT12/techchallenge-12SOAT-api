@@ -48,16 +48,18 @@ public class ServiceOrder {
             return totalValue;
         }
         if (services != null) {
-            totalValue.add(services.stream()
+            totalValue = totalValue.add(services.stream()
                     .map(VehicleService::getValue)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add));
+                    .reduce(totalValue, BigDecimal::add));
         }
 
         if (stockItems != null) {
             // Calculate total from stock items (value * quantity)
-            totalValue.add(stockItems.stream()
-                    .map(item -> item.getValue().multiply(new BigDecimal(item.getQuantity())))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add));
+            BigDecimal stockTotal = BigDecimal.ZERO;
+            stockTotal = stockItems.stream()
+                    .map(items -> items.getValue().multiply(BigDecimal.valueOf(items.getQuantity())))
+                    .reduce(stockTotal, BigDecimal::add);
+            totalValue = totalValue.add(stockTotal);
         }
 
         return totalValue;

@@ -2,6 +2,7 @@ package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.reposito
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Stock;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.StockRepository;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.StockEntity;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.mapper.StockMapper;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.StockJpaRepository;
 
@@ -26,9 +27,9 @@ public class StockRepositoryImpl implements StockRepository {
      */
     @Override
     public Stock save(Stock stock) {
-        var entity = stockMapper.toEntity(stock);
-        var savedStock = stockJpaRepository.save(entity);
-        return stockMapper.toDomain(savedStock);
+        StockEntity entity = stockMapper.toEntity(stock);
+        StockEntity savedEntity = stockJpaRepository.save(entity);
+        return stockMapper.toDomain(savedEntity);
     }
 
     /**
