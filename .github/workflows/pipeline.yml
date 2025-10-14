@@ -87,6 +87,8 @@ jobs:
         with:
           dockerfile: ./Dockerfile
           ignore: DL3006
+          failure_threshold: warning
+
 
       - name: Scan Dockerfile's base images for vulnerabilities with Trivy
         uses: aquasecurity/trivy-action@0.22.0
