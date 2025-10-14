@@ -22,7 +22,7 @@ public class JwtTokenUtil implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final long JWT_TOKEN_VALIDITY_IN_MINUTE = 120;
+    private static final long JWT_TOKEN_VALIDITY_IN_MINUTE = 480;
 
     private String secret = new String(Base64.getEncoder().encode(RandomStringUtils.random(32, true, true).getBytes()));
 
