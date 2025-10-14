@@ -152,7 +152,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.22.0
         with:
 
-          image-ref: ghcr.io/${{ github.repository | lower }}:latest 
+          image-ref: 'ghcr.io/${{ github.repository | lower }}:latest' 
           format: 'sarif'
           output: 'trivy-image-results.sarif'
           ignore-unfixed: true
@@ -178,7 +178,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Push GHCR Image
-        run: docker push ghcr.io/${{ github.repository | lower }} --all-tags
+        run: 'docker push ghcr.io/${{ github.repository | lower }} --all-tags'
 
   push-to-dockerhub:
     name: Push to Docker Hub
@@ -192,4 +192,4 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }} 
       
       - name: Push Docker Hub Image
-        run: docker push 747132/${{ github.event.repository.name | lower }} --all-tags
+        run: 'docker push 747132/${{ github.event.repository.name | lower }} --all-tags'
