@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/clean-arch/tool-categories")
+@RequestMapping("/api/tool-categories")
 @Tag(name = "Categorias de Ferramentas", description = "API para gerenciar categorias de ferramentas")
 public class ToolCategoryApi {
 

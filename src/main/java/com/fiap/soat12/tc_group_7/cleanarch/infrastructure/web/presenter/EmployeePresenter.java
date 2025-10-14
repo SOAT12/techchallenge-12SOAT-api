@@ -2,9 +2,9 @@ package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Employee;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.EmployeeFunction;
+import com.fiap.soat12.tc_group_7.cleanarch.util.CryptUtil;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeResponseDTO;
-import com.fiap.soat12.tc_group_7.util.CryptUtil;
 
 public class EmployeePresenter {
 

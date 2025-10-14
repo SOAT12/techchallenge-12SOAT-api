@@ -3,13 +3,13 @@ package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.EmployeeFunctionRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.EmployeeRepository;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.EmployeeUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.EmployeeFunctionGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.EmployeeGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.EmployeeFunctionPresenter;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.EmployeePresenter;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.employee.EmployeeResponseDTO;
-import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;

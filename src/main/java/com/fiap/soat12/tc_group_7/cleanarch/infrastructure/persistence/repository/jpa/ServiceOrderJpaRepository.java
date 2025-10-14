@@ -4,7 +4,7 @@ import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.Cu
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.EmployeeJpaEntity;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.ServiceOrderEntity;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.VehicleJpaEntity;
-import com.fiap.soat12.tc_group_7.util.Status;
+import com.fiap.soat12.tc_group_7.cleanarch.util.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;

@@ -1,7 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity;
 
+import com.fiap.soat12.tc_group_7.cleanarch.util.Status;
 import com.fiap.soat12.tc_group_7.entity.Audit;
-import com.fiap.soat12.tc_group_7.util.Status;
 import jakarta.persistence.*;
 import lombok.*;
 

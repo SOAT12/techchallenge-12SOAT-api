@@ -1,8 +1,11 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ServiceOrder;
-import com.fiap.soat12.tc_group_7.dto.AverageExecutionTimeResponseDTO;
-import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
+import com.fiap.soat12.tc_group_7.cleanarch.util.Status;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.AverageExecutionTimeResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderFullCreationResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderStatusResponseDTO;
 
 import java.time.Duration;
 import java.util.List;
@@ -80,6 +83,18 @@ public class ServiceOrderPresenter {
         }
 
         return new AverageExecutionTimeResponseDTO(duration.toHours(), String.format("%d horas, %d minutos", duration.toHours(), duration.toMinutesPart()));
+    }
+
+    public ServiceOrderStatusResponseDTO toServiceOrderStatusResponseDTO(Status status) {
+        return ServiceOrderStatusResponseDTO.builder()
+                .status(status.getLabel())
+                .build();
+    }
+
+    public ServiceOrderFullCreationResponseDTO toServiceOrderFullCreationResponseDTO(Long id) {
+        return ServiceOrderFullCreationResponseDTO.builder()
+                .serviceOrderIdentifier(id)
+                .build();
     }
 
 }

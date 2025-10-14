@@ -75,6 +75,7 @@ public class WebSecurityConfig {
                                 "/api/employees/forgot-password",
                                 "/clean-arch/**"
                         ).permitAll()
+                        .requestMatchers("/actuator/health/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/employees").permitAll()
 
                         // Endpoints do StockController

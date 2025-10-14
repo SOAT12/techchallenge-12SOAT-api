@@ -48,8 +48,54 @@ O projeto utiliza Docker e Docker Compose para orquestrar a aplicação e seu ba
     ```bash
     docker-compose down
     ```
+#### 2. Executando com Kubernetes (Minikube)
 
-#### 2. Fluxo de Uso da API (Caminho Feliz)
+Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simulando um ambiente mais próximo ao de produção e permitindo a validação das configurações de orquestração.
+
+1. Certifique-se de ter o Docker (https://www.docker.com/get-started), o Minikube (https://minikube.sigs.k8s.io/docs/start/), e o [kubeseal](https://github.com/bitnami-labs/sealed-secrets/releases) instalado. 
+   * (Scoop install kubeseal / choco install kubeseal) Lembre-se de executar os comandos como administrador.
+2. Navegue até a pasta raiz do projeto.
+3. Inicie o cluster Minikube com o seguinte comando:
+   ```bash
+   minikube start --driver=docker
+    ```
+   * Este comando utiliza o Docker para criar um node Kubernetes local em sua máquina.
+
+
+4. No controller do cluster deverá ser instalado algumas features. Estes são pré-requisitos para a aplicação rodar corretamente.
+
+   * Habilita o addon do Ingress para roteamento de tráfego externo
+   ```bash
+   minikube addons enable ingress
+    ```
+5. Execute a aplicação no cluster.
+   * Cria o namespace dedicado para a aplicação
+   ```bash
+   minikube kubectl -- create namespace techchallenge
+    ```
+   * Aplica todos os scripts do diretório k8s/
+   ```bash
+   minikube kubectl -- apply -f k8s/
+    ```
+    * Este passo irá criar os Deployments, Services, e outros recursos. O controlador do Sealed Secrets irá descriptografar o segredo e disponibilizá-lo para a aplicação.
+
+6. Aguarde a inicialização dos Pods. Monitore o status até que todos os pods da aplicação estejam com o status Running e READY 1/1.
+   ```bash
+   minikube kubectl -- get pods -n techchallenge --watch
+    ```
+
+7. Para testes locais, é necessário que seja feito um proxy para as portas do Banco de dados e da aplicação (em um novo terminal).
+    ```bash
+   kubectl port-forward svc/techchallenge-service 8080:8080 -n techchallenge
+    ```
+    #### OBS: Para estes comandos funcionarem, os terminais deverão permanecer abertos para manter o acesso à aplicação.
+
+8. Acesse a aplicação. Após o túnel estar ativo, a aplicação estará disponível em seu navegador no seguinte endereço:
+   http://127.0.0.1
+
+
+
+#### 3. Fluxo de Uso da API (Caminho Feliz)
 
 Após a aplicação estar em execução, você pode interagir com a API RESTful através da documentação interativa do Swagger.
 

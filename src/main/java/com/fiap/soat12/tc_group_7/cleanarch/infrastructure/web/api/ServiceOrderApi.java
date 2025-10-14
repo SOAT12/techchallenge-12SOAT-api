@@ -1,9 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.api;
 
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.ServiceOrderController;
-import com.fiap.soat12.tc_group_7.dto.AverageExecutionTimeResponseDTO;
-import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.ServiceOrderResponseDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/clean-arch/service-orders")
+@RequestMapping("/api/service-orders")
 @Tag(name = "Ordem de Serviço", description = "API para gerenciar ordem de serviço")
 public class ServiceOrderApi {
 
@@ -36,6 +34,16 @@ public class ServiceOrderApi {
     @ApiResponse(responseCode = "400", description = "Requisição inválida ou categoria não encontrada")
     @PostMapping
     public ServiceOrderResponseDTO createOrder(@Valid @RequestBody ServiceOrderRequestDTO request) {
+        return serviceOrderController.createOrder(request);
+    }
+
+    @Operation(summary = "Cria uma nova Ordem de Serviço com dados completos",
+            description = "Cria uma nova Ordem de Serviço (OS) informando os dados do cliente, veículo, serviços e peças (itens de estoque)" +
+                    "sem depender de registros previamente existentes.")
+    @ApiResponse(responseCode = "201", description = "Ordem de serviço criada com sucesso")
+    @ApiResponse(responseCode = "400", description = "Requisição inválida ou categoria não encontrada")
+    @PostMapping("/full")
+    public ServiceOrderFullCreationResponseDTO createOrder(@Valid @RequestBody ServiceOrderFullCreationRequestDTO request) {
         return serviceOrderController.createOrder(request);
     }
 
@@ -166,6 +174,25 @@ public class ServiceOrderApi {
                                                                    @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
                                                                    @RequestParam(required = false) List<Long> serviceIds) {
         return serviceOrderController.calculateAverageExecutionTime(startDate, endDate, serviceIds);
+    }
+
+    @Operation(
+            summary = "Consulta de status da ordem de serviço",
+            description = "Retorna o status atual da ordem de serviço."
+    )
+    @GetMapping("/status")
+    public ServiceOrderStatusResponseDTO getServiceOrderStatus(@RequestParam Long id) {
+        return serviceOrderController.getServiceOrderStatus(id);
+    }
+
+    @Operation(
+            summary = "Aprovação ou recusa de ordem de serviço através de serviço externo",
+            description = "Aprova ou recusa ordem de serviço."
+    )
+    @GetMapping("/{id}/webhook/approval")
+    public void approval(@PathVariable Long id,
+                         @RequestParam Boolean approval) {
+        serviceOrderController.approval(id, approval);
     }
 
 }

@@ -1,9 +1,9 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.useCases;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.VehicleService;
+import com.fiap.soat12.tc_group_7.cleanarch.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.VehicleServiceGateway;
 import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceRequestDTO;
-import com.fiap.soat12.tc_group_7.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 public class VehicleServiceUseCase {
 
     public static final String SERVICE_NOT_FOUND_MESSAGE = "Serviço não encontrado.";
+    protected static final String SERVICE_ALREADY_EXISTS_MESSAGE = "Já existe um serviço cadastrado com o nome informado.";
 
     private final VehicleServiceGateway vehicleServiceGateway;
 
@@ -32,6 +33,10 @@ public class VehicleServiceUseCase {
     }
 
     public VehicleService create(VehicleServiceRequestDTO dto) {
+        if (vehicleServiceGateway.findByName(dto.getName()).isPresent()) {
+            throw new IllegalArgumentException(SERVICE_ALREADY_EXISTS_MESSAGE);
+        }
+
         VehicleService vehicleService = VehicleService.builder()
                 .name(dto.getName())
                 .value(dto.getValue())

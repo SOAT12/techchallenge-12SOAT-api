@@ -4,7 +4,7 @@ import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Customer;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Employee;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ServiceOrder;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Vehicle;
-import com.fiap.soat12.tc_group_7.util.Status;
+import com.fiap.soat12.tc_group_7.cleanarch.util.Status;
 
 import java.util.Date;
 import java.util.List;

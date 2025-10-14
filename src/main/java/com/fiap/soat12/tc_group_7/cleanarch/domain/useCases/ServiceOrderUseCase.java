@@ -1,12 +1,13 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.useCases;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.*;
+import com.fiap.soat12.tc_group_7.cleanarch.exception.InvalidTransitionException;
+import com.fiap.soat12.tc_group_7.cleanarch.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.ServiceOrderGateway;
-import com.fiap.soat12.tc_group_7.dto.ServiceOrderRequestDTO;
+import com.fiap.soat12.tc_group_7.cleanarch.util.Status;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderFullCreationRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
-import com.fiap.soat12.tc_group_7.exception.InvalidTransitionException;
-import com.fiap.soat12.tc_group_7.exception.NotFoundException;
-import com.fiap.soat12.tc_group_7.util.Status;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -20,6 +21,7 @@ import static java.util.Objects.nonNull;
 public class ServiceOrderUseCase {
 
     protected static final String FUNCTION_MECHANIC_DESCRIPTION = "Mecânico";
+    protected static final String DEFAULT_REJECT_REASON = "Recusada através de notificação externa";
 
     private final ServiceOrderGateway serviceOrderGateway;
     private final EmployeeUseCase employeeUseCase;
@@ -57,6 +59,52 @@ public class ServiceOrderUseCase {
         notificationUseCase.notifyMechanicAssignedToOS(savedOrder, employee);
         return savedOrder;
     }
+
+    public ServiceOrder createServiceOrder(ServiceOrderFullCreationRequestDTO requestDTO) {
+        ServiceOrder serviceOrder = new ServiceOrder();
+
+        Customer customer = customerUseCase.createCustomer(requestDTO.getCustomer());
+        Vehicle vehicle = vehicleUseCase.create(requestDTO.getVehicle());
+
+        Employee employee = null;
+        if (nonNull(requestDTO.getEmployeeId())) {
+            employee = employeeUseCase.getEmployeeById(requestDTO.getEmployeeId());
+        } else {
+            employee = this.findMostAvailableEmployee();
+        }
+
+        serviceOrder.setCustomer(customer);
+        serviceOrder.setVehicle(vehicle);
+        serviceOrder.setEmployee(employee);
+
+        if (requestDTO.getServices() != null) {
+            requestDTO.getServices()
+                    .forEach(serviceDTO -> {
+                        VehicleService vehicleService = vehicleServiceUseCase.create(serviceDTO);
+                        serviceOrder.getServices().add(vehicleService);
+                    });
+        }
+
+        if (requestDTO.getStockItems() != null) {
+            requestDTO.getStockItems()
+                    .forEach(stockDTO -> {
+                        Stock stock = stockUseCase.createStock(stockDTO.getToolName(),
+                                stockDTO.getValue(),
+                                stockDTO.getQuantity(),
+                                stockDTO.getToolCategoryId());
+                        serviceOrder.getStockItems().add(stock);
+                    });
+        }
+
+        serviceOrder.setNotes(requestDTO.getNotes());
+        serviceOrder.setStatus(Status.OPENED);
+        serviceOrder.setTotalValue(serviceOrder.calculateTotalValue(serviceOrder.getServices(), serviceOrder.getStockItems()));
+
+        ServiceOrder savedOrder = serviceOrderGateway.save(serviceOrder);
+        notificationUseCase.notifyMechanicAssignedToOS(savedOrder, employee);
+        return savedOrder;
+    }
+
 
     public ServiceOrder findById(Long id) {
         return serviceOrderGateway.findById(id)
@@ -247,6 +295,14 @@ public class ServiceOrderUseCase {
 
         long avgMillis = totalMillis / finishedOrders.size();
         return Duration.ofMillis(avgMillis);
+    }
+
+    public void approval(Long id, Boolean approval) {
+        if (approval) {
+            this.approve(id, null);
+        } else {
+            this.reject(id, DEFAULT_REJECT_REASON);
+        }
     }
 
     private void mapServicesDetail(ServiceOrderRequestDTO request, ServiceOrder order) {
