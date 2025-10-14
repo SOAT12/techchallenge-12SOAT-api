@@ -2,9 +2,7 @@ package com.fiap.soat12.tc_group_7.cleanarch.util;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ServiceOrder;
 import com.fiap.soat12.tc_group_7.cleanarch.exception.InvalidTransitionException;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 import java.util.Date;
