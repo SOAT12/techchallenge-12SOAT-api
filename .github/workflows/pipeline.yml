@@ -153,7 +153,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.22.0
         with:
 
-          image-ref: ${{ steps.meta.outputs.tags }}
+          image-ref: ghcr.io/${{ github.repository }}:latest 
           format: 'sarif'
           output: 'trivy-image-results.sarif'
           ignore-unfixed: true
