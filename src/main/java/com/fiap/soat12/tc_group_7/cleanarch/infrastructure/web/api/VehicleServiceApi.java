@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/api/vehicle-services")
 @RequiredArgsConstructor
 @Tag(name = "Serviço", description = "API para gerenciar serviços")
-public class VehicleServiceRestController {
+public class VehicleServiceApi {
 
     private final VehicleServiceController vehicleServiceController;
 

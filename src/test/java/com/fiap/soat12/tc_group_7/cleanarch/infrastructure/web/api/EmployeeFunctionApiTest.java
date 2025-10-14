@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
-class EmployeeFunctionRestControllerTest {
+class EmployeeFunctionApiTest {
 
     @Mock
     private EmployeeFunctionController employeeFunctionController;
 
     @InjectMocks
-    private EmployeeFunctionRestController employeeFunctionRestController;
+    private EmployeeFunctionApi employeeFunctionApi;
 
     @BeforeEach
     void setUp() {
@@ -54,7 +54,7 @@ class EmployeeFunctionRestControllerTest {
             when(employeeFunctionController.createEmployeeFunction(requestDTO)).thenReturn(responseDTO);
 
             // Act
-            EmployeeFunctionResponseDTO result = employeeFunctionRestController.create(requestDTO);
+            EmployeeFunctionResponseDTO result = employeeFunctionApi.create(requestDTO);
 
             // Assert
             assertNotNull(result);
@@ -74,7 +74,7 @@ class EmployeeFunctionRestControllerTest {
             when(employeeFunctionController.getEmployeeFunctionById(id)).thenReturn(responseDTO);
 
             // Act
-            EmployeeFunctionResponseDTO result = employeeFunctionRestController.getById(id);
+            EmployeeFunctionResponseDTO result = employeeFunctionApi.getById(id);
 
             // Assert
             assertNotNull(result);
@@ -94,7 +94,7 @@ class EmployeeFunctionRestControllerTest {
             when(employeeFunctionController.getAllActiveEmployeeFunctions()).thenReturn(responseDTOList);
 
             // Act
-            List<EmployeeFunctionResponseDTO> result = employeeFunctionRestController.getAllActiveEmployeeFunctions();
+            List<EmployeeFunctionResponseDTO> result = employeeFunctionApi.getAllActiveEmployeeFunctions();
 
             // Assert
             assertNotNull(result);
@@ -110,7 +110,7 @@ class EmployeeFunctionRestControllerTest {
             when(employeeFunctionController.getAllEmployeeFunctions()).thenReturn(responseDTOList);
 
             // Act
-            List<EmployeeFunctionResponseDTO> result = employeeFunctionRestController.getAll();
+            List<EmployeeFunctionResponseDTO> result = employeeFunctionApi.getAll();
 
             // Assert
             assertNotNull(result);
@@ -131,7 +131,7 @@ class EmployeeFunctionRestControllerTest {
             when(employeeFunctionController.updateEmployeeFunctionById(id, requestDTO)).thenReturn(responseDTO);
 
             // Act
-            EmployeeFunctionResponseDTO result = employeeFunctionRestController.update(id, requestDTO);
+            EmployeeFunctionResponseDTO result = employeeFunctionApi.update(id, requestDTO);
 
             // Assert
             assertNotNull(result);
@@ -150,7 +150,7 @@ class EmployeeFunctionRestControllerTest {
             doNothing().when(employeeFunctionController).inactivateEmployeeFunction(id);
 
             // Act
-            employeeFunctionRestController.delete(id);
+            employeeFunctionApi.delete(id);
 
             // Assert
             verify(employeeFunctionController, times(1)).inactivateEmployeeFunction(id);
@@ -167,7 +167,7 @@ class EmployeeFunctionRestControllerTest {
             doNothing().when(employeeFunctionController).activateEmployeeFunction(id);
 
             // Act
-            employeeFunctionRestController.activate(id);
+            employeeFunctionApi.activate(id);
 
             // Assert
             verify(employeeFunctionController, times(1)).activateEmployeeFunction(id);
