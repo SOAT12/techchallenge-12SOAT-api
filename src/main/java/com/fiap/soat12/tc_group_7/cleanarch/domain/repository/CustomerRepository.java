@@ -1,18 +1,18 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.repository;
 
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.CustomerJpaEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Customer;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CustomerRepository {
 
-    List<CustomerJpaEntity> findAll();
+    List<Customer> findAll();
 
-    Optional<CustomerJpaEntity> findById(Long id);
+    Optional<Customer> findById(Long id);
 
-    Optional<CustomerJpaEntity> findByCpf(String cpf);
+    Optional<Customer> findByCpf(String cpf);
 
-    CustomerJpaEntity save(CustomerJpaEntity customer);
+    Customer save(Customer customer);
 
 }

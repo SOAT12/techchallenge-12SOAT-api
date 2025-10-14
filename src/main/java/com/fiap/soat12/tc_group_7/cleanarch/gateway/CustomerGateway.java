@@ -2,7 +2,6 @@ package com.fiap.soat12.tc_group_7.cleanarch.gateway;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Customer;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.CustomerRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.CustomerJpaEntity;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -14,62 +13,23 @@ public class CustomerGateway {
     private final CustomerRepository customerRepository;
 
     public List<Customer> findAll() {
-        return customerRepository.findAll().stream()
-                .map(this::toCustomer)
-                .toList();
+        return customerRepository.findAll();
     }
 
     public Optional<Customer> findById(Long id) {
-        return customerRepository.findById(id)
-                .map(this::toCustomer);
+        return customerRepository.findById(id);
     }
 
     public Optional<Customer> findByCpf(String cpf) {
-        return customerRepository.findByCpf(cpf)
-                .map(this::toCustomer);
+        return customerRepository.findByCpf(cpf);
     }
 
     public Customer save(Customer customer) {
-        var customerJpaEntity = customerRepository.save(this.toCustomerJpaEntity(customer));
-        return this.toCustomer(customerJpaEntity);
+        return customerRepository.save(customer);
     }
 
     public void update(Customer customer) {
-        customerRepository.save(this.toCustomerJpaEntity(customer));
-    }
-
-    private CustomerJpaEntity toCustomerJpaEntity(Customer customer) {
-        return CustomerJpaEntity.builder()
-                .id(customer.getId())
-                .cpf(customer.getCpf())
-                .name(customer.getName())
-                .phone(customer.getPhone())
-                .email(customer.getEmail())
-                .city(customer.getCity())
-                .state(customer.getState())
-                .district(customer.getDistrict())
-                .street(customer.getStreet())
-                .number(customer.getNumber())
-                .deleted(customer.getDeleted())
-                .build();
-    }
-
-    private Customer toCustomer(CustomerJpaEntity customerJpaEntity) {
-        return Customer.builder()
-                .id(customerJpaEntity.getId())
-                .cpf(customerJpaEntity.getCpf())
-                .name(customerJpaEntity.getName())
-                .phone(customerJpaEntity.getPhone())
-                .email(customerJpaEntity.getEmail())
-                .city(customerJpaEntity.getCity())
-                .state(customerJpaEntity.getState())
-                .district(customerJpaEntity.getDistrict())
-                .street(customerJpaEntity.getStreet())
-                .number(customerJpaEntity.getNumber())
-                .deleted(customerJpaEntity.getDeleted())
-                .createdAt(customerJpaEntity.getCreatedAt())
-                .updatedAt(customerJpaEntity.getUpdatedAt())
-                .build();
+        customerRepository.save(customer);
     }
 
 }

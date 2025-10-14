@@ -1,18 +1,18 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.repository;
 
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.VehicleJpaEntity;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Vehicle;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface VehicleRepository {
 
-    List<VehicleJpaEntity> findAll();
+    List<Vehicle> findAll();
 
-    Optional<VehicleJpaEntity> findById(Long id);
+    Optional<Vehicle> findById(Long id);
 
-    Optional<VehicleJpaEntity> findByLicensePlate(String licensePlate);
+    Optional<Vehicle> findByLicensePlate(String licensePlate);
 
-    VehicleJpaEntity save(VehicleJpaEntity vehicle);
+    Vehicle save(Vehicle vehicle);
 
 }

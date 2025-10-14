@@ -16,8 +16,8 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
     @Bean
-    public VehicleServiceRepository vehicleServiceDataSource(VehicleServiceJpaRepository vehicleServiceJpaRepository) {
-        return new VehicleServiceRepositoryImpl(vehicleServiceJpaRepository);
+    public VehicleServiceRepository vehicleServiceDataSource(VehicleServiceMapper vehicleServiceMapper, VehicleServiceJpaRepository vehicleServiceJpaRepository) {
+        return new VehicleServiceRepositoryImpl(vehicleServiceMapper, vehicleServiceJpaRepository);
     }
 
     @Bean
@@ -43,8 +43,8 @@ public class AppConfig {
     }
 
     @Bean
-    public VehicleRepository vehicleDataSource(VehicleJpaRepository vehicleJpaRepository) {
-        return new VehicleRepositoryImpl(vehicleJpaRepository);
+    public VehicleRepository vehicleDataSource(VehicleMapper vehicleMapper, VehicleJpaRepository vehicleJpaRepository) {
+        return new VehicleRepositoryImpl(vehicleMapper, vehicleJpaRepository);
     }
 
     @Bean
@@ -68,8 +68,8 @@ public class AppConfig {
     }
 
     @Bean
-    public CustomerRepository customerDataSource(CustomerJpaRepository customerJpaRepository) {
-        return new CustomerRepositoryImpl(customerJpaRepository);
+    public CustomerRepository customerDataSource(CustomerMapper customerMapper, CustomerJpaRepository customerJpaRepository) {
+        return new CustomerRepositoryImpl(customerMapper, customerJpaRepository);
     }
 
     @Bean

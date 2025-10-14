@@ -2,12 +2,10 @@ package com.fiap.soat12.tc_group_7.cleanarch.gateway;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Vehicle;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.VehicleRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.VehicleJpaEntity;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class VehicleGateway {
@@ -15,50 +13,19 @@ public class VehicleGateway {
     private final VehicleRepository vehicleRepository;
 
     public List<Vehicle> findAll() {
-        return vehicleRepository.findAll().stream()
-                .map(this::toVehicle)
-                .collect(Collectors.toList());
+        return vehicleRepository.findAll();
     }
 
     public Optional<Vehicle> findById(Long id) {
-        return vehicleRepository.findById(id)
-                .map(this::toVehicle);
+        return vehicleRepository.findById(id);
     }
 
     public Optional<Vehicle> findByLicensePlate(String licensePlate) {
-        return vehicleRepository.findByLicensePlate(licensePlate)
-                .map(this::toVehicle);
+        return vehicleRepository.findByLicensePlate(licensePlate);
     }
 
     public Vehicle save(Vehicle vehicle) {
-        VehicleJpaEntity vehicleJpaEntity = vehicleRepository.save(this.toVehicleJpaEntity(vehicle));
-        return this.toVehicle(vehicleJpaEntity);
-    }
-
-    private VehicleJpaEntity toVehicleJpaEntity(Vehicle vehicle) {
-        return VehicleJpaEntity.builder()
-                .id(vehicle.getId())
-                .licensePlate(vehicle.getLicensePlate())
-                .brand(vehicle.getBrand())
-                .model(vehicle.getModel())
-                .year(vehicle.getYear())
-                .color(vehicle.getColor())
-                .active(vehicle.getActive())
-                .build();
-    }
-
-    private Vehicle toVehicle(VehicleJpaEntity vehicleJpaEntity) {
-        return Vehicle.builder()
-                .id(vehicleJpaEntity.getId())
-                .licensePlate(vehicleJpaEntity.getLicensePlate())
-                .brand(vehicleJpaEntity.getBrand())
-                .model(vehicleJpaEntity.getModel())
-                .year(vehicleJpaEntity.getYear())
-                .color(vehicleJpaEntity.getColor())
-                .active(vehicleJpaEntity.getActive())
-                .createdAt(vehicleJpaEntity.getCreatedAt())
-                .updatedAt(vehicleJpaEntity.getUpdatedAt())
-                .build();
+        return vehicleRepository.save(vehicle);
     }
 
 }

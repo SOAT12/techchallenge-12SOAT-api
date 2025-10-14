@@ -2,33 +2,67 @@ package com.fiap.soat12.tc_group_7.cleanarch.gateway;
 
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Customer;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.CustomerRepository;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.entity.CustomerJpaEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class CustomerGatewayTest {
 
+    @Mock
     private CustomerRepository customerRepository;
+
     private CustomerGateway customerGateway;
 
     @BeforeEach
     void setUp() {
-        customerRepository = mock(CustomerRepository.class);
         customerGateway = new CustomerGateway(customerRepository);
     }
 
     @Test
     void findAll_shouldReturnListOfCustomers() {
-        List<CustomerJpaEntity> jpaEntities = List.of(createCustomerJpaEntity(1L), createCustomerJpaEntity(2L));
-        when(customerRepository.findAll()).thenReturn(jpaEntities);
+        Customer customer1 = Customer.builder()
+                .id(1L)
+                .cpf("12345678911")
+                .name("João Souto")
+                .phone("11999999999")
+                .email("joaosouto@email.com")
+                .city("São Paulo")
+                .state("SP")
+                .district("Centro")
+                .street("Rua A")
+                .number("100")
+                .deleted(false)
+                .createdAt(new Date())
+                .updatedAt(new Date())
+                .build();
+        Customer customer2 = Customer.builder()
+                .id(1L)
+                .cpf("12345678900")
+                .name("João Silva")
+                .phone("11999999999")
+                .email("joao@email.com")
+                .city("São Paulo")
+                .state("SP")
+                .district("Centro")
+                .street("Rua A")
+                .number("100")
+                .deleted(false)
+                .createdAt(new Date())
+                .updatedAt(new Date())
+                .build();
+        List<Customer> customers = List.of(customer1, customer2);
+        when(customerRepository.findAll()).thenReturn(customers);
 
         List<Customer> result = customerGateway.findAll();
 
@@ -37,93 +71,125 @@ public class CustomerGatewayTest {
     }
 
     @Test
-    void findById_shouldReturnCustomer_whenFound() {
-        CustomerJpaEntity jpaEntity = createCustomerJpaEntity(1L);
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(jpaEntity));
-
-        Optional<Customer> result = customerGateway.findById(1L);
-
-        assertTrue(result.isPresent());
-        assertEquals(jpaEntity.getId(), result.get().getId());
-        verify(customerRepository).findById(1L);
-    }
-
-    @Test
-    void findById_shouldReturnEmpty_whenNotFound() {
-        when(customerRepository.findById(1L)).thenReturn(Optional.empty());
-
-        Optional<Customer> result = customerGateway.findById(1L);
-
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void findByCpf_shouldReturnCustomer_whenFound() {
-        CustomerJpaEntity jpaEntity = createCustomerJpaEntity(1L);
-        when(customerRepository.findByCpf("123.456.789-00")).thenReturn(Optional.of(jpaEntity));
-
-        Optional<Customer> result = customerGateway.findByCpf("123.456.789-00");
-
-        assertTrue(result.isPresent());
-        assertEquals(jpaEntity.getCpf(), result.get().getCpf());
-        verify(customerRepository).findByCpf("123.456.789-00");
-    }
-
-    @Test
-    void save_shouldReturnCustomer_whenSavedSuccessfully() {
-        Customer customer = createCustomer(1L);
-        CustomerJpaEntity jpaEntity = createCustomerJpaEntity(1L);
-
-        when(customerRepository.save(any(CustomerJpaEntity.class))).thenReturn(jpaEntity);
-
-        Customer savedCustomer = customerGateway.save(customer);
-
-        assertNotNull(savedCustomer);
-        assertEquals(customer.getCpf(), savedCustomer.getCpf());
-        verify(customerRepository).save(any(CustomerJpaEntity.class));
-    }
-
-    @Test
-    void update_shouldCallSaveMethod() {
-        Customer customer = createCustomer(1L);
-
-        customerGateway.update(customer);
-
-        verify(customerRepository).save(any(CustomerJpaEntity.class));
-    }
-
-    private CustomerJpaEntity createCustomerJpaEntity(Long id) {
-        return CustomerJpaEntity.builder()
-                .id(id)
-                .cpf("123.456.789-00")
+    void findById_shouldReturnCustomerOptional() {
+        Long id = 1L;
+        Customer customer = Customer.builder()
+                .id(1L)
+                .cpf("12345678900")
                 .name("João Silva")
-                .phone("99999-9999")
+                .phone("11999999999")
                 .email("joao@email.com")
                 .city("São Paulo")
                 .state("SP")
                 .district("Centro")
                 .street("Rua A")
-                .number("123")
-                .deleted(false)
-                .build();
-    }
-
-    private Customer createCustomer(Long id) {
-        return Customer.builder()
-                .id(id)
-                .cpf("123.456.789-00")
-                .name("João Silva")
-                .phone("99999-9999")
-                .email("joao@email.com")
-                .city("São Paulo")
-                .state("SP")
-                .district("Centro")
-                .street("Rua A")
-                .number("123")
+                .number("100")
                 .deleted(false)
                 .createdAt(new Date())
                 .updatedAt(new Date())
                 .build();
+        when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
+
+        Optional<Customer> result = customerGateway.findById(id);
+
+        assertTrue(result.isPresent());
+        verify(customerRepository).findById(id);
+    }
+
+    @Test
+    void findById_shouldReturnEmptyWhenNotFound() {
+        Long id = 1L;
+        when(customerRepository.findById(id)).thenReturn(Optional.empty());
+
+        Optional<Customer> result = customerGateway.findById(id);
+
+        assertFalse(result.isPresent());
+        verify(customerRepository).findById(id);
+    }
+
+    @Test
+    void findByCpf_shouldReturnCustomerOptional() {
+        String cpf = "12345678900";
+        Customer customer = Customer.builder()
+                .id(1L)
+                .cpf("12345678900")
+                .name("João Silva")
+                .phone("11999999999")
+                .email("joao@email.com")
+                .city("São Paulo")
+                .state("SP")
+                .district("Centro")
+                .street("Rua A")
+                .number("100")
+                .deleted(false)
+                .createdAt(new Date())
+                .updatedAt(new Date())
+                .build();
+        when(customerRepository.findByCpf(cpf)).thenReturn(Optional.of(customer));
+
+        Optional<Customer> result = customerGateway.findByCpf(cpf);
+
+        assertTrue(result.isPresent());
+        verify(customerRepository).findByCpf(cpf);
+    }
+
+    @Test
+    void findByCpf_shouldReturnEmptyWhenNotFound() {
+        String cpf = "12345678900";
+        when(customerRepository.findByCpf(cpf)).thenReturn(Optional.empty());
+
+        Optional<Customer> result = customerGateway.findByCpf(cpf);
+
+        assertFalse(result.isPresent());
+        verify(customerRepository).findByCpf(cpf);
+    }
+
+    @Test
+    void save_shouldReturnSavedCustomer() {
+        Customer customer = Customer.builder()
+                .id(1L)
+                .cpf("12345678900")
+                .name("João Silva")
+                .phone("11999999999")
+                .email("joao@email.com")
+                .city("São Paulo")
+                .state("SP")
+                .district("Centro")
+                .street("Rua A")
+                .number("100")
+                .deleted(false)
+                .createdAt(new Date())
+                .updatedAt(new Date())
+                .build();
+        when(customerRepository.save(customer)).thenReturn(customer);
+
+        Customer result = customerGateway.save(customer);
+
+        assertNotNull(result);
+        verify(customerRepository).save(customer);
+    }
+
+    @Test
+    void update_shouldCallSaveOnRepository() {
+        Customer customer = Customer.builder()
+                .id(1L)
+                .cpf("12345678900")
+                .name("João Silva")
+                .phone("11999999999")
+                .email("joao@email.com")
+                .city("São Paulo")
+                .state("SP")
+                .district("Centro")
+                .street("Rua A")
+                .number("100")
+                .deleted(false)
+                .createdAt(new Date())
+                .updatedAt(new Date())
+                .build();
+
+        customerGateway.update(customer);
+
+        verify(customerRepository).save(customer);
     }
 
 }
