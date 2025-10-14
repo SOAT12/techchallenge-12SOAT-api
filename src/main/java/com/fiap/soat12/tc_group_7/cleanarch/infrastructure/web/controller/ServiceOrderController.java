@@ -24,15 +24,21 @@ public class ServiceOrderController {
         return serviceOrderPresenter.toServiceOrderResponseDTO(serviceOrder);
     }
 
+    public ServiceOrderResponseDTO findOrderById(Long id) {
+        var serviceOrder = serviceOrderUseCase.findById(id);
+        return serviceOrderPresenter.toServiceOrderResponseDTO(serviceOrder);
+    }
+
     public List<ServiceOrderResponseDTO> findAllOrders() {
         return serviceOrderUseCase.findAllOrders().stream()
                 .map(serviceOrderPresenter::toServiceOrderResponseDTO)
                 .toList();
     }
 
-    public ServiceOrderResponseDTO findOrderById(Long id) {
-        var serviceOrder = serviceOrderUseCase.findById(id);
-        return serviceOrderPresenter.toServiceOrderResponseDTO(serviceOrder);
+    public List<ServiceOrderResponseDTO> findAllOrdersFiltered() {
+        return serviceOrderUseCase.findAllOrdersFiltered().stream()
+                .map(serviceOrderPresenter::toServiceOrderResponseDTO)
+                .toList();
     }
 
     public List<ServiceOrderResponseDTO> findByCustomerInfo(String document) {

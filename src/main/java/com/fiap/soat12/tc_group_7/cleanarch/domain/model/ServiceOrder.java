@@ -55,9 +55,10 @@ public class ServiceOrder {
 
         if (stockItems != null) {
             // Calculate total from stock items (value * quantity)
-            BigDecimal stockTotal = totalValue.add(stockItems.stream()
-                    .map(item -> item.getValue().multiply(new BigDecimal(item.getQuantity())))
-                    .reduce(totalValue, BigDecimal::add));
+            BigDecimal stockTotal = BigDecimal.ZERO;
+            stockTotal = stockItems.stream()
+                    .map(items -> items.getValue().multiply(BigDecimal.valueOf(items.getQuantity())))
+                    .reduce(stockTotal, BigDecimal::add);
             totalValue = totalValue.add(stockTotal);
         }
 

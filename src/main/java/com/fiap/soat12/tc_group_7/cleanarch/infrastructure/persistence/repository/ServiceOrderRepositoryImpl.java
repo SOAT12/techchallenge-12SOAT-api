@@ -40,8 +40,8 @@ public class ServiceOrderRepositoryImpl implements ServiceOrderRepository {
     }
 
     @Override
-    public List<ServiceOrder> findAllFilteredAndSorted() {
-        return serviceOrderJpaRepository.findAllFilteredAndSorted().stream()
+    public List<ServiceOrder> findAllFilteredAndSorted(List<Status> statuses) {
+        return serviceOrderJpaRepository.findAllFilteredAndSorted(statuses).stream()
                 .map(serviceOrderMapper::toServiceOrder)
                 .toList();
     }
