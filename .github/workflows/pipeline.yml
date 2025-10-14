@@ -139,7 +139,6 @@ jobs:
           tags: |
             type=raw,value=latest,enable=${{ github.ref_name == github.event.repository.default_branch || startsWith(github.ref, 'refs/tags/v') }}
             type=sha,prefix=,suffix=-${{ github.sha }},format=short
-
       - name: Build Docker image and Load
         uses: docker/build-push-action@v5
         with:
@@ -153,7 +152,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.22.0
         with:
 
-          image-ref: ghcr.io/${{ github.event.repository.name }}:latest 
+          image-ref: ghcr.io/${{ github.repository | lower }}:latest 
           format: 'sarif'
           output: 'trivy-image-results.sarif'
           ignore-unfixed: true
@@ -179,7 +178,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Push GHCR Image
-        run: docker push ghcr.io/${{ github.event.repository.name }} --all-tags
+        run: docker push ghcr.io/${{ github.repository | lower }} --all-tags
 
   push-to-dockerhub:
     name: Push to Docker Hub
@@ -193,4 +192,4 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }} 
       
       - name: Push Docker Hub Image
-        run: docker push 747132/${{ github.event.repository.name }} --all-tags
+        run: docker push 747132/${{ github.event.repository.name | lower }} --all-tags
