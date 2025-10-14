@@ -1,13 +1,24 @@
 package com.fiap.soat12.tc_group_7.cleanarch.config;
 
+import com.fiap.soat12.tc_group_7.cleanarch.domain.port.CodeGeneratorPort;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.port.EncryptionPort;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.port.NotificationPort;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.port.TokenServicePort;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.repository.*;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.*;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.*;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.adapter.BCryptAdapter;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.adapter.CodeGeneratorAdapter;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.adapter.JwtAdapter;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.adapter.MailClientAdapter;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.mapper.*;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.*;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.persistence.repository.jpa.*;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.*;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.*;
+import com.fiap.soat12.tc_group_7.cleanarch.util.JwtTokenUtil;
+import com.fiap.soat12.tc_group_7.config.SessionToken;
+import com.fiap.soat12.tc_group_7.service.MailClient;
 import jakarta.persistence.EntityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -291,5 +302,50 @@ public class AppConfig {
     @Bean
     public ServiceOrderController serviceOrderController(ServiceOrderUseCase serviceOrderUseCase, ServiceOrderPresenter serviceOrderPresenter) {
         return new ServiceOrderController(serviceOrderUseCase, serviceOrderPresenter);
+    }
+
+    @Bean
+    public EncryptionPort encryptionPort() {
+        return new BCryptAdapter();
+    }
+
+    @Bean
+    public TokenServicePort tokenServicePort(JwtTokenUtil jwtTokenUtil, SessionToken sessionToken) {
+        return new JwtAdapter(jwtTokenUtil, sessionToken);
+    }
+
+    @Bean
+    public NotificationPort notificationPort(MailClient mailClient) {
+        return new MailClientAdapter(mailClient);
+    }
+
+    @Bean
+    public CodeGeneratorPort codeGeneratorPort() {
+        return new CodeGeneratorAdapter();
+    }
+
+    @Bean
+    public PasswordManagementUseCase passwordManagementUseCase(
+            EmployeeGateway employeeGateway,
+            EncryptionPort encryptionPort,
+            CodeGeneratorPort codeGeneratorPort,
+            NotificationPort notificationPort) {
+        return new PasswordManagementUseCase(
+                employeeGateway,
+                encryptionPort,
+                codeGeneratorPort,
+                notificationPort);
+    }
+
+    @Bean
+    public EmployeeAuthUseCase employeeAuthUseCase(
+            EmployeeGateway employeeGateway,
+            EncryptionPort encryptionPort,
+            TokenServicePort tokenServicePort,
+            PasswordManagementUseCase passwordManagementUseCase) {
+        return new EmployeeAuthUseCase(
+                employeeGateway,
+                encryptionPort,
+                tokenServicePort);
     }
 }

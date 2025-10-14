@@ -1,5 +1,6 @@
 package com.fiap.soat12.tc_group_7.config;
 
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.adapter.JwtUserDetailsAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,7 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity(debug = false)
 public class WebSecurityConfig {
 
-    private static final String[] AUTHORIZED_ROLES = {"GESTOR", "ATENDENTE", "MECANICO"};
+    private static final String[] AUTHORIZED_ROLES = {"GESTOR", "ATENDENTE", "MECÂNICO"};
     private static final String STOCK_ID_PATH = "/api/stock/{id}";
     private static final String EMPLOYEE_ID_PATH = "/api/employees/{id}";
     private static final String EMPLOYEE_FUNCTION_ID_PATH = "/api/employee-functions/{id}";
@@ -31,11 +31,11 @@ public class WebSecurityConfig {
     private static final String TOOL_CATEGORIES_BASE_PATH = "/api/tool-categories";
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final UserDetailsService jwtUserDetailsService;
+    private final JwtUserDetailsAdapter jwtUserDetailsService;
     private final RequestFilter jwtRequestFilter;
 
     public WebSecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-                             UserDetailsService jwtUserDetailsService,
+                             JwtUserDetailsAdapter jwtUserDetailsService,
                              RequestFilter jwtRequestFilter) {
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtUserDetailsService = jwtUserDetailsService;
@@ -48,10 +48,10 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() { // Mark as public
+    public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(jwtUserDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder()); // Uses the passwordEncoder bean defined above
+        authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 
@@ -71,9 +71,8 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/api-docs/**",
-                                "/api/employees/login",
-                                "/api/employees/forgot-password",
-                                "/clean-arch/**"
+                                "/api/auth/login",
+                                "/api/auth/forgot-password"
                         ).permitAll()
                         .requestMatchers("/actuator/health/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/employees").permitAll()
@@ -109,6 +108,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/service-orders").hasAnyRole(AUTHORIZED_ROLES)
                         .requestMatchers(HttpMethod.GET, SERVICE_ORDER_ID_PATH).hasAnyRole(AUTHORIZED_ROLES)
                         .requestMatchers(HttpMethod.GET, "/api/service-orders").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.GET, "/api/service-orders/status").hasAnyRole(AUTHORIZED_ROLES)
                         .requestMatchers(HttpMethod.DELETE, SERVICE_ORDER_ID_PATH).hasAnyRole(AUTHORIZED_ROLES)
                         .requestMatchers(HttpMethod.PUT, SERVICE_ORDER_ID_PATH).hasAnyRole(AUTHORIZED_ROLES)
                         .requestMatchers(HttpMethod.PATCH, "/api/service-orders/{id}/diagnose").hasAnyRole(AUTHORIZED_ROLES)
@@ -128,18 +128,18 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/tool-categories/{id}/reactivate").hasAnyRole(AUTHORIZED_ROLES)
 
                         // Endpoints do VehicleServiceController
-                        .requestMatchers(HttpMethod.GET, "/v1/vehicle-services").hasAnyRole(AUTHORIZED_ROLES)
-                        .requestMatchers(HttpMethod.GET, "/v1/vehicle-services/{id}").hasAnyRole(AUTHORIZED_ROLES)
-                        .requestMatchers(HttpMethod.POST, "/v1/vehicle-services").hasAnyRole(AUTHORIZED_ROLES)
-                        .requestMatchers(HttpMethod.PUT, "/v1/vehicle-services/{id}").hasAnyRole(AUTHORIZED_ROLES)
-                        .requestMatchers(HttpMethod.PATCH, "/v1/vehicle-services/{id}/deactivate").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.GET, "/api/vehicle-services").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.GET, "/api/vehicle-services/{id}").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.POST, "/api/vehicle-services").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.PUT, "/api/vehicle-services/{id}").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.PATCH, "/api/vehicle-services/{id}/deactivate").hasAnyRole(AUTHORIZED_ROLES)
 
                         // Endpoints do CustomerController
-                        .requestMatchers(HttpMethod.GET, "/v1/customers").hasAnyRole(AUTHORIZED_ROLES)
-                        .requestMatchers(HttpMethod.GET, "/v1/customers/cpf").hasAnyRole(AUTHORIZED_ROLES)
-                        .requestMatchers(HttpMethod.POST, "/v1/customers").hasAnyRole(AUTHORIZED_ROLES)
-                        .requestMatchers(HttpMethod.PUT, "/v1/customers/{id}").hasAnyRole(AUTHORIZED_ROLES)
-                        .requestMatchers(HttpMethod.DELETE, "/v1/customers/{id}").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.GET, "/api/customers/all").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.GET, "/api/customers/cpf").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.POST, "/api/customers").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.PUT, "/api/customers/{id}").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.DELETE, "/api/customers/{id}").hasAnyRole(AUTHORIZED_ROLES)
 
                         // Endpoints do VehicleController
                         .requestMatchers(HttpMethod.POST, "/api/vehicle").hasAnyRole(AUTHORIZED_ROLES)
