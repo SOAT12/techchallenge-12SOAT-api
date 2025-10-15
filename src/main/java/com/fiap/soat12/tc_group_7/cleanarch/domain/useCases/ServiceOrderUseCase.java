@@ -270,7 +270,7 @@ public class ServiceOrderUseCase {
 
         String subject = order.getCustomer().getName() + " Seus serviços solicitados foram finalizados";
 
-        //mailClient.sendMail(order.getCustomer().getEmail(), subject, "mailTemplateServiceFinish", variables);
+        mailClient.sendMail(order.getCustomer().getEmail(), subject, "mailTemplateServiceFinish", variables);
 
         return serviceOrder;
     }

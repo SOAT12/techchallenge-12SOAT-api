@@ -72,7 +72,8 @@ public class WebSecurityConfig {
                                 "/swagger-ui/**",
                                 "/api-docs/**",
                                 "/api/auth/login",
-                                "/api/auth/forgot-password"
+                                "/api/auth/forgot-password",
+                                "/api/service-orders/1/webhook/approval"
                         ).permitAll()
                         .requestMatchers("/actuator/health/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/employees").permitAll()
