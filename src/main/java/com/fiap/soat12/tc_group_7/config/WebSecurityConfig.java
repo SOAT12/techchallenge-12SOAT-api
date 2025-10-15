@@ -106,6 +106,7 @@ public class WebSecurityConfig {
 
                         // Endpoints do ServiceOrderController
                         .requestMatchers(HttpMethod.POST, "/api/service-orders").hasAnyRole(AUTHORIZED_ROLES)
+                        .requestMatchers(HttpMethod.POST, "/api/service-orders/full").hasAnyRole(AUTHORIZED_ROLES)
                         .requestMatchers(HttpMethod.GET, SERVICE_ORDER_ID_PATH).hasAnyRole(AUTHORIZED_ROLES)
                         .requestMatchers(HttpMethod.GET, "/api/service-orders").hasAnyRole(AUTHORIZED_ROLES)
                         .requestMatchers(HttpMethod.GET, "/api/service-orders/status").hasAnyRole(AUTHORIZED_ROLES)
