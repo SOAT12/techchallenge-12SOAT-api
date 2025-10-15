@@ -1,6 +1,5 @@
 package com.fiap.soat12.tc_group_7.config;
 
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.adapter.JwtUserDetailsAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -31,17 +31,16 @@ public class WebSecurityConfig {
     private static final String TOOL_CATEGORIES_BASE_PATH = "/api/tool-categories";
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JwtUserDetailsAdapter jwtUserDetailsService;
+    private final UserDetailsService jwtUserDetailsService;
     private final RequestFilter jwtRequestFilter;
 
     public WebSecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-                             JwtUserDetailsAdapter jwtUserDetailsService,
+                             UserDetailsService jwtUserDetailsService,
                              RequestFilter jwtRequestFilter) {
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.jwtRequestFilter = jwtRequestFilter;
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() { // Mark as public
         return new BCryptPasswordEncoder();
