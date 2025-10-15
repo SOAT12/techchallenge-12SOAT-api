@@ -1,228 +1,157 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller;
 
-import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Vehicle;
-import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.VehicleUseCase;
-import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.VehiclePresenter;
-import com.fiap.soat12.tc_group_7.dto.vehicle.VehicleRequestDTO;
-import com.fiap.soat12.tc_group_7.dto.vehicle.VehicleResponseDTO;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.VehicleService;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.VehicleServiceUseCase;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.VehicleServicePresenter;
+import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.vehicleservice.VehicleServiceResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class VehicleServiceControllerTest {
+class VehicleServiceControllerTest {
 
-    private VehicleUseCase vehicleUseCase;
-    private VehiclePresenter vehiclePresenter;
-    private VehicleController controller;
+    @Mock
+    private VehicleServiceUseCase vehicleServiceUseCase;
+
+    @Mock
+    private VehicleServicePresenter vehicleServicePresenter;
+
+    @InjectMocks
+    private VehicleServiceController vehicleServiceController;
 
     @BeforeEach
-    void setup() {
-        vehicleUseCase = mock(VehicleUseCase.class);
-        vehiclePresenter = mock(VehiclePresenter.class);
-        controller = new VehicleController(vehicleUseCase, vehiclePresenter);
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void createVehicle_shouldReturnVehicleResponseDTO() {
-        VehicleRequestDTO requestDTO = new VehicleRequestDTO();
-        Vehicle vehicle = Vehicle.builder()
-                .id(1L)
-                .licensePlate("ABC-1234")
-                .brand("Toyota")
-                .model("Corolla")
-                .year(2020)
-                .color("Prata")
-                .active(true)
-                .build();
-        VehicleResponseDTO responseDTO = new VehicleResponseDTO();
+    @Nested
+    class GetAllActiveVehicleServices {
+        @Test
+        void shouldGetAllActiveVehicleServices() {
+            // Arrange
+            when(vehicleServiceUseCase.getAllActiveVehicleServices()).thenReturn(List.of(VehicleService.builder().build()));
+            when(vehicleServicePresenter.toVehicleServiceResponseDTO(any())).thenReturn(new VehicleServiceResponseDTO());
 
-        when(vehicleUseCase.create(requestDTO)).thenReturn(vehicle);
-        when(vehiclePresenter.toVehicleResponseDTO(vehicle)).thenReturn(responseDTO);
+            // Act
+            List<VehicleServiceResponseDTO> result = vehicleServiceController.getAllActiveVehicleServices();
 
-        VehicleResponseDTO result = controller.createVehicle(requestDTO);
-
-        assertEquals(responseDTO, result);
-        verify(vehicleUseCase).create(requestDTO);
-        verify(vehiclePresenter).toVehicleResponseDTO(vehicle);
+            // Assert
+            assertFalse(result.isEmpty());
+            verify(vehicleServiceUseCase).getAllActiveVehicleServices();
+        }
     }
 
-    @Test
-    void getVehicleById_shouldReturnVehicleResponseDTO() {
-        Long id = 1L;
-        Vehicle vehicle = Vehicle.builder()
-                .id(1L)
-                .licensePlate("ABC-1234")
-                .brand("Toyota")
-                .model("Corolla")
-                .year(2020)
-                .color("Prata")
-                .active(true)
-                .build();
-        VehicleResponseDTO responseDTO = new VehicleResponseDTO();
+    @Nested
+    class GetAllVehicleServices {
+        @Test
+        void shouldGetAllVehicleServices() {
+            // Arrange
+            when(vehicleServiceUseCase.getAllVehicleServices()).thenReturn(List.of(VehicleService.builder().build()));
+            when(vehicleServicePresenter.toVehicleServiceResponseDTO(any())).thenReturn(new VehicleServiceResponseDTO());
 
-        when(vehicleUseCase.getVehicleById(id)).thenReturn(vehicle);
-        when(vehiclePresenter.toVehicleResponseDTO(vehicle)).thenReturn(responseDTO);
+            // Act
+            List<VehicleServiceResponseDTO> result = vehicleServiceController.getAllVehicleServices();
 
-        VehicleResponseDTO result = controller.getVehicleById(id);
-
-        assertEquals(responseDTO, result);
-        verify(vehicleUseCase).getVehicleById(id);
-        verify(vehiclePresenter).toVehicleResponseDTO(vehicle);
+            // Assert
+            assertFalse(result.isEmpty());
+            verify(vehicleServiceUseCase).getAllVehicleServices();
+        }
     }
 
-    @Test
-    void getVehicleByLicensePlate_shouldReturnVehicleResponseDTO() {
-        String licensePlate = "ABC-1234";
-        Vehicle vehicle = Vehicle.builder()
-                .id(1L)
-                .licensePlate("ABC-1234")
-                .brand("Toyota")
-                .model("Corolla")
-                .year(2020)
-                .color("Prata")
-                .active(true)
-                .build();
-        VehicleResponseDTO responseDTO = new VehicleResponseDTO();
+    @Nested
+    class GetById {
+        @Test
+        void shouldGetById() {
+            // Arrange
+            Long id = 1L;
+            when(vehicleServiceUseCase.getById(id)).thenReturn(VehicleService.builder().build());
+            when(vehicleServicePresenter.toVehicleServiceResponseDTO(any())).thenReturn(new VehicleServiceResponseDTO());
 
-        when(vehicleUseCase.getVehicleByLicensePlate(licensePlate)).thenReturn(vehicle);
-        when(vehiclePresenter.toVehicleResponseDTO(vehicle)).thenReturn(responseDTO);
+            // Act
+            VehicleServiceResponseDTO result = vehicleServiceController.getById(id);
 
-        VehicleResponseDTO result = controller.getVehicleByLicensePlate(licensePlate);
-
-        assertEquals(responseDTO, result);
-        verify(vehicleUseCase).getVehicleByLicensePlate(licensePlate);
-        verify(vehiclePresenter).toVehicleResponseDTO(vehicle);
+            // Assert
+            assertNotNull(result);
+            verify(vehicleServiceUseCase).getById(id);
+        }
     }
 
-    @Test
-    void getAllVehicles_shouldReturnListOfVehicleResponseDTO() {
-        Vehicle vehicle1 = Vehicle.builder()
-                .id(1L)
-                .licensePlate("ABC-1234")
-                .brand("Toyota")
-                .model("Corolla")
-                .year(2020)
-                .color("Prata")
-                .active(true)
-                .build();
-        Vehicle vehicle2 = Vehicle.builder()
-                .id(1L)
-                .licensePlate("DEF-5678")
-                .brand("Toyota")
-                .model("Camry")
-                .year(2022)
-                .color("Branco")
-                .active(true)
-                .build();
-        List<Vehicle> vehicles = Arrays.asList(vehicle1, vehicle2);
+    @Nested
+    class Create {
+        @Test
+        void shouldCreate() {
+            // Arrange
+            VehicleServiceRequestDTO dto = new VehicleServiceRequestDTO();
+            when(vehicleServiceUseCase.create(dto)).thenReturn(VehicleService.builder().build());
+            when(vehicleServicePresenter.toVehicleServiceResponseDTO(any())).thenReturn(new VehicleServiceResponseDTO());
 
-        VehicleResponseDTO dto1 = new VehicleResponseDTO();
-        VehicleResponseDTO dto2 = new VehicleResponseDTO();
+            // Act
+            VehicleServiceResponseDTO result = vehicleServiceController.create(dto);
 
-        when(vehicleUseCase.getAllVehicles()).thenReturn(vehicles);
-        when(vehiclePresenter.toVehicleResponseDTO(vehicle1)).thenReturn(dto1);
-        when(vehiclePresenter.toVehicleResponseDTO(vehicle2)).thenReturn(dto2);
-
-        List<VehicleResponseDTO> result = controller.getAllVehicles();
-
-        assertEquals(2, result.size());
-        assertTrue(result.contains(dto1));
-        assertTrue(result.contains(dto2));
-
-        verify(vehicleUseCase).getAllVehicles();
-        verify(vehiclePresenter, times(2)).toVehicleResponseDTO(any());
+            // Assert
+            assertNotNull(result);
+            verify(vehicleServiceUseCase).create(dto);
+        }
     }
 
-    @Test
-    void getAllVehiclesActive_shouldReturnListOfVehicleResponseDTO() {
-        Vehicle vehicle1 = Vehicle.builder()
-                .id(1L)
-                .licensePlate("ABC-1234")
-                .brand("Toyota")
-                .model("Corolla")
-                .year(2020)
-                .color("Prata")
-                .active(true)
-                .build();
-        Vehicle vehicle2 = Vehicle.builder()
-                .id(1L)
-                .licensePlate("DEF-5678")
-                .brand("Toyota")
-                .model("Camry")
-                .year(2022)
-                .color("Branco")
-                .active(true)
-                .build();
-        List<Vehicle> vehicles = Arrays.asList(vehicle1, vehicle2);
+    @Nested
+    class Update {
+        @Test
+        void shouldUpdate() {
+            // Arrange
+            Long id = 1L;
+            VehicleServiceRequestDTO dto = new VehicleServiceRequestDTO();
+            when(vehicleServiceUseCase.update(id, dto)).thenReturn(VehicleService.builder().build());
+            when(vehicleServicePresenter.toVehicleServiceResponseDTO(any())).thenReturn(new VehicleServiceResponseDTO());
 
-        VehicleResponseDTO dto1 = new VehicleResponseDTO();
-        VehicleResponseDTO dto2 = new VehicleResponseDTO();
+            // Act
+            VehicleServiceResponseDTO result = vehicleServiceController.update(id, dto);
 
-        when(vehicleUseCase.getAllVehiclesActive()).thenReturn(vehicles);
-        when(vehiclePresenter.toVehicleResponseDTO(vehicle1)).thenReturn(dto1);
-        when(vehiclePresenter.toVehicleResponseDTO(vehicle2)).thenReturn(dto2);
-
-        List<VehicleResponseDTO> result = controller.getAllVehiclesActive();
-
-        assertEquals(2, result.size());
-        assertTrue(result.contains(dto1));
-        assertTrue(result.contains(dto2));
-
-        verify(vehicleUseCase).getAllVehiclesActive();
-        verify(vehiclePresenter, times(2)).toVehicleResponseDTO(any());
+            // Assert
+            assertNotNull(result);
+            verify(vehicleServiceUseCase).update(id, dto);
+        }
     }
 
-    @Test
-    void updateVehicle_shouldReturnVehicleResponseDTO() {
-        Long id = 1L;
-        VehicleRequestDTO requestDTO = new VehicleRequestDTO();
-        Vehicle vehicle = Vehicle.builder()
-                .id(1L)
-                .licensePlate("DEF-5678")
-                .brand("Toyota")
-                .model("Camry")
-                .year(2022)
-                .color("Branco")
-                .active(true)
-                .build();
-        VehicleResponseDTO responseDTO = new VehicleResponseDTO();
+    @Nested
+    class Deactivate {
+        @Test
+        void shouldDeactivate() {
+            // Arrange
+            Long id = 1L;
 
-        when(vehicleUseCase.updateVehicle(id, requestDTO)).thenReturn(vehicle);
-        when(vehiclePresenter.toVehicleResponseDTO(vehicle)).thenReturn(responseDTO);
+            // Act
+            vehicleServiceController.deactivate(id);
 
-        VehicleResponseDTO result = controller.updateVehicle(id, requestDTO);
-
-        assertEquals(responseDTO, result);
-        verify(vehicleUseCase).updateVehicle(id, requestDTO);
-        verify(vehiclePresenter).toVehicleResponseDTO(vehicle);
+            // Assert
+            verify(vehicleServiceUseCase).deactivate(id);
+        }
     }
 
-    @Test
-    void deleteVehicle_shouldCallUseCase() {
-        Long id = 1L;
+    @Nested
+    class Activate {
+        @Test
+        void shouldActivate() {
+            // Arrange
+            Long id = 1L;
 
-        doNothing().when(vehicleUseCase).deleteVehicle(id);
+            // Act
+            vehicleServiceController.activate(id);
 
-        controller.deleteVehicle(id);
-
-        verify(vehicleUseCase).deleteVehicle(id);
+            // Assert
+            verify(vehicleServiceUseCase).activate(id);
+        }
     }
-
-    @Test
-    void reactivateVehicle_shouldCallUseCase() {
-        Long id = 1L;
-
-        doNothing().when(vehicleUseCase).reactivateVehicle(id);
-
-        controller.reactivateVehicle(id);
-
-        verify(vehicleUseCase).reactivateVehicle(id);
-    }
-
 }

@@ -5,214 +5,272 @@ import com.fiap.soat12.tc_group_7.cleanarch.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.CustomerGateway;
 import com.fiap.soat12.tc_group_7.dto.customer.CustomerRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class CustomerUseCaseTest {
+class CustomerUseCaseTest {
 
     @Mock
     private CustomerGateway customerGateway;
 
+    @InjectMocks
     private CustomerUseCase customerUseCase;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        customerUseCase = new CustomerUseCase(customerGateway);
     }
 
-    @Test
-    void getAllActiveCustomers_returnsOnlyNonDeleted() {
-        Customer activeCustomer = Customer.builder().id(1L).deleted(false).build();
-        Customer deletedCustomer = Customer.builder().id(2L).deleted(true).build();
+    @Nested
+    class GetAllActiveCustomers {
 
-        when(customerGateway.findAll()).thenReturn(List.of(activeCustomer, deletedCustomer));
+        @Test
+        void shouldReturnOnlyActiveCustomers() {
+            // Arrange
+            Customer activeCustomer = Customer.builder().id(1L).deleted(false).build();
+            Customer deletedCustomer = Customer.builder().id(2L).deleted(true).build();
+            when(customerGateway.findAll()).thenReturn(List.of(activeCustomer, deletedCustomer));
 
-        List<Customer> result = customerUseCase.getAllActiveCustomers();
+            // Act
+            List<Customer> result = customerUseCase.getAllActiveCustomers();
 
-        assertEquals(1, result.size());
-        assertFalse(result.getFirst().getDeleted());
-        verify(customerGateway).findAll();
+            // Assert
+            assertEquals(1, result.size());
+            assertEquals(activeCustomer, result.get(0));
+            verify(customerGateway, times(1)).findAll();
+        }
     }
 
-    @Test
-    void getAllCustomers_returnsAll() {
-        List<Customer> customers = List.of(
-                Customer.builder().id(1L).build(),
-                Customer.builder().id(2L).build()
-        );
+    @Nested
+    class GetAllCustomers {
 
-        when(customerGateway.findAll()).thenReturn(customers);
+        @Test
+        void shouldReturnAllCustomers() {
+            // Arrange
+            Customer customer1 = Customer.builder().id(1L).build();
+            Customer customer2 = Customer.builder().id(2L).build();
+            when(customerGateway.findAll()).thenReturn(List.of(customer1, customer2));
 
-        List<Customer> result = customerUseCase.getAllCustomers();
+            // Act
+            List<Customer> result = customerUseCase.getAllCustomers();
 
-        assertEquals(2, result.size());
-        verify(customerGateway).findAll();
+            // Assert
+            assertEquals(2, result.size());
+            verify(customerGateway, times(1)).findAll();
+        }
     }
 
-    @Test
-    void getCustomerByCpf_found() {
-        String cpf = "12345678900";
-        Customer customer = Customer.builder().cpf(cpf).build();
+    @Nested
+    class GetCustomerById {
 
-        when(customerGateway.findByCpf(cpf)).thenReturn(Optional.of(customer));
+        @Test
+        void shouldReturnCustomerWhenFound() {
+            // Arrange
+            Long customerId = 1L;
+            Customer customer = Customer.builder().id(customerId).build();
+            when(customerGateway.findById(customerId)).thenReturn(Optional.of(customer));
 
-        Customer result = customerUseCase.getCustomerByCpf(cpf);
+            // Act
+            Customer result = customerUseCase.getCustomerById(customerId);
 
-        assertEquals(cpf, result.getCpf());
-        verify(customerGateway).findByCpf(cpf);
+            // Assert
+            assertNotNull(result);
+            assertEquals(customerId, result.getId());
+            verify(customerGateway, times(1)).findById(customerId);
+        }
+
+        @Test
+        void shouldThrowNotFoundExceptionWhenCustomerNotFound() {
+            // Arrange
+            Long customerId = 1L;
+            when(customerGateway.findById(customerId)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(NotFoundException.class, () -> customerUseCase.getCustomerById(customerId));
+            verify(customerGateway, times(1)).findById(customerId);
+        }
     }
 
-    @Test
-    void getCustomerByCpf_notFound_throwsException() {
-        String cpf = "12345678900";
+    @Nested
+    class GetCustomerByCpf {
 
-        when(customerGateway.findByCpf(cpf)).thenReturn(Optional.empty());
+        @Test
+        void shouldReturnCustomerWhenFound() {
+            // Arrange
+            String cpf = "12345678900";
+            Customer customer = Customer.builder().cpf(cpf).build();
+            when(customerGateway.findByCpf(cpf)).thenReturn(Optional.of(customer));
 
-        NotFoundException ex = assertThrows(NotFoundException.class, () -> {
-            customerUseCase.getCustomerByCpf(cpf);
-        });
+            // Act
+            Customer result = customerUseCase.getCustomerByCpf(cpf);
 
-        assertEquals(CustomerUseCase.CUSTOMER_NOT_FOUND_MESSAGE, ex.getMessage());
-        verify(customerGateway).findByCpf(cpf);
+            // Assert
+            assertNotNull(result);
+            assertEquals(cpf, result.getCpf());
+            verify(customerGateway, times(1)).findByCpf(cpf);
+        }
+
+        @Test
+        void shouldThrowNotFoundExceptionWhenCustomerNotFound() {
+            // Arrange
+            String cpf = "12345678900";
+            when(customerGateway.findByCpf(cpf)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(NotFoundException.class, () -> customerUseCase.getCustomerByCpf(cpf));
+            verify(customerGateway, times(1)).findByCpf(cpf);
+        }
     }
 
-    @Test
-    void createCustomer_savesAndReturnsCustomer() {
-        CustomerRequestDTO dto = CustomerRequestDTO.builder()
-                .cpf("12345678900")
-                .name("João")
-                .phone("99999-9999")
-                .email("joao@email.com")
-                .city("São Paulo")
-                .state("SP")
-                .district("Centro")
-                .street("Rua A")
-                .number("100")
-                .build();
+    @Nested
+    class CreateCustomer {
 
-        Customer savedCustomer = Customer.builder()
-                .id(1L)
-                .cpf(dto.getCpf())
-                .name(dto.getName())
-                .build();
+        @Test
+        void shouldCreateCustomerSuccessfully() {
+            // Arrange
+            CustomerRequestDTO requestDTO = new CustomerRequestDTO();
+            requestDTO.setCpf("12345678900");
+            when(customerGateway.findByCpf(requestDTO.getCpf())).thenReturn(Optional.empty());
 
-        when(customerGateway.save(any(Customer.class))).thenReturn(savedCustomer);
+            Customer customerToSave = Customer.builder()
+                    .cpf(requestDTO.getCpf())
+                    .deleted(false)
+                    .build();
+            when(customerGateway.save(any(Customer.class))).thenReturn(customerToSave);
 
-        Customer result = customerUseCase.createCustomer(dto);
 
-        assertEquals(savedCustomer.getId(), result.getId());
-        assertEquals(dto.getCpf(), result.getCpf());
-        verify(customerGateway).save(any(Customer.class));
+            // Act
+            Customer result = customerUseCase.createCustomer(requestDTO);
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(requestDTO.getCpf(), result.getCpf());
+            assertFalse(result.getDeleted());
+            verify(customerGateway, times(1)).findByCpf(requestDTO.getCpf());
+            verify(customerGateway, times(1)).save(any(Customer.class));
+        }
+
+        @Test
+        void shouldThrowIllegalArgumentExceptionWhenCustomerAlreadyExists() {
+            // Arrange
+            CustomerRequestDTO requestDTO = new CustomerRequestDTO();
+            requestDTO.setCpf("12345678900");
+            when(customerGateway.findByCpf(requestDTO.getCpf())).thenReturn(Optional.of(Customer.builder().build()));
+
+            // Act & Assert
+            assertThrows(IllegalArgumentException.class, () -> customerUseCase.createCustomer(requestDTO));
+            verify(customerGateway, times(1)).findByCpf(requestDTO.getCpf());
+            verify(customerGateway, never()).save(any(Customer.class));
+        }
     }
 
-    @Test
-    void updateCustomerById_found_updatesAndReturns() {
-        Long id = 1L;
-        Customer existingCustomer = Customer.builder()
-                .id(id)
-                .cpf("oldcpf")
-                .build();
+    @Nested
+    class UpdateCustomerById {
 
-        CustomerRequestDTO dto = CustomerRequestDTO.builder()
-                .cpf("newcpf")
-                .name("New Name")
-                .phone("12345")
-                .email("new@email.com")
-                .city("City")
-                .state("ST")
-                .district("District")
-                .street("Street")
-                .number("10")
-                .build();
+        @Test
+        void shouldUpdateCustomerSuccessfully() {
+            // Arrange
+            Long customerId = 1L;
+            CustomerRequestDTO requestDTO = new CustomerRequestDTO();
+            requestDTO.setName("New Name");
+            Customer existingCustomer = Customer.builder().id(customerId).name("Old Name").build();
+            when(customerGateway.findById(customerId)).thenReturn(Optional.of(existingCustomer));
 
-        when(customerGateway.findById(id)).thenReturn(Optional.of(existingCustomer));
+            // Act
+            Customer result = customerUseCase.updateCustomerById(customerId, requestDTO);
 
-        Customer result = customerUseCase.updateCustomerById(id, dto);
+            // Assert
+            assertNotNull(result);
+            assertEquals("New Name", result.getName());
+            verify(customerGateway, times(1)).findById(customerId);
+            verify(customerGateway, times(1)).update(existingCustomer);
+        }
 
-        assertEquals(dto.getCpf(), result.getCpf());
-        assertEquals(dto.getName(), result.getName());
-        verify(customerGateway).findById(id);
-        verify(customerGateway).update(existingCustomer);
+        @Test
+        void shouldThrowNotFoundExceptionWhenCustomerToUpdateNotFound() {
+            // Arrange
+            Long customerId = 1L;
+            CustomerRequestDTO requestDTO = new CustomerRequestDTO();
+            when(customerGateway.findById(customerId)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(NotFoundException.class, () -> customerUseCase.updateCustomerById(customerId, requestDTO));
+            verify(customerGateway, times(1)).findById(customerId);
+            verify(customerGateway, never()).update(any(Customer.class));
+        }
     }
 
-    @Test
-    void updateCustomerById_notFound_throwsException() {
-        Long id = 1L;
-        CustomerRequestDTO dto = CustomerRequestDTO.builder().build();
+    @Nested
+    class DeleteCustomerById {
 
-        when(customerGateway.findById(id)).thenReturn(Optional.empty());
+        @Test
+        void shouldSetDeletedToTrue() {
+            // Arrange
+            Long customerId = 1L;
+            Customer customer = Customer.builder().id(customerId).deleted(false).build();
+            when(customerGateway.findById(customerId)).thenReturn(Optional.of(customer));
 
-        NotFoundException ex = assertThrows(NotFoundException.class, () -> {
-            customerUseCase.updateCustomerById(id, dto);
-        });
+            // Act
+            customerUseCase.deleteCustomerById(customerId);
 
-        assertEquals(CustomerUseCase.CUSTOMER_NOT_FOUND_MESSAGE, ex.getMessage());
-        verify(customerGateway).findById(id);
-        verify(customerGateway, never()).update(any());
+            // Assert
+            assertTrue(customer.getDeleted());
+            verify(customerGateway, times(1)).findById(customerId);
+            verify(customerGateway, times(1)).update(customer);
+        }
+
+        @Test
+        void shouldThrowNotFoundExceptionWhenCustomerToDeleteNotFound() {
+            // Arrange
+            Long customerId = 1L;
+            when(customerGateway.findById(customerId)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(NotFoundException.class, () -> customerUseCase.deleteCustomerById(customerId));
+            verify(customerGateway, times(1)).findById(customerId);
+            verify(customerGateway, never()).update(any(Customer.class));
+        }
     }
 
-    @Test
-    void deleteCustomerById_found_setsDeletedTrue() {
-        Long id = 1L;
-        Customer customer = Customer.builder().id(id).deleted(false).build();
+    @Nested
+    class ActivateCustomer {
 
-        when(customerGateway.findById(id)).thenReturn(Optional.of(customer));
+        @Test
+        void shouldSetDeletedToFalse() {
+            // Arrange
+            Long customerId = 1L;
+            Customer customer = Customer.builder().id(customerId).deleted(true).build();
+            when(customerGateway.findById(customerId)).thenReturn(Optional.of(customer));
 
-        customerUseCase.deleteCustomerById(id);
+            // Act
+            customerUseCase.activateCustomer(customerId);
 
-        assertTrue(customer.getDeleted());
-        verify(customerGateway).update(customer);
+            // Assert
+            assertFalse(customer.getDeleted());
+            verify(customerGateway, times(1)).findById(customerId);
+            verify(customerGateway, times(1)).update(customer);
+        }
+
+        @Test
+        void shouldThrowNotFoundExceptionWhenCustomerToActivateNotFound() {
+            // Arrange
+            Long customerId = 1L;
+            when(customerGateway.findById(customerId)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(NotFoundException.class, () -> customerUseCase.activateCustomer(customerId));
+            verify(customerGateway, times(1)).findById(customerId);
+            verify(customerGateway, never()).update(any(Customer.class));
+        }
     }
-
-    @Test
-    void deleteCustomerById_notFound_throwsException() {
-        Long id = 1L;
-
-        when(customerGateway.findById(id)).thenReturn(Optional.empty());
-
-        NotFoundException ex = assertThrows(NotFoundException.class, () -> {
-            customerUseCase.deleteCustomerById(id);
-        });
-
-        assertEquals(CustomerUseCase.CUSTOMER_NOT_FOUND_MESSAGE, ex.getMessage());
-        verify(customerGateway).findById(id);
-        verify(customerGateway, never()).update(any());
-    }
-
-    @Test
-    void activateCustomer_found_setsDeletedFalse() {
-        Long id = 1L;
-        Customer customer = Customer.builder().id(id).deleted(true).build();
-
-        when(customerGateway.findById(id)).thenReturn(Optional.of(customer));
-
-        customerUseCase.activateCustomer(id);
-
-        assertFalse(customer.getDeleted());
-        verify(customerGateway).update(customer);
-    }
-
-    @Test
-    void activateCustomer_notFound_throwsException() {
-        Long id = 1L;
-
-        when(customerGateway.findById(id)).thenReturn(Optional.empty());
-
-        NotFoundException ex = assertThrows(NotFoundException.class, () -> {
-            customerUseCase.activateCustomer(id);
-        });
-
-        assertEquals(CustomerUseCase.CUSTOMER_NOT_FOUND_MESSAGE, ex.getMessage());
-        verify(customerGateway).findById(id);
-        verify(customerGateway, never()).update(any());
-    }
-
 }

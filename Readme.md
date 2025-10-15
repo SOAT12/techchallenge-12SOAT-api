@@ -27,6 +27,20 @@ Aqui estão as instruções de uso que você pode adicionar ao seu `README.md`. 
 
 ---
 
+### Arquitetura da Aplicação:
+
+**Componentes da Aplicação:**
+
+<img src="docs/architecture.png" alt="Diagrama da arquitetura" width="700"/>
+
+**Infraestrutura provisionada:**
+
+<img src="docs/infra-architecture.png" alt="Diagrama da infraestrutura" width="700"/>
+
+**Fluxo de deploy:**
+
+<img src="docs/deploy-flow.png" alt="Fluxo do deploy" width="700"/>
+
 ### 🚀 Instruções de Uso
 
 Siga as instruções abaixo para subir a aplicação em seu ambiente local e interagir com suas funcionalidades.
@@ -48,21 +62,18 @@ O projeto utiliza Docker e Docker Compose para orquestrar a aplicação e seu ba
    docker-compose down
    ```
 
-#### 2. Executando com Kubernetes (Minikube)
+#### 2. Executando com Kubernetes
 
 Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simulando um ambiente mais próximo ao de produção e permitindo a validação das configurações de orquestração.
 
 1. Certifique-se de ter o Docker (https://www.docker.com/get-started), o
-   Minikube (https://minikube.sigs.k8s.io/docs/start/), e
-   o [kubeseal](https://github.com/bitnami-labs/sealed-secrets/releases) instalado.
-    * (Scoop install kubeseal / choco install kubeseal) Lembre-se de executar os comandos como administrador.
+   Minikube (https://minikube.sigs.k8s.io/docs/start/).
 2. Navegue até a pasta raiz do projeto.
 3. Inicie o cluster Minikube com o seguinte comando:
    ```bash
    minikube start --driver=docker
     ```
     * Este comando utiliza o Docker para criar um node Kubernetes local em sua máquina.
-
 
 4. No controller do cluster deverá ser instalado algumas features. Estes são pré-requisitos para a aplicação rodar corretamente.
 
@@ -94,6 +105,11 @@ Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simuland
 
 8. Acesse a aplicação. Após o túnel estar ativo, a aplicação estará disponível em seu navegador no seguinte endereço:
    http://127.0.0.1
+
+9. Para encerrar e finalizar o uso do cluster basta executar o seguinte comando:
+    ```bash
+   minikube delete
+    ```
 
 #### 3. Provisionando a Infraestrutura com Terraform
 
@@ -156,7 +172,123 @@ Para remover todos os recursos criados pelo Terraform nesta configuração, util
    terraform destroy
 ```
 
-#### 4. Fluxo de Uso da API (Caminho Feliz)
+#### 4. FASE 2 - Fluxo de Uso da API (Caminho Feliz)
+
+**Passo 1: Cadastro de Funcionário**
+
+* Vá para a seção `Funcionário` no Swagger.
+* Utilize o endpoint `POST /api/employees` já existe tem tipos de perfil de funcionário. Guarde o `id` retornado.
+* 1 = Gestor, 2 = Mecânico, 3 = Atendente
+  ```json 
+  {
+  "employeeFunctionId": 2,
+  "cpf": "12345678901",
+  "name": "João da Silva",
+  "password": "senha123",
+  "phone": "11999999999",
+  "email": "joao@email.com",
+  "active": true
+  }
+  ```
+
+**Passo 2: Autenticação**
+
+* Vá para a seção `Funcionário` no Swagger.
+* Utilize o endpoint `POST /api/employees/login` para obter um token JWT.
+  ```json 
+  {
+    "cpf": "12345678901",
+    "password": "senha123"
+  }
+  ```
+
+**Passo 3: Criação de ferramentas**
+
+* Vá para a seção `Categorias de Ferramentas`.
+* Use o endpoint `POST /api/tool-categories`.
+  ```json 
+  {
+  "toolCategoryName": "Peças de Reposição",
+  "active": true
+  }
+  ```
+  ```json
+  {
+  "toolCategoryName": "Ferramentas Manuais",
+  "active": true
+  }
+  ```
+
+**Passo 4: Criar Ordem de Serviço com os dados do cliente, veículo, serviços e peças, retornando a identificação única da OS**
+
+* Vá para a seção `Ordem de Serviço`.
+* Use o endpoint `POST /api/service-orders/full` para criar uma nova OS.
+* No corpo da requisição, passe todos os dados do cliente, veículo e serviços a serem criados.
+* Guarde o `id` da OS criada para os próximos passos.
+* employeeId = É opcional, passar apenas quando quiser quiser criar uma OS com um mecânico específico atribuído
+* Notifica o mecânico que ele foi atribuído para uma nova OS
+
+```json 
+{
+  "customer": {
+    "cpf": "48123980027",
+    "name": "Zezinho cliente teste",
+    "phone": "11987654321",
+    "email": "zezinho@email.com",
+    "city": "São Paulo",
+    "state": "SP",
+    "district": "Campo Limpo",
+    "street": "Avenida Doutor Manoel Palomino Fernandes",
+    "number": "294"
+  },
+  "vehicle": {
+    "licensePlate": "XCP4U38",
+    "brand": "Fiat",
+    "model": "Uno",
+    "year": 2020,
+    "color": "Prata"
+  },
+  "services": [
+    {
+      "name": "Troca do volante",
+      "value": 100.0
+    }
+  ],
+  "stockItems": [
+    {
+      "toolName": "Volante",
+      "value": 100.00,
+      "active": true,
+      "quantity": 0,
+      "toolCategoryId": {toolCategoryId}
+    }
+  ],
+  "notes": "string"
+}
+```
+
+**Passo 5: Consultas de OS**
+
+**Passo 5.1: Listagem de OS ordenada por status e data de criação**
+
+* Ordenação por status: Em Execução > Aguardando Aprovação > Diagnóstico > Recebida.
+* Mais antigas primeiro.
+* Excluir (lógica não física) da listagem as OS finalizadas e entregues.
+
+* Utilizar o endpoint `GET /api/service-orders/filtered`
+
+**Passo 5.2: Consultar status da OS por Identificador**
+
+* Utilizar o endpoint `GET /api/service-orders/status?id=1`
+
+**Passo 6: Aprova o Orçamento pelo sistema através de notificação externa**
+
+* Utilizar o endpoint `GET /api/service-orders/{{SERVICE_ORDER_ID}}/webhook/approval?approval=true` altera o status da
+  OS para aprovada ou recusada pelo cliente.
+* A OS deve estar com o status de aguardando aprovaçao.
+* Notifica o mecânico atribuído que a OS foi aprovada.
+
+#### 5. FASE 1 - Fluxo de Uso da API (Caminho Feliz)
 
 Após a aplicação estar em execução, você pode interagir com a API RESTful através da documentação interativa do Swagger.
 
@@ -271,58 +403,6 @@ Após a aplicação estar em execução, você pode interagir com a API RESTful 
 
 **Passo 4: Criação da Ordem de Serviço (OS)**
 
-**Passo 4.1: Criar Ordem de Serviço com os dados do cliente,
-veículo, serviços e peças, retornando a identificação única da OS**
-
-* Vá para a seção `Ordem de Serviço`.
-* Use o endpoint `POST /api/service-orders/full` para criar uma nova OS.
-* No corpo da requisição, passe todos os dados do cliente, veículo e serviços a serem criados.
-* Guarde o `id` da OS criada para os próximos passos.
-* employeeId = É opcional, passar apenas quando quiser quiser criar uma OS com um mecânico específico atribuído
-* Notifica o mecânico que ele foi atribuído para uma nova OS
-
-```json 
-{
-  "customer": {
-    "cpf": "string",
-    "name": "string",
-    "phone": "string",
-    "email": "string",
-    "city": "string",
-    "state": "string",
-    "district": "string",
-    "street": "string",
-    "number": "string"
-  },
-  "vehicle": {
-    "licensePlate": "YKY5Z63",
-    "brand": "string",
-    "model": "string",
-    "year": 1900,
-    "color": "string"
-  },
-  "services": [
-    {
-      "name": "string",
-      "value": 0.01
-    }
-  ],
-  "stockItems": [
-    {
-      "toolName": "string",
-      "value": 0.01,
-      "active": true,
-      "quantity": 0,
-      "toolCategoryId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    }
-  ],
-  "employeeId": 0,
-  "notes": "string"
-}
-```
-
-**Passo 4.2: Criar Ordem de Serviço com dados já cadastrados**
-
 * Vá para a seção `Ordem de Serviço`.
 * Use o endpoint `POST /api/service-orders` para criar uma nova OS.
 * No corpo da requisição, utilize os `ids` do cliente, veículo, mecânico e serviço criados anteriormente.
@@ -352,23 +432,11 @@ veículo, serviços e peças, retornando a identificação única da OS**
 
 **Passo 5: Consultas de OS**
 
-**Passo 5.1: Listagem de OS ordenada por status e data de criação**
-
-* Ordenação por status: Em Execução > Aguardando Aprovação > Diagnóstico > Recebida.
-* Mais antigas primeiro.
-* Excluir (lógica não física) da listagem as OS finalizadas e entregues.
-
-* Utilizar o endpoint `GET /api/service-orders/filtered`
-
-**Passo 5.2: Consultar status da OS por Identificador**
-
-* Utilizar o endpoint `GET /api/service-orders/status?id=1`
-
-**Passo 5.3: Consultar OS por CPF**
+**Passo 5.1: Consultar OS por CPF**
 
 * Utilizar o endpoint `GET /api/service-orders/consult?document=48123980027`
 
-**Passo 5.4: Consultar OS por Placa do Veículo**
+**Passo 5.2: Consultar OS por Placa do Veículo**
 
 * Utilizar o endpoint `GET /api/service-orders/consult?licensePlate=XCP4U38`
 
@@ -387,16 +455,9 @@ veículo, serviços e peças, retornando a identificação única da OS**
 
 **Passo 6.3: Aprovação de Orçamento**
 
-**Passo 6.3.1: Aprova o Orçamento pelo sistema**
-
 * Utilizar o endpoint `PATCH /api/service-orders/{{SERVICE_ORDER_ID}}/approve?employeeId=1` altera o status da OS para aprovada pelo cliente.
 * Quando a aprovação for feita pela Atendente e não pelo cliente pode ser passado o `employeeId` para já associar para um mecânico específico
 * Notifica o mecânico atribuído que a OS foi aprovada
-
-**Passo 6.3.2: Cliente Aprova o Orçamento através de notificação externa**
-
-* Utilizar o endpoint `GET /api/service-orders/{{SERVICE_ORDER_ID}}/webhook/approval?approval=true` altera o status da
-  OS para aprovada ou recusada pelo cliente.
 
 **Passo 6.4: Iniciar Execução do Serviço**
 
