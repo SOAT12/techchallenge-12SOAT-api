@@ -95,7 +95,53 @@ Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simuland
 8. Acesse a aplicação. Após o túnel estar ativo, a aplicação estará disponível em seu navegador no seguinte endereço:
    http://127.0.0.1
 
-#### 3. Fluxo de Uso da API (Caminho Feliz)
+#### 3. Provisionando a Infraestrutura com Terraform
+
+Esta seção descreve como utilizar o Terraform para provisionar toda a infraestrutura necessária para o projeto de forma local.
+
+1.  **Dependências do Projeto:** Certifique-se de que todos os pré-requisitos da seção anterior estejam devidamente instalados.
+
+2.  **Instalação do Terraform:** É necessário ter o Terraform instalado em sua máquina. Siga as instruções de instalação no [site oficial da HashiCorp](https://developer.hashicorp.com/terraform/install).
+
+#### Passos para Execução
+
+1.  **Navegue até a pasta `infra`** do projeto em seu terminal.
+
+2.  **Inicialize o Terraform:**
+    Este comando prepara o diretório de trabalho, baixando os provedores necessários e configurando o backend.
+    ```bash
+    terraform init
+    ```
+
+3.  **Valide a configuração:**
+    Este comando faz uma verificação de sanidade para garantir que a sintaxe dos seus arquivos de configuração está tecnicamente correta.
+    ```bash
+    terraform validate
+    ```
+
+4.  **Gere um plano de execução:**
+    Este comando cria um plano que permite visualizar as alterações (criações, atualizações, destruições) que o Terraform fará na infraestrutura. É um passo crucial para revisar e garantir que as mudanças estão corretas antes de aplicá-las.
+    ```bash
+    terraform plan
+    ```
+
+5.  **Aplique a configuração para criar a infraestrutura:**
+    Após revisar o plano e confirmar que as alterações estão corretas, execute este comando para aplicar as mudanças. Você precisará digitar `yes` para confirmar e provisionar a infraestrutura.
+    ```bash
+    terraform apply
+    ```
+
+#### Destruindo a Infraestrutura
+
+Para remover todos os recursos criados pelo Terraform nesta configuração, utilize o comando abaixo. Ele também exibirá um plano de destruição e pedirá sua confirmação antes de prosseguir.
+
+> **Atenção:** Este comando é destrutivo e irá apagar permanentemente a infraestrutura gerenciada. Use com cuidado.
+
+```bash
+terraform destroy
+```
+
+#### 4. Fluxo de Uso da API (Caminho Feliz)
 
 Após a aplicação estar em execução, você pode interagir com a API RESTful através da documentação interativa do Swagger.
 

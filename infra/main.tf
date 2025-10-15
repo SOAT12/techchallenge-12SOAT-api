@@ -56,3 +56,13 @@ resource "kubectl_manifest" "ingress" {
   override_namespace = "techchallenge"
   yaml_body          = file("../k8s/ingress.yaml")
 }
+
+resource "null_resource" "minikube_starter" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = "minikube start --driver=docker --cpus 4 --memory 4192"
+  }
+}
