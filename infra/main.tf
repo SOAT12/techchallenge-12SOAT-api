@@ -1,4 +1,5 @@
 resource "kubernetes_namespace_v1" "techchallenge_ns" {
+
   metadata {
     name = "techchallenge"
   }
@@ -57,12 +58,32 @@ resource "kubectl_manifest" "ingress" {
   yaml_body          = file("../k8s/ingress.yaml")
 }
 
-resource "null_resource" "minikube_starter" {
-  triggers = {
-    always_run = timestamp()
+resource "null_resource" "app_port_forward" {
+  depends_on = [kubectl_manifest.app_service]
+
+  provisioner "local-exec" {
+    when    = create
+    command = <<EOT
+      nohup kubectl port-forward svc/techchallenge-service 8080:8080 -n techchallenge > /dev/null 2>&1 &
+      sleep 2
+      echo "======================================================================="
+      echo "✅ Porta 8080 habilitada!"
+      echo "➡️  Acesse o Swagger UI em: http://localhost:8080/swagger-ui/index.html"
+      echo "======================================================================="
+    EOT
   }
 
   provisioner "local-exec" {
-    command = "minikube start --driver=docker --cpus 4 --memory 4192"
+    when    = destroy
+    command = <<EOT
+      echo "🧹 Executando limpeza do ambiente..."
+
+      kill $(lsof -t -i:8080) || true
+      echo "✅ Port-forward 8080 finalizado."
+
+      minikube delete --all-profiles || true
+      echo "✅ Minikube deletado."
+    EOT
+    interpreter = ["/bin/bash", "-c"]
   }
 }
