@@ -71,19 +71,6 @@ resource "null_resource" "app_port_forward" {
       echo "➡️  Acesse o Swagger UI em: http://localhost:8080/swagger-ui/index.html"
       echo "======================================================================="
     EOT
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<EOT
-      echo "🧹 Executando limpeza do ambiente..."
-
-      kill $(lsof -t -i:8080) || true
-      echo "✅ Port-forward 8080 finalizado."
-
-      minikube delete --all-profiles || true
-      echo "✅ Minikube deletado."
-    EOT
-    interpreter = ["/bin/bash", "-c"]
+    interpreter = ["PowerShell", "-Command"]
   }
 }
