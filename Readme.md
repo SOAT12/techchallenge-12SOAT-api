@@ -118,11 +118,21 @@ Esta seção descreve como utilizar o Terraform para provisionar toda a infraest
     ```bash
     terraform validate
     ```
-    
-4. **Aplique a configuração para criar a infraestrutura:**
+
+4.  **Gere um plano de execução:**
+    Este comando cria um plano que permite visualizar as alterações (criações, atualizações, destruições) que o Terraform fará na infraestrutura. É um passo crucial para revisar e garantir que as mudanças estão corretas antes de aplicá-las.
+    ```bash
+    terraform plan
+    ```
+
+5.  **Aplique a configuração para criar a infraestrutura:**
     Após revisar o plano e confirmar que as alterações estão corretas, execute este comando para aplicar as mudanças. Você precisará digitar `yes` para confirmar e provisionar a infraestrutura.
     ```bash
     terraform apply -target=null_resource.minikube_starter -auto-approve
+    ```
+6. Aguarde a inicialização dos Pods. Monitore o status até que todos os pods da aplicação estejam com o status Running e READY 1/1.
+   ```bash
+   minikube kubectl -- get pods -n techchallenge --watch
     ```
 
 #### Destruindo a Infraestrutura
@@ -131,9 +141,9 @@ Para remover todos os recursos criados pelo Terraform nesta configuração, util
 
 > **Atenção:** Este comando é destrutivo e irá apagar permanentemente a infraestrutura gerenciada. Use com cuidado.
 
-    ```bash
-    terraform destroy
-    ```
+```bash
+terraform destroy
+```
 
 #### 4. Fluxo de Uso da API (Caminho Feliz)
 
