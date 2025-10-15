@@ -141,6 +141,11 @@ Esta seção descreve como utilizar o Terraform para provisionar toda a infraest
    minikube kubectl -- get pods -n techchallenge --watch
     ```
 
+8. Se não habilitar automáticamente a porta 8080, rodar o comando abaixo.
+   ```bash
+   kubectl port-forward svc/techchallenge-service 8080:8080 -n techchallenge
+    ```
+
 #### Destruindo a Infraestrutura
 
 Para remover todos os recursos criados pelo Terraform nesta configuração, utilize o comando abaixo. Ele também exibirá um plano de destruição e pedirá sua confirmação antes de prosseguir.

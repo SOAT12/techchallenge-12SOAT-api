@@ -64,12 +64,15 @@ resource "null_resource" "app_port_forward" {
   provisioner "local-exec" {
     when    = create
     command = <<EOT
-      nohup kubectl port-forward svc/techchallenge-service 8080:8080 -n techchallenge > /dev/null 2>&1 &
-      sleep 2
-      echo "======================================================================="
-      echo "✅ Porta 8080 habilitada!"
-      echo "➡️  Acesse o Swagger UI em: http://localhost:8080/swagger-ui/index.html"
-      echo "======================================================================="
+      # 1. Comando para rodar em background usando Start-Process
+      Start-Process kubectl -ArgumentList "port-forward svc/techchallenge-service 8080:8080 -n techchallenge"
+
+      # 2. Pausa e Mensagem (usando comandos PowerShell)
+      Start-Sleep -Seconds 5
+      Write-Host "======================================================================="
+      Write-Host "Porta 8080 habilitada!"
+      Write-Host "Acesse o Swagger UI em: http://localhost:8080/swagger-ui/index.html"
+      Write-Host "======================================================================="
     EOT
     interpreter = ["PowerShell", "-Command"]
   }
