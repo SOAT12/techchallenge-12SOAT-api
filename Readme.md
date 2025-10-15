@@ -29,7 +29,17 @@ Aqui estão as instruções de uso que você pode adicionar ao seu `README.md`. 
 
 ### Arquitetura da Aplicação:
 
-![Diagrama da arquitetura](docs/architecture.png)
+**Componentes da Aplicação:**
+
+<img src="docs/architecture.png" alt="Diagrama da arquitetura" width="700"/>
+
+**Infraestrutura provisionada:**
+
+<img src="docs/infra-architecture.png" alt="Diagrama da infraestrutura" width="700"/>
+
+**Fluxo de deploy:**
+
+<img src="docs/deploy-flow.png" alt="Fluxo do deploy" width="700"/>
 
 ### 🚀 Instruções de Uso
 
