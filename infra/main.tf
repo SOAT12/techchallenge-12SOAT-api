@@ -1,4 +1,5 @@
 resource "kubernetes_namespace_v1" "techchallenge_ns" {
+
   metadata {
     name = "techchallenge"
   }
@@ -57,12 +58,22 @@ resource "kubectl_manifest" "ingress" {
   yaml_body          = file("../k8s/ingress.yaml")
 }
 
-resource "null_resource" "minikube_starter" {
-  triggers = {
-    always_run = timestamp()
-  }
+resource "null_resource" "app_port_forward" {
+  depends_on = [kubectl_manifest.app_service]
 
   provisioner "local-exec" {
-    command = "minikube start --driver=docker --cpus 4 --memory 4192"
+    when    = create
+    command = <<EOT
+      # 1. Comando para rodar em background usando Start-Process
+      Start-Process kubectl -ArgumentList "port-forward svc/techchallenge-service 8080:8080 -n techchallenge"
+
+      # 2. Pausa e Mensagem (usando comandos PowerShell)
+      Start-Sleep -Seconds 5
+      Write-Host "======================================================================="
+      Write-Host "Porta 8080 habilitada!"
+      Write-Host "Acesse o Swagger UI em: http://localhost:8080/swagger-ui/index.html"
+      Write-Host "======================================================================="
+    EOT
+    interpreter = ["PowerShell", "-Command"]
   }
 }
