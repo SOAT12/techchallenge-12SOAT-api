@@ -8,6 +8,7 @@ import com.fiap.soat12.tc_group_7.cleanarch.util.Status;
 import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderFullCreationRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
+import com.fiap.soat12.tc_group_7.service.MailClient;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -30,6 +31,8 @@ public class ServiceOrderUseCase {
     private final VehicleUseCase vehicleUseCase;
     private final VehicleServiceUseCase vehicleServiceUseCase;
     private final StockUseCase stockUseCase;
+    private final MailClient mailClient;
+
 
     public ServiceOrder createServiceOrder(ServiceOrderRequestDTO requestDTO) {
         ServiceOrder serviceOrder = new ServiceOrder();
@@ -202,12 +205,12 @@ public class ServiceOrderUseCase {
         variables.put("totalValue", order.getTotalValue());
         variables.put("userName", order.getCustomer().getName());
         variables.put("services", serviceOrder.getServices());
-        variables.put("directApproveLink", BASE_URL + id + "/approve");
-        variables.put("directRejectLink", BASE_URL + id + "/reject");
+        variables.put("directApproveLink", BASE_URL + id + "/webhook/approval?approval=true");
+        variables.put("directRejectLink", BASE_URL + id + "/webhook/approval?approval=false");
 
         String subject = order.getCustomer().getName() + " Seu Orçamento de Serviços está Pronto! (Aprovação Necessária)";
 
-        //emailClient.sendMail(order.getCustomer().getEmail(), subject, "mailTemplateServices", variables);
+        mailClient.sendMail(order.getCustomer().getEmail(), subject, "mailTemplateServices", variables);
 
         return serviceOrder;
     }

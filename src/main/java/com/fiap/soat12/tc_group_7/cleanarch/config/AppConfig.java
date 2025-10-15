@@ -290,8 +290,9 @@ public class AppConfig {
                                                    NotificationUseCase notificationUseCase,
                                                    VehicleUseCase vehicleUseCase,
                                                    VehicleServiceUseCase vehicleServiceUseCase,
-                                                   StockUseCase stockUseCase) {
-        return new ServiceOrderUseCase(serviceOrderGateway, employeeUseCase, customerUseCase, notificationUseCase, vehicleUseCase, vehicleServiceUseCase, stockUseCase);
+                                                   StockUseCase stockUseCase,
+                                                   MailClient mailClient) {
+        return new ServiceOrderUseCase(serviceOrderGateway, employeeUseCase, customerUseCase, notificationUseCase, vehicleUseCase, vehicleServiceUseCase, stockUseCase, mailClient);
     }
 
     @Bean

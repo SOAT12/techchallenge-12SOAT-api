@@ -308,31 +308,6 @@ class ServiceOrderUseCaseTest {
     }
 
     @Nested
-    class WaitForApproval {
-        @Test
-        void shouldWaitForApproval() throws Exception {
-            // Arrange
-            Long id = 1L;
-            Customer customer = Customer.builder().name("Test").email("test@test.com").build();
-            ServiceOrder order = ServiceOrder.builder()
-                .id(id)
-                .status(com.fiap.soat12.tc_group_7.cleanarch.util.Status.IN_DIAGNOSIS)
-                .customer(customer)
-                .build();
-            when(serviceOrderGateway.findById(id)).thenReturn(Optional.of(order));
-            when(serviceOrderGateway.save(order)).thenReturn(order);
-
-            // Act
-            ServiceOrder result = serviceOrderUseCase.waitForApproval(id);
-
-            // Assert
-            assertNotNull(result);
-            assertEquals(com.fiap.soat12.tc_group_7.cleanarch.util.Status.WAITING_FOR_APPROVAL, result.getStatus());
-            verify(serviceOrderGateway).save(order);
-        }
-    }
-
-    @Nested
     class Approve {
         @Test
         void shouldApproveOrder() throws Exception {

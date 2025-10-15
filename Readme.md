@@ -25,6 +25,9 @@ O foco deste MVP é garantir uma gestão eficiente e segura, aplicando boas prá
 
 Aqui estão as instruções de uso que você pode adicionar ao seu `README.md`. A seção está dividida em como executar o projeto com Docker e um guia para testar o "fluxo feliz" (happy path) das rotas da API usando a documentação do Swagger.
 
+
+Link do vídeo do Youtube:
+https://www.youtube.com/watch?v=dIdenFq2bOw
 ---
 
 ### Arquitetura da Aplicação:
@@ -194,7 +197,7 @@ Para remover todos os recursos criados pelo Terraform nesta configuração, util
 **Passo 2: Autenticação**
 
 * Vá para a seção `Funcionário` no Swagger.
-* Utilize o endpoint `POST /api/employees/login` para obter um token JWT.
+* Utilize o endpoint `POST /api/auth/login` para obter um token JWT.
   ```json 
   {
     "cpf": "12345678901",
