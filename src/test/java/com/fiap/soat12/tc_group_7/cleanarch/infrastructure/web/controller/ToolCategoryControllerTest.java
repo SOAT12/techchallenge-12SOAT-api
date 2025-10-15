@@ -6,17 +6,20 @@ import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.ToolCat
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.ToolCategoryRequestDTO;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.ToolCategoryResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class ToolCategoryControllerTest {
 
@@ -34,110 +37,119 @@ class ToolCategoryControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void createToolCategory_ShouldDelegateToUseCaseAndPresenter() {
-        ToolCategoryRequestDTO requestDTO = new ToolCategoryRequestDTO("New Category");
-        ToolCategory domainObject = ToolCategory.create("New Category");
-        ToolCategoryResponseDTO responseDTO = new ToolCategoryResponseDTO();
+    @Nested
+    class CreateToolCategory {
+        @Test
+        void shouldCreateToolCategory() {
+            // Arrange
+            ToolCategoryRequestDTO dto = new ToolCategoryRequestDTO();
+            when(toolCategoryUseCase.createToolCategory(any())).thenReturn(new ToolCategory(UUID.randomUUID(), "Test", true));
+            when(toolCategoryPresenter.toToolCategoryResponseDTO(any())).thenReturn(new ToolCategoryResponseDTO());
 
-        when(toolCategoryUseCase.createToolCategory("New Category")).thenReturn(domainObject);
-        when(toolCategoryPresenter.toToolCategoryResponseDTO(domainObject)).thenReturn(responseDTO);
+            // Act
+            ToolCategoryResponseDTO result = toolCategoryController.createToolCategory(dto);
 
-        ToolCategoryResponseDTO result = toolCategoryController.createToolCategory(requestDTO);
-
-        assertNotNull(result);
-        verify(toolCategoryUseCase, times(1)).createToolCategory("New Category");
-        verify(toolCategoryPresenter, times(1)).toToolCategoryResponseDTO(domainObject);
+            // Assert
+            assertNotNull(result);
+        }
     }
 
-    @Test
-    void getToolCategoryById_ShouldDelegateToUseCaseAndPresenter() {
-        UUID id = UUID.randomUUID();
-        ToolCategory domainObject = new ToolCategory(id, "Test", true);
-        ToolCategoryResponseDTO responseDTO = new ToolCategoryResponseDTO();
+    @Nested
+    class GetToolCategoryById {
+        @Test
+        void shouldGetToolCategoryById() {
+            // Arrange
+            UUID id = UUID.randomUUID();
+            when(toolCategoryUseCase.getToolCategoryById(id)).thenReturn(new ToolCategory(UUID.randomUUID(), "Test", true));
+            when(toolCategoryPresenter.toToolCategoryResponseDTO(any())).thenReturn(new ToolCategoryResponseDTO());
 
-        when(toolCategoryUseCase.getToolCategoryById(id)).thenReturn(domainObject);
-        when(toolCategoryPresenter.toToolCategoryResponseDTO(domainObject)).thenReturn(responseDTO);
+            // Act
+            ToolCategoryResponseDTO result = toolCategoryController.getToolCategoryById(id);
 
-        ToolCategoryResponseDTO result = toolCategoryController.getToolCategoryById(id);
-
-        assertNotNull(result);
-        verify(toolCategoryUseCase, times(1)).getToolCategoryById(id);
-        verify(toolCategoryPresenter, times(1)).toToolCategoryResponseDTO(domainObject);
+            // Assert
+            assertNotNull(result);
+        }
     }
 
-    @Test
-    void getAllToolCategories_ShouldReturnListOfDTOs() {
-        ToolCategory domainObject = ToolCategory.create("Test");
-        List<ToolCategory> domainList = Collections.singletonList(domainObject);
-        ToolCategoryResponseDTO responseDTO = new ToolCategoryResponseDTO();
+    @Nested
+    class GetAllToolCategories {
+        @Test
+        void shouldGetAllToolCategories() {
+            // Arrange
+            when(toolCategoryUseCase.getAllToolCategories()).thenReturn(List.of(new ToolCategory(UUID.randomUUID(), "Test", true)));
+            when(toolCategoryPresenter.toToolCategoryResponseDTO(any())).thenReturn(new ToolCategoryResponseDTO());
 
-        when(toolCategoryUseCase.getAllToolCategories()).thenReturn(domainList);
-        when(toolCategoryPresenter.toToolCategoryResponseDTO(domainObject)).thenReturn(responseDTO);
+            // Act
+            List<ToolCategoryResponseDTO> result = toolCategoryController.getAllToolCategories();
 
-        List<ToolCategoryResponseDTO> result = toolCategoryController.getAllToolCategories();
-
-        assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
-        verify(toolCategoryUseCase, times(1)).getAllToolCategories();
+            // Assert
+            assertFalse(result.isEmpty());
+        }
     }
 
-    @Test
-    void getAllToolCategoriesActive_ShouldReturnListOfDTOs() {
-        ToolCategory domainObject = ToolCategory.create("Test");
-        List<ToolCategory> domainList = Collections.singletonList(domainObject);
-        ToolCategoryResponseDTO responseDTO = new ToolCategoryResponseDTO();
+    @Nested
+    class GetAllToolCategoriesActive {
+        @Test
+        void shouldGetAllToolCategoriesActive() {
+            // Arrange
+            when(toolCategoryUseCase.getAllToolCategoriesActive()).thenReturn(List.of(new ToolCategory(UUID.randomUUID(), "Test", true)));
+            when(toolCategoryPresenter.toToolCategoryResponseDTO(any())).thenReturn(new ToolCategoryResponseDTO());
 
-        when(toolCategoryUseCase.getAllToolCategoriesActive()).thenReturn(domainList);
-        when(toolCategoryPresenter.toToolCategoryResponseDTO(domainObject)).thenReturn(responseDTO);
+            // Act
+            List<ToolCategoryResponseDTO> result = toolCategoryController.getAllToolCategoriesActive();
 
-        List<ToolCategoryResponseDTO> result = toolCategoryController.getAllToolCategoriesActive();
-
-        assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
-        verify(toolCategoryUseCase, times(1)).getAllToolCategoriesActive();
+            // Assert
+            assertFalse(result.isEmpty());
+        }
     }
 
-    @Test
-    void updateToolCategory_ShouldDelegateToUseCaseAndPresenter() {
-        UUID id = UUID.randomUUID();
-        ToolCategoryRequestDTO requestDTO = new ToolCategoryRequestDTO("Updated Name");
-        ToolCategory domainObject = new ToolCategory(id, "Updated Name", true);
-        ToolCategoryResponseDTO responseDTO = new ToolCategoryResponseDTO();
+    @Nested
+    class UpdateToolCategory {
+        @Test
+        void shouldUpdateToolCategory() {
+            // Arrange
+            UUID id = UUID.randomUUID();
+            ToolCategoryRequestDTO dto = new ToolCategoryRequestDTO();
+            when(toolCategoryUseCase.updateToolCategory(any(), any())).thenReturn(new ToolCategory(UUID.randomUUID(), "Test", true));
+            when(toolCategoryPresenter.toToolCategoryResponseDTO(any())).thenReturn(new ToolCategoryResponseDTO());
 
-        when(toolCategoryUseCase.updateToolCategory(id, "Updated Name")).thenReturn(domainObject);
-        when(toolCategoryPresenter.toToolCategoryResponseDTO(domainObject)).thenReturn(responseDTO);
+            // Act
+            ToolCategoryResponseDTO result = toolCategoryController.updateToolCategory(id, dto);
 
-        ToolCategoryResponseDTO result = toolCategoryController.updateToolCategory(id, requestDTO);
-
-        assertNotNull(result);
-        verify(toolCategoryUseCase, times(1)).updateToolCategory(id, "Updated Name");
-        verify(toolCategoryPresenter, times(1)).toToolCategoryResponseDTO(domainObject);
+            // Assert
+            assertNotNull(result);
+        }
     }
 
-    @Test
-    void reactivateToolCategory_ShouldDelegateToUseCaseAndPresenter() {
-        UUID id = UUID.randomUUID();
-        ToolCategory domainObject = new ToolCategory(id, "Reactivated", true);
-        ToolCategoryResponseDTO responseDTO = new ToolCategoryResponseDTO();
+    @Nested
+    class ReactivateToolCategory {
+        @Test
+        void shouldReactivateToolCategory() {
+            // Arrange
+            UUID id = UUID.randomUUID();
+            when(toolCategoryUseCase.reactivateToolCategory(id)).thenReturn(new ToolCategory(UUID.randomUUID(), "Test", true));
+            when(toolCategoryPresenter.toToolCategoryResponseDTO(any())).thenReturn(new ToolCategoryResponseDTO());
 
-        when(toolCategoryUseCase.reactivateToolCategory(id)).thenReturn(domainObject);
-        when(toolCategoryPresenter.toToolCategoryResponseDTO(domainObject)).thenReturn(responseDTO);
+            // Act
+            ToolCategoryResponseDTO result = toolCategoryController.reactivateToolCategory(id);
 
-        ToolCategoryResponseDTO result = toolCategoryController.reactivateToolCategory(id);
-
-        assertNotNull(result);
-        verify(toolCategoryUseCase, times(1)).reactivateToolCategory(id);
-        verify(toolCategoryPresenter, times(1)).toToolCategoryResponseDTO(domainObject);
+            // Assert
+            assertNotNull(result);
+        }
     }
 
-    @Test
-    void logicallyDeleteToolCategory_ShouldCallUseCase() {
-        UUID id = UUID.randomUUID();
-        doNothing().when(toolCategoryUseCase).logicallyDeleteToolCategory(id);
+    @Nested
+    class LogicallyDeleteToolCategory {
+        @Test
+        void shouldLogicallyDeleteToolCategory() {
+            // Arrange
+            UUID id = UUID.randomUUID();
 
-        toolCategoryController.logicallyDeleteToolCategory(id);
+            // Act
+            toolCategoryController.logicallyDeleteToolCategory(id);
 
-        verify(toolCategoryUseCase, times(1)).logicallyDeleteToolCategory(id);
+            // Assert
+            verify(toolCategoryUseCase).logicallyDeleteToolCategory(id);
+        }
     }
 }

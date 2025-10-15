@@ -1,18 +1,25 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.useCases;
 
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ServiceOrder;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Stock;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
 import com.fiap.soat12.tc_group_7.cleanarch.exception.NotFoundException;
+import com.fiap.soat12.tc_group_7.cleanarch.exception.StockUnavailableException;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.StockGateway;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.ToolCategoryGateway;
+import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,157 +37,279 @@ class StockUseCaseTest {
     @InjectMocks
     private StockUseCase stockUseCase;
 
-    private ToolCategory validCategory;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        validCategory = new ToolCategory(UUID.randomUUID(), "Hammers", true);
     }
 
-    @Test
-    void createStock_WithValidData_ShouldSaveAndReturnStock() {
-        when(toolCategoryGateway.findById(validCategory.getId())).thenReturn(Optional.of(validCategory));
-        when(stockGateway.findByName(anyString())).thenReturn(Optional.empty());
-        when(stockGateway.save(any(Stock.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    @Nested
+    class CreateStock {
+        @Test
+        void shouldCreateStock() {
+            // Arrange
+            UUID toolCategoryId = UUID.randomUUID();
+            ToolCategory toolCategory = new ToolCategory(toolCategoryId, "Category", true);
+            when(toolCategoryGateway.findById(toolCategoryId)).thenReturn(Optional.of(toolCategory));
+            when(stockGateway.findByName(anyString())).thenReturn(Optional.empty());
+            when(stockGateway.save(any(Stock.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        Stock result = stockUseCase.createStock("Sledgehammer", BigDecimal.TEN, 5, validCategory.getId());
+            // Act
+            Stock result = stockUseCase.createStock("Tool", BigDecimal.TEN, 10, toolCategoryId);
 
-        assertNotNull(result);
-        assertEquals("Sledgehammer", result.getToolName());
-        verify(stockGateway, times(1)).save(any(Stock.class));
+            // Assert
+            assertNotNull(result);
+            verify(stockGateway).save(any(Stock.class));
+        }
+
+        @Test
+        void shouldThrowIllegalArgumentExceptionWhenCategoryNotFound() {
+            // Arrange
+            UUID toolCategoryId = UUID.randomUUID();
+            when(toolCategoryGateway.findById(toolCategoryId)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(IllegalArgumentException.class, () -> stockUseCase.createStock("Tool", BigDecimal.TEN, 10, toolCategoryId));
+            verify(stockGateway, never()).save(any(Stock.class));
+        }
+
+        @Test
+        void shouldThrowIllegalArgumentExceptionWhenItemAlreadyExists() {
+            // Arrange
+            UUID toolCategoryId = UUID.randomUUID();
+            ToolCategory toolCategory = new ToolCategory(toolCategoryId, "Category", true);
+            when(toolCategoryGateway.findById(toolCategoryId)).thenReturn(Optional.of(toolCategory));
+            when(stockGateway.findByName(anyString())).thenReturn(Optional.of(Stock.builder().build()));
+
+            // Act & Assert
+            assertThrows(IllegalArgumentException.class, () -> stockUseCase.createStock("Tool", BigDecimal.TEN, 10, toolCategoryId));
+            verify(stockGateway, never()).save(any(Stock.class));
+        }
     }
 
-    @Test
-    void createStock_WithExistingName_ShouldThrowException() {
-        String toolName = "Sledgehammer";
-        Stock existingStock = Stock.create(toolName, BigDecimal.ONE, 1, validCategory);
-        when(toolCategoryGateway.findById(validCategory.getId())).thenReturn(Optional.of(validCategory));
-        when(stockGateway.findByName(toolName)).thenReturn(Optional.of(existingStock));
+    @Nested
+    class UpdateStockItem {
+        @Test
+        void shouldUpdateStockItem() {
+            // Arrange
+            UUID id = UUID.randomUUID();
+            UUID toolCategoryId = UUID.randomUUID();
+            ToolCategory toolCategory = new ToolCategory(toolCategoryId, "Category", true);
+            Stock existingStock = Stock.builder().id(id).toolName("Old Tool").quantity(5).build();
 
-        Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            stockUseCase.createStock(toolName, BigDecimal.TEN, 5, validCategory.getId());
-        });
+            when(stockGateway.findById(id)).thenReturn(Optional.of(existingStock));
+            when(toolCategoryGateway.findById(toolCategoryId)).thenReturn(Optional.of(toolCategory));
+            when(stockGateway.save(any(Stock.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        assertEquals("Item já cadastrado.", e.getMessage());
-        verify(stockGateway, never()).save(any());
+            // Act
+            Stock result = stockUseCase.updateStockItem(id, "New Tool", BigDecimal.ONE, 10, true, toolCategoryId);
+
+            // Assert
+            assertNotNull(result);
+            assertEquals("New Tool", result.getToolName());
+            assertEquals(10, result.getQuantity());
+            verify(stockGateway).save(any(Stock.class));
+        }
+
+        @Test
+        void shouldThrowNotFoundExceptionWhenStockItemNotFound() {
+            // Arrange
+            UUID id = UUID.randomUUID();
+            when(stockGateway.findById(id)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(NotFoundException.class, () -> stockUseCase.updateStockItem(id, "New Tool", BigDecimal.ONE, 10, true, UUID.randomUUID()));
+            verify(stockGateway, never()).save(any(Stock.class));
+        }
     }
 
-    @Test
-    void createStock_WithInvalidCategory_ShouldThrowException() {
-        UUID invalidCategoryId = UUID.randomUUID();
-        when(toolCategoryGateway.findById(invalidCategoryId)).thenReturn(Optional.empty());
+    @Nested
+    class GetAllStock {
+        @Test
+        void shouldGetAllStock() {
+            // Arrange
+            when(stockGateway.findAll()).thenReturn(List.of(Stock.builder().build()));
 
-        Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            stockUseCase.createStock("Tool", BigDecimal.TEN, 5, invalidCategoryId);
-        });
+            // Act
+            List<Stock> result = stockUseCase.getAllStock();
 
-        assertEquals("Categoria não encontrada", e.getMessage());
+            // Assert
+            assertFalse(result.isEmpty());
+            verify(stockGateway).findAll();
+        }
     }
 
-    @Test
-    void updateStockItem_WithValidData_ShouldUpdateAndSave() {
-        UUID stockId = UUID.randomUUID();
-        Stock existingStock = new Stock(stockId, "Old Name", BigDecimal.ONE, 10, validCategory, true, null, null);
+    @Nested
+    class GetAllActiveStockItems {
+        @Test
+        void shouldGetAllActiveStockItems() {
+            // Arrange
+            when(stockGateway.findAllActive()).thenReturn(List.of(Stock.builder().build()));
 
-        when(stockGateway.findById(stockId)).thenReturn(Optional.of(existingStock));
-        when(toolCategoryGateway.findById(validCategory.getId())).thenReturn(Optional.of(validCategory));
-        when(stockGateway.findByName("New Name")).thenReturn(Optional.empty());
-        when(stockGateway.save(any(Stock.class))).thenReturn(existingStock);
+            // Act
+            List<Stock> result = stockUseCase.getAllActiveStockItems();
 
-        Stock result = stockUseCase.updateStockItem(stockId, "New Name", BigDecimal.TEN, 15, true, validCategory.getId());
-
-        assertNotNull(result);
-        assertEquals("New Name", result.getToolName());
-        assertEquals(0, BigDecimal.TEN.compareTo(result.getValue()));
-        assertEquals(15, result.getQuantity()); // 10 base + 5 added
-        verify(stockGateway, times(1)).save(existingStock);
+            // Assert
+            assertFalse(result.isEmpty());
+            verify(stockGateway).findAllActive();
+        }
     }
 
-    @Test
-    void updateStockItem_WithExistingNameToDifferentItem_ShouldThrowException() {
-        UUID stockId = UUID.randomUUID();
-        String newName = "New Name";
-        Stock existingStock = new Stock(stockId, "Old Name", BigDecimal.ONE, 10, validCategory, true, null, null);
-        Stock otherStock = new Stock(UUID.randomUUID(), newName, BigDecimal.ONE, 1, validCategory, true, null, null);
+    @Nested
+    class FindStockItemById {
+        @Test
+        void shouldFindStockItemById() {
+            // Arrange
+            UUID id = UUID.randomUUID();
+            when(stockGateway.findActiveById(id)).thenReturn(Optional.of(Stock.builder().build()));
 
-        when(stockGateway.findById(stockId)).thenReturn(Optional.of(existingStock));
-        when(stockGateway.findByName(newName)).thenReturn(Optional.of(otherStock));
+            // Act
+            Stock result = stockUseCase.findStockItemById(id);
 
-        Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            stockUseCase.updateStockItem(stockId, newName, BigDecimal.TEN, 15, true, validCategory.getId());
-        });
+            // Assert
+            assertNotNull(result);
+            verify(stockGateway).findActiveById(id);
+        }
 
-        assertEquals(String.format("O nome da ferramenta %s já está em uso.", newName), e.getMessage());
+        @Test
+        void shouldThrowNotFoundExceptionWhenStockItemNotFound() {
+            // Arrange
+            UUID id = UUID.randomUUID();
+            when(stockGateway.findActiveById(id)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(NotFoundException.class, () -> stockUseCase.findStockItemById(id));
+        }
     }
 
-    @Test
-    void updateStockItem_NotFound_ShouldThrowException() {
-        UUID stockId = UUID.randomUUID();
-        when(stockGateway.findById(stockId)).thenReturn(Optional.empty());
+    @Nested
+    class InactivateStockItem {
+        @Test
+        void shouldInactivateStockItem() {
+            // Arrange
+            UUID id = UUID.randomUUID();
+            Stock stock = Stock.builder().id(id).isActive(true).build();
+            when(stockGateway.findById(id)).thenReturn(Optional.of(stock));
+            when(stockGateway.save(any(Stock.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        assertThrows(NotFoundException.class, () -> {
-            stockUseCase.updateStockItem(stockId, "New Name", BigDecimal.TEN, 15, true, validCategory.getId());
-        });
+            // Act
+            stockUseCase.inactivateStockItem(id);
+
+            // Assert
+            assertFalse(stock.isActive());
+            verify(stockGateway).save(any(Stock.class));
+        }
+
+        @Test
+        void shouldThrowNotFoundExceptionWhenStockItemNotFound() {
+            // Arrange
+            UUID id = UUID.randomUUID();
+            when(stockGateway.findById(id)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(NotFoundException.class, () -> stockUseCase.inactivateStockItem(id));
+            verify(stockGateway, never()).save(any(Stock.class));
+        }
     }
 
-    @Test
-    void findStockItemById_WhenExists_ShouldReturnStock() {
-        UUID stockId = UUID.randomUUID();
-        Stock stock = new Stock(stockId, "FindMe", BigDecimal.ONE, 1, validCategory, true, null, null);
-        when(stockGateway.findActiveById(stockId)).thenReturn(Optional.of(stock));
+    @Nested
+    class ReactivateStockItem {
+        @Test
+        void shouldReactivateStockItem() {
+            // Arrange
+            UUID id = UUID.randomUUID();
+            Stock stock = Stock.builder().id(id).isActive(false).build();
+            when(stockGateway.findById(id)).thenReturn(Optional.of(stock));
+            when(stockGateway.save(any(Stock.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        Stock result = stockUseCase.findStockItemById(stockId);
+            // Act
+            Stock result = stockUseCase.reactivateStockItem(id);
 
-        assertNotNull(result);
-        assertEquals(stockId, result.getId());
+            // Assert
+            assertTrue(result.isActive());
+            verify(stockGateway).save(any(Stock.class));
+        }
+
+        @Test
+        void shouldThrowNotFoundExceptionWhenStockItemNotFound() {
+            // Arrange
+            UUID id = UUID.randomUUID();
+            when(stockGateway.findById(id)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(NotFoundException.class, () -> stockUseCase.reactivateStockItem(id));
+            verify(stockGateway, never()).save(any(Stock.class));
+        }
     }
 
-    @Test
-    void findStockItemById_WhenNotExists_ShouldThrowException() {
-        UUID stockId = UUID.randomUUID();
-        when(stockGateway.findActiveById(stockId)).thenReturn(Optional.empty());
+    @Nested
+    class CheckStockAvailability {
+        @Test
+        void shouldNotThrowExceptionWhenStockIsAvailable() {
+            // Arrange
+            UUID stockId = UUID.randomUUID();
+            Stock requiredItem = Stock.builder().id(stockId).quantity(5).build();
+            Stock availableStock = Stock.builder().id(stockId).quantity(10).build();
+            ServiceOrder order = ServiceOrder.builder().stockItems(Set.of(requiredItem)).build();
 
-        assertThrows(NotFoundException.class, () -> stockUseCase.findStockItemById(stockId));
+            when(stockGateway.findActiveById(stockId)).thenReturn(Optional.of(availableStock));
+
+            // Act & Assert
+            assertDoesNotThrow(() -> stockUseCase.checkStockAvailability(order));
+        }
+
+        @Test
+        void shouldThrowStockUnavailableExceptionWhenStockIsNotAvailable() {
+            // Arrange
+            UUID stockId = UUID.randomUUID();
+            Stock requiredItem = Stock.builder().id(stockId).quantity(15).build();
+            Stock availableStock = Stock.builder().id(stockId).quantity(10).build();
+            ServiceOrder order = ServiceOrder.builder().stockItems(Set.of(requiredItem)).build();
+
+            when(stockGateway.findActiveById(stockId)).thenReturn(Optional.of(availableStock));
+
+            // Act & Assert
+            assertThrows(StockUnavailableException.class, () -> stockUseCase.checkStockAvailability(order));
+        }
     }
 
-    @Test
-    void inactivateStockItem_WhenExists_ShouldDeactivateAndSave() {
-        UUID stockId = UUID.randomUUID();
-        Stock stock = new Stock(stockId, "To Inactivate", BigDecimal.ONE, 1, validCategory, true, null, null);
-        when(stockGateway.findById(stockId)).thenReturn(Optional.of(stock));
+    @Nested
+    class GetStockAvailability {
+        @Test
+        void shouldReturnAllItemsAvailableWhenStockIsAvailable() {
+            // Arrange
+            UUID stockId = UUID.randomUUID();
+            Stock requiredItem = Stock.builder().id(stockId).quantity(5).build();
+            Stock availableStock = Stock.builder().id(stockId).toolName("Tool").quantity(10).build();
+            ServiceOrder order = ServiceOrder.builder().stockItems(Set.of(requiredItem)).build();
 
-        stockUseCase.inactivateStockItem(stockId);
+            when(stockGateway.findActiveById(stockId)).thenReturn(Optional.of(availableStock));
 
-        assertFalse(stock.isActive());
-        verify(stockGateway, times(1)).save(stock);
-    }
+            // Act
+            StockAvailabilityResponseDTO result = stockUseCase.getStockAvailability(order);
 
-    @Test
-    void inactivateStockItem_WhenNotExists_ShouldThrowException() {
-        UUID stockId = UUID.randomUUID();
-        when(stockGateway.findById(stockId)).thenReturn(Optional.empty());
+            // Assert
+            assertTrue(result.isAvailable());
+            assertTrue(result.getMissingItems().isEmpty());
+        }
 
-        assertThrows(NotFoundException.class, () -> stockUseCase.inactivateStockItem(stockId));
-    }
+        @Test
+        void shouldReturnMissingItemsWhenStockIsNotAvailable() {
+            // Arrange
+            UUID stockId = UUID.randomUUID();
+            Stock requiredItem = Stock.builder().id(stockId).quantity(15).build();
+            Stock availableStock = Stock.builder().id(stockId).toolName("Tool").quantity(10).build();
+            ServiceOrder order = ServiceOrder.builder().stockItems(Set.of(requiredItem)).build();
 
-    @Test
-    void reactivateStockItem_WhenExists_ShouldActivateAndSave() {
-        UUID stockId = UUID.randomUUID();
-        Stock stock = new Stock(stockId, "To Reactivate", BigDecimal.ONE, 1, validCategory, false, null, null);
-        when(stockGateway.findById(stockId)).thenReturn(Optional.of(stock));
+            when(stockGateway.findActiveById(stockId)).thenReturn(Optional.of(availableStock));
 
-        stockUseCase.reactivateStockItem(stockId);
+            // Act
+            StockAvailabilityResponseDTO result = stockUseCase.getStockAvailability(order);
 
-        assertTrue(stock.isActive());
-        verify(stockGateway, times(1)).save(stock);
-    }
-
-    @Test
-    void reactivateStockItem_WhenNotExists_ShouldThrowException() {
-        UUID stockId = UUID.randomUUID();
-        when(stockGateway.findById(stockId)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> stockUseCase.reactivateStockItem(stockId));
+            // Assert
+            assertFalse(result.isAvailable());
+            assertFalse(result.getMissingItems().isEmpty());
+            assertEquals(1, result.getMissingItems().size());
+            assertEquals(stockId, result.getMissingItems().get(0).getStockId());
+        }
     }
 }

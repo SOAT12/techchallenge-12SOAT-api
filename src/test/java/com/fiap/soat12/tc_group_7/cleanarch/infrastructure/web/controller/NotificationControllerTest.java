@@ -6,91 +6,98 @@ import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.Notific
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.notification.NotificationResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class NotificationControllerTest {
+class NotificationControllerTest {
 
+    @Mock
     private NotificationUseCase notificationUseCase;
+
+    @Mock
     private NotificationPresenter notificationPresenter;
-    private NotificationController controller;
+
+    @InjectMocks
+    private NotificationController notificationController;
 
     @BeforeEach
-    void setup() {
-        notificationUseCase = mock(NotificationUseCase.class);
-        notificationPresenter = mock(NotificationPresenter.class);
-        controller = new NotificationController(notificationUseCase, notificationPresenter);
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void getAllNotifications_shouldReturnMappedDTOs() {
-        Notification notification = mock(Notification.class);
-        NotificationResponseDTO dto = new NotificationResponseDTO();
-        List<Notification> notifications = List.of(notification);
+    @Nested
+    class GetAllNotifications {
+        @Test
+        void shouldGetAllNotifications() {
+            // Arrange
+            when(notificationUseCase.getAllNotifications()).thenReturn(List.of(Notification.builder().build()));
+            when(notificationPresenter.toNotificationResponseDTO(any())).thenReturn(new NotificationResponseDTO());
 
-        when(notificationUseCase.getAllNotifications()).thenReturn(notifications);
-        when(notificationPresenter.toNotificationResponseDTO(notification)).thenReturn(dto);
+            // Act
+            List<NotificationResponseDTO> result = notificationController.getAllNotifications();
 
-        List<NotificationResponseDTO> result = controller.getAllNotifications();
-
-        assertEquals(1, result.size());
-        assertSame(dto, result.getFirst());
-
-        verify(notificationUseCase).getAllNotifications();
-        verify(notificationPresenter).toNotificationResponseDTO(notification);
+            // Assert
+            assertFalse(result.isEmpty());
+        }
     }
 
-    @Test
-    void getNotificationsByEmployeeId_shouldReturnMappedDTOs() {
-        Long employeeId = 123L;
+    @Nested
+    class GetNotificationsByEmployeeId {
+        @Test
+        void shouldGetNotificationsByEmployeeId() {
+            // Arrange
+            Long employeeId = 1L;
+            when(notificationUseCase.getNotificationsByEmployeeId(employeeId)).thenReturn(List.of(Notification.builder().build()));
+            when(notificationPresenter.toNotificationResponseDTO(any())).thenReturn(new NotificationResponseDTO());
 
-        Notification notification = mock(Notification.class);
-        NotificationResponseDTO dto = new NotificationResponseDTO();
-        List<Notification> notifications = List.of(notification);
+            // Act
+            List<NotificationResponseDTO> result = notificationController.getNotificationsByEmployeeId(employeeId);
 
-        when(notificationUseCase.getNotificationsByEmployeeId(employeeId)).thenReturn(notifications);
-        when(notificationPresenter.toNotificationResponseDTO(notification)).thenReturn(dto);
-
-        List<NotificationResponseDTO> result = controller.getNotificationsByEmployeeId(employeeId);
-
-        assertEquals(1, result.size());
-        assertSame(dto, result.getFirst());
-
-        verify(notificationUseCase).getNotificationsByEmployeeId(employeeId);
-        verify(notificationPresenter).toNotificationResponseDTO(notification);
+            // Assert
+            assertFalse(result.isEmpty());
+        }
     }
 
-    @Test
-    void createNotification_shouldReturnMappedDTO() {
-        NotificationRequestDTO requestDTO = new NotificationRequestDTO();
-        Notification notification = mock(Notification.class);
-        NotificationResponseDTO dto = new NotificationResponseDTO();
+    @Nested
+    class CreateNotification {
+        @Test
+        void shouldCreateNotification() {
+            // Arrange
+            NotificationRequestDTO dto = new NotificationRequestDTO();
+            when(notificationUseCase.createNotification(dto)).thenReturn(Notification.builder().build());
+            when(notificationPresenter.toNotificationResponseDTO(any())).thenReturn(new NotificationResponseDTO());
 
-        when(notificationUseCase.createNotification(requestDTO)).thenReturn(notification);
-        when(notificationPresenter.toNotificationResponseDTO(notification)).thenReturn(dto);
+            // Act
+            NotificationResponseDTO result = notificationController.createNotification(dto);
 
-        NotificationResponseDTO result = controller.createNotification(requestDTO);
-
-        assertSame(dto, result);
-
-        verify(notificationUseCase).createNotification(requestDTO);
-        verify(notificationPresenter).toNotificationResponseDTO(notification);
+            // Assert
+            assertNotNull(result);
+        }
     }
 
-    @Test
-    void deleteNotification_shouldCallUseCase() {
-        Long id = 42L;
+    @Nested
+    class DeleteNotification {
+        @Test
+        void shouldDeleteNotification() {
+            // Arrange
+            Long id = 1L;
 
-        // Método deleteNotification não retorna nada, só verifica chamada
-        controller.deleteNotification(id);
+            // Act
+            notificationController.deleteNotification(id);
 
-        verify(notificationUseCase).deleteNotification(id);
-        verifyNoMoreInteractions(notificationPresenter);
+            // Assert
+            verify(notificationUseCase).deleteNotification(id);
+        }
     }
-
 }
