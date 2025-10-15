@@ -27,6 +27,10 @@ Aqui estão as instruções de uso que você pode adicionar ao seu `README.md`. 
 
 ---
 
+### Arquitetura da Aplicação:
+
+![Diagrama da arquitetura](docs/architecture.png)
+
 ### 🚀 Instruções de Uso
 
 Siga as instruções abaixo para subir a aplicação em seu ambiente local e interagir com suas funcionalidades.
@@ -405,7 +409,7 @@ Após a aplicação estar em execução, você pode interagir com a API RESTful 
 
 * Utilizar o endpoint `GET /api/service-orders/consult?document=48123980027`
 
-**Passo 5.2S: Consultar OS por Placa do Veículo**
+**Passo 5.2: Consultar OS por Placa do Veículo**
 
 * Utilizar o endpoint `GET /api/service-orders/consult?licensePlate=XCP4U38`
 
