@@ -232,7 +232,6 @@ terraform destroy
       "toolCategoryId": {toolCategoryId}
     }
   ],
-  "employeeId": 0,
   "notes": "string"
 }
 ```
