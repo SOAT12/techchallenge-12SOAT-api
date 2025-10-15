@@ -62,21 +62,18 @@ O projeto utiliza Docker e Docker Compose para orquestrar a aplicação e seu ba
    docker-compose down
    ```
 
-#### 2. Executando com Kubernetes (Minikube)
+#### 2. Executando com Kubernetes
 
 Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simulando um ambiente mais próximo ao de produção e permitindo a validação das configurações de orquestração.
 
 1. Certifique-se de ter o Docker (https://www.docker.com/get-started), o
-   Minikube (https://minikube.sigs.k8s.io/docs/start/), e
-   o [kubeseal](https://github.com/bitnami-labs/sealed-secrets/releases) instalado.
-    * (Scoop install kubeseal / choco install kubeseal) Lembre-se de executar os comandos como administrador.
+   Minikube (https://minikube.sigs.k8s.io/docs/start/).
 2. Navegue até a pasta raiz do projeto.
 3. Inicie o cluster Minikube com o seguinte comando:
    ```bash
    minikube start --driver=docker
     ```
     * Este comando utiliza o Docker para criar um node Kubernetes local em sua máquina.
-
 
 4. No controller do cluster deverá ser instalado algumas features. Estes são pré-requisitos para a aplicação rodar corretamente.
 
@@ -108,6 +105,11 @@ Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simuland
 
 8. Acesse a aplicação. Após o túnel estar ativo, a aplicação estará disponível em seu navegador no seguinte endereço:
    http://127.0.0.1
+
+9. Para encerrar e finalizar o uso do cluster basta executar o seguinte comando:
+    ```bash
+   minikube delete
+    ```
 
 #### 3. Provisionando a Infraestrutura com Terraform
 
