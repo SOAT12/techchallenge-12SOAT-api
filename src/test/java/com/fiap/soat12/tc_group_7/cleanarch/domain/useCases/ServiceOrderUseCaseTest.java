@@ -1,10 +1,14 @@
 package com.fiap.soat12.tc_group_7.cleanarch.domain.useCases;
 
-import com.fiap.soat12.tc_group_7.cleanarch.domain.model.*;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Customer;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Employee;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ServiceOrder;
+import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Vehicle;
 import com.fiap.soat12.tc_group_7.cleanarch.exception.NotFoundException;
 import com.fiap.soat12.tc_group_7.cleanarch.gateway.ServiceOrderGateway;
-import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderFullCreationRequestDTO;
+import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderRequestDTO;
+import com.fiap.soat12.tc_group_7.service.MailClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,8 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,6 +45,9 @@ class ServiceOrderUseCaseTest {
 
     @Mock
     private StockUseCase stockUseCase;
+
+    @Mock
+    MailClient mailClient;
 
     @InjectMocks
     private ServiceOrderUseCase serviceOrderUseCase;
@@ -303,6 +310,31 @@ class ServiceOrderUseCaseTest {
             // Assert
             assertNotNull(result);
             assertEquals(com.fiap.soat12.tc_group_7.cleanarch.util.Status.IN_DIAGNOSIS, result.getStatus());
+            verify(serviceOrderGateway).save(order);
+        }
+    }
+
+    @Nested
+    class WaitForApproval {
+        @Test
+        void shouldWaitForApproval() throws Exception {
+            // Arrange
+            Long id = 1L;
+            Customer customer = Customer.builder().name("Test").email("test@test.com").build();
+            ServiceOrder order = ServiceOrder.builder()
+                    .id(id)
+                    .status(com.fiap.soat12.tc_group_7.cleanarch.util.Status.IN_DIAGNOSIS)
+                    .customer(customer)
+                    .build();
+            when(serviceOrderGateway.findById(id)).thenReturn(Optional.of(order));
+            when(serviceOrderGateway.save(order)).thenReturn(order);
+
+            // Act
+            ServiceOrder result = serviceOrderUseCase.waitForApproval(id);
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(com.fiap.soat12.tc_group_7.cleanarch.util.Status.WAITING_FOR_APPROVAL, result.getStatus());
             verify(serviceOrderGateway).save(order);
         }
     }
