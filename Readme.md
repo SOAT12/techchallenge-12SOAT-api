@@ -28,6 +28,7 @@ Aqui estão as instruções de uso que você pode adicionar ao seu `README.md`. 
 
 Link do vídeo do Youtube:
 https://www.youtube.com/watch?v=dIdenFq2bOw
+adendo: https://youtu.be/W4g-jS4cXxo
 ---
 
 ### Arquitetura da Aplicação:
