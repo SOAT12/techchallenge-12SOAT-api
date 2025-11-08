@@ -69,6 +69,16 @@ spec:
                 secretKeyRef:
                   name: techchallenge-secrets
                   key: DB_PWD
+            - name: SPRING_MAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: techchallenge-secrets
+                  key: SPRING_MAIL_USERNAME
+            - name: SPRING_MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: techchallenge-secrets
+                  key: SPRING_MAIL_PASSWORD
           resources:
             requests:
               cpu: "250m"

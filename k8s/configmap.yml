@@ -12,5 +12,3 @@ data:
     spring.application.name=techchallenge-app
     spring.liquibase.change-log=classpath:liquibase/liquibase-changelog.yml
     spring.datasource.url=jdbc:postgresql://postgres-service:5432/postgres
-    spring.datasource.username=postgres
-    spring.datasource.password=password
