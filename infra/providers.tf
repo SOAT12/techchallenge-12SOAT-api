@@ -1,12 +1,28 @@
-provider "kubernetes" {
-  # Força o uso do arquivo de configuração padrão do kubectl/Minikube.
-  config_path    = "~/.kube/config"
-
-  # Mantemos o contexto para garantir que ele use o cluster correto.
-  config_context = "minikube"
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.0"
+    }
+  }
 }
 
-provider "kubectl" {
-  # Repetimos a configuração para o provedor kubectl.
-  config_path    = "~/.kube/config"
+provider "aws" {
+  region = "sa-east-1"
+}
+
+data "aws_caller_identity" "current" {}
+
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  token                  = data.aws_eks_cluster_auth.this.token
+}
+
+data "aws_eks_cluster_auth" "this" {
+  name = module.eks.cluster_name
 }

@@ -11,4 +11,8 @@ data:
     server.port=8080
     spring.application.name=techchallenge-app
     spring.liquibase.change-log=classpath:liquibase/liquibase-changelog.yml
-    spring.datasource.url=jdbc:postgresql://postgres-service:5432/postgres
+    spring.datasource.url=jdbc:postgresql://techchallenge-db.crwcmi44cymk.sa-east-1.rds.amazonaws.com:5432/postgres
+    spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+    spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+    spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+    spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
