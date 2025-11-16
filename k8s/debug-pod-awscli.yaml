@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug-secret-access-awscli
+  namespace: techchallenge
+spec:
+  serviceAccountName: default
+  containers:
+  - name: awscli
+    image: amazon/aws-cli:latest
+    command: ["sleep", "3600"]
+    env:
+    - name: AWS_REGION
+      value: sa-east-1
+    - name: AWS_DEFAULT_REGION
+      value: sa-east-1
+  restartPolicy: Never

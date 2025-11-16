@@ -52,8 +52,13 @@ resource "aws_iam_role" "aws_load_balancer_controller" {
   })
 }
 
+resource "aws_iam_policy" "aws_load_balancer_controller_policy" {
+  name        = "${module.eks.cluster_name}-aws-load-balancer-controller-policy"
+  policy      = file("${path.module}/iam_policy_load_balancer_controller.json")
+}
+
 resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller" {
-  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/AWSLoadBalancerControllerIAMPolicy"
+  policy_arn = aws_iam_policy.aws_load_balancer_controller_policy.arn
   role       = aws_iam_role.aws_load_balancer_controller.name
 }
 
@@ -66,3 +71,65 @@ resource "kubernetes_service_account_v1" "aws_load_balancer_controller" {
     }
   }
 }
+
+
+
+
+data "aws_secretsmanager_secret" "techchallenge_secrets" {
+  name = "techchallenge-credentials"
+}
+
+data "aws_secretsmanager_secret_version" "techchallenge_secrets_version" {
+  secret_id = data.aws_secretsmanager_secret.techchallenge_secrets.id
+}
+
+resource "aws_iam_policy" "secrets_manager_read_policy" {
+  name        = "${module.eks.cluster_name}-secrets-manager-read-policy"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ],
+        Resource = data.aws_secretsmanager_secret.techchallenge_secrets.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "secrets_manager_read_attachment" {
+  policy_arn = aws_iam_policy.secrets_manager_read_policy.arn
+  role       = module.eks.eks_managed_node_groups["main"].iam_role_name
+}
+
+resource "aws_iam_role" "techchallenge_app_role" {
+  name = "${module.eks.cluster_name}-techchallenge-app-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${replace(module.eks.oidc_provider_arn, "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/", "")}"
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "${replace(module.eks.oidc_provider_arn, "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/", "")}:sub" = "system:serviceaccount:techchallenge:default"
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "techchallenge_app_secrets_read_attachment" {
+  policy_arn = aws_iam_policy.secrets_manager_read_policy.arn
+  role       = aws_iam_role.techchallenge_app_role.name
+}
+
+

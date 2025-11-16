@@ -1,6 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.api;
 
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.StockController;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.CreateStockRequestDTO;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.StockRequestDTO;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.StockResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +37,7 @@ public class StockApiTest {
 
     @Test
     void createStock_ShouldReturnCreatedStock() {
-        StockRequestDTO requestDTO = new StockRequestDTO();
+        CreateStockRequestDTO requestDTO = new CreateStockRequestDTO();
         // preencher campos obrigatórios do requestDTO
 
         StockResponseDTO responseDTO = StockResponseDTO.builder()
@@ -54,7 +55,7 @@ public class StockApiTest {
 
     @Test
     void createStock_ShouldThrowBadRequest_WhenInvalidData() {
-        StockRequestDTO invalidRequest = new StockRequestDTO();
+        CreateStockRequestDTO invalidRequest = new CreateStockRequestDTO();
         // dados inválidos
 
         when(stockController.createStock(invalidRequest)).thenThrow(new IllegalArgumentException("Categoria não encontrada"));

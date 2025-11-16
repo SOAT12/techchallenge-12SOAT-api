@@ -4,6 +4,7 @@ import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Stock;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.ToolCategory;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.StockUseCase;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.StockPresenter;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.CreateStockRequestDTO;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.StockRequestDTO;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.StockResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +43,7 @@ class StockControllerTest {
 
     @Test
     void createStock_ShouldDelegateToUseCaseAndPresenter() {
-        StockRequestDTO requestDTO = new StockRequestDTO("New Stock", BigDecimal.TEN, true, 10, categoryId);
+        CreateStockRequestDTO requestDTO = new CreateStockRequestDTO("New Stock", BigDecimal.TEN, 10, categoryId);
         Stock domainObject = Stock.create("New Stock", BigDecimal.TEN, 10, validCategory);
         StockResponseDTO responseDTO = new StockResponseDTO();
 

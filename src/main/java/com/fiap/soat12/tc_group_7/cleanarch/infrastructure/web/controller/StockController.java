@@ -3,6 +3,7 @@ package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.model.Stock;
 import com.fiap.soat12.tc_group_7.cleanarch.domain.useCases.StockUseCase;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.StockPresenter;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.CreateStockRequestDTO;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.StockRequestDTO;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.StockResponseDTO;
 
@@ -19,7 +20,7 @@ public class StockController {
         this.stockPresenter = stockPresenter;
     }
     
-    public StockResponseDTO createStock(StockRequestDTO dto) {
+    public StockResponseDTO createStock(CreateStockRequestDTO dto) {
         Stock stock = stockUseCase.createStock(dto.getToolName(), dto.getValue(), dto.getQuantity(), dto.getToolCategoryId());
         return stockPresenter.toStockResponseDTO(stock);
     }

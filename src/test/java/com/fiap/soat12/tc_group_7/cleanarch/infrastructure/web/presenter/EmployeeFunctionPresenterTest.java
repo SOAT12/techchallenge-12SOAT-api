@@ -46,7 +46,6 @@ class EmployeeFunctionPresenterTest {
             // Arrange
             EmployeeFunctionRequestDTO dto = new EmployeeFunctionRequestDTO();
             dto.setDescription("Test");
-            dto.setActive(true);
 
             // Act
             EmployeeFunction result = employeeFunctionPresenter.toEmployeeFunction(dto);

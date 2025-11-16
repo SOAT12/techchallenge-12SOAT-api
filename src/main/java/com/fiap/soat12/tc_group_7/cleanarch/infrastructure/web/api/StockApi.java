@@ -1,6 +1,7 @@
 package com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.api;
 
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.controller.StockController;
+import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.CreateStockRequestDTO;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.StockRequestDTO;
 import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.dto.StockResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +34,7 @@ public class StockApi {
     @ApiResponse(responseCode = "201", description = "Item de estoque criado com sucesso")
     @ApiResponse(responseCode = "400", description = "Requisição inválida ou categoria não encontrada")
     @PostMapping
-    public ResponseEntity<StockResponseDTO> createStock(@Valid @RequestBody StockRequestDTO requestDTO) {
+    public ResponseEntity<StockResponseDTO> createStock(@Valid @RequestBody CreateStockRequestDTO requestDTO) {
         try {
             StockResponseDTO createdStock = stockController.createStock(requestDTO);
             return new ResponseEntity<>(createdStock, HttpStatus.CREATED);
