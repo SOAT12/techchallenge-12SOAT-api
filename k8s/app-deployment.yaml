@@ -61,8 +61,21 @@ spec:
               value: "techchallenge-app"
             - name: SPRING_LIQUIBASE_CHANGE-LOG
               value: "classpath:liquibase/liquibase-changelog.yml"
-            - name: SPRING_CONFIG_LOCATION
-              value: "file:/etc/config/application.properties"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: techchallenge-secrets
+                  key: DB_USR
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: techchallenge-secrets
+                  key: DB_PWD
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: techchallenge-secrets
+                  key: DB_URL
           resources:
             requests:
               cpu: "500m"
@@ -70,46 +83,3 @@ spec:
             limits:
               cpu: "1000m"
               memory: "1.5Gi"
-          volumeMounts:
-            - name: secrets-store-inline
-              mountPath: "/mnt/secrets-store"
-              readOnly: true
-            - name: app-config
-              mountPath: "/etc/config"
-              readOnly: true
-      initContainers:
-        - name: init-secrets
-          image: alpine/helm:latest
-          command: ['sh', '-c', 'set -ex;
-            SECRET_FILE="/mnt/secrets-store/techchallenge-credentials-json";
-            DB_PWD=$(cat "$SECRET_FILE" | jq -r '.DB_PASSWORD');
-            SPRING_MAIL_USERNAME=$(cat "$SECRET_FILE" | jq -r '.SPRING_MAIL_USERNAME');
-            SPRING_MAIL_PASSWORD=$(cat "$SECRET_FILE" | jq -r '.SPRING_MAIL_PASSWORD');
-            {
-              echo "spring.datasource.url=jdbc:postgresql://techchallenge-db.crwcmi44cymk.sa-east-1.rds.amazonaws.com:5432/postgres";
-              echo "spring.datasource.username=postgres";
-              echo "spring.datasource.password=$DB_PWD";
-              echo "spring.mail.host=smtp.gmail.com";
-              echo "spring.mail.port=587";
-              echo "spring.mail.protocol=smtp";
-              echo "spring.mail.username=$SPRING_MAIL_USERNAME";
-              echo "spring.mail.password=$SPRING_MAIL_PASSWORD";
-              echo "spring.mail.properties.mail.smtp.auth=true";
-              echo "spring.mail.properties.mail.smtp.starttls.enable=true";
-            } > /etc/config/application.properties']
-          volumeMounts:
-            - name: secrets-store-inline
-              mountPath: "/mnt/secrets-store"
-              readOnly: true
-            - name: app-config
-              mountPath: "/etc/config"
-      volumes:
-        - name: secrets-store-inline
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: aws-secrets-manager-secret-provider
-        - name: app-config
-          emptyDir: {}
-

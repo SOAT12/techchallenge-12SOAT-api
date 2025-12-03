@@ -69,7 +69,9 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/swagger-ui/**",
+                                "/api-docs/**",
                                 "/v3/api-docs/**",
+                                "/swagger-ui.html",
                                 "/api/auth/login",
                                 "/api/auth/forgot-password",
                                 "/api/service-orders/1/webhook/approval"
@@ -161,7 +163,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() { // Mark as public
+    public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers("/resources/**");
     }
 }
