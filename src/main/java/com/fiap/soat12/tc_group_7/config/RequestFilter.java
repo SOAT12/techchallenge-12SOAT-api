@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiap.soat12.tc_group_7.cleanarch.util.JwtTokenUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,9 @@ public class RequestFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws JsonProcessingException, IOException {
+            throws IOException {
+
+        String path = request.getServletPath();
 
         try {
 
@@ -95,8 +98,6 @@ public class RequestFilter extends OncePerRequestFilter {
                 }
 
             }
-
-            String path = request.getServletPath();
 
             if (pathWhiteList.contains(path)) {
 
