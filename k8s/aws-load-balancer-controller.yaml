@@ -21,7 +21,7 @@ spec:
       containers:
         - args:
             - --cluster-name=techchallenge-cluster
-            - --aws-region=sa-east-1
+            - --aws-region=us-east-1
             - --aws-vpc-id=vpc-03d2ce3f83187a3cd
             - --enable-wafv2
             - --enable-shield
@@ -38,7 +38,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: AWS_REGION
-              value: sa-east-1
+              value: us-east-1
             - name: AWS_VPC_ID
               value: vpc-03d2ce3f83187a3cd
           image: public.ecr.aws/eks/aws-load-balancer-controller:v2.7.1

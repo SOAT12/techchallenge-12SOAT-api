@@ -173,7 +173,7 @@ jobs:
         with:
           # ATENÇÃO: Crie este IAM Role na sua conta AWS!
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsEKSDeloyRole 
-          aws-region: sa-east-1
+          aws-region: us-east-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -190,7 +190,7 @@ jobs:
         working-directory: ./ops
 
       - name: Update Kubeconfig
-        run: aws eks update-kubeconfig --name ${{ steps.get_cluster_info.outputs.CLUSTER_NAME }} --region sa-east-1
+        run: aws eks update-kubeconfig --name ${{ steps.get_cluster_info.outputs.CLUSTER_NAME }} --region us-east-1
 
       - name: Create/Update DB Secret
         run: |
