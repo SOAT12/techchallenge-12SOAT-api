@@ -16,16 +16,7 @@ O foco deste MVP é garantir uma gestão eficiente e segura, aplicando boas prá
 * **Testes:** JUnit e Mockito para testes unitários e de integração, garantindo a qualidade do código.
 * **Comunicação:** Funcionalidade de envio de e-mails para notificações, utilizando o JavaMailSender e templates Thymeleaf.
 
-### Principais Funcionalidades do MVP
-
-* **Gestão de Ordens de Serviço (OS):** Criação, acompanhamento de status (via uma máquina de estados), geração de orçamentos e aprovação de serviços. Inclui endpoints para transições de estado como `diagnose`, `approve`, `finish`, `deliver`.
-* **Gestão de Estoque:** Controle de peças e insumos, com funcionalidades de CRUD e verificação de disponibilidade para a execução de serviços.
-* **Cadastros Base:** Funcionalidades de CRUD para clientes e veículos, com validação de dados sensíveis como CPF e placa.
-* **Monitoramento:** Cálculo do tempo médio de execução dos serviços finalizados, com a possibilidade de aplicar filtros por data e serviços.
-
-Aqui estão as instruções de uso que você pode adicionar ao seu `README.md`. A seção está dividida em como executar o projeto com Docker e um guia para testar o "fluxo feliz" (happy path) das rotas da API usando a documentação do Swagger.
-
-
+### Entregáveis Fase 2:
 Link do vídeo do Youtube:
 https://www.youtube.com/watch?v=dIdenFq2bOw
 adendo: https://youtu.be/W4g-jS4cXxo
@@ -45,6 +36,96 @@ adendo: https://youtu.be/W4g-jS4cXxo
 
 <img src="docs/deploy-flow.png" alt="Fluxo do deploy" width="700"/>
 
+### Principais Funcionalidades do MVP
+
+* **Gestão de Ordens de Serviço (OS):** Criação, acompanhamento de status (via uma máquina de estados), geração de orçamentos e aprovação de serviços. Inclui endpoints para transições de estado como `diagnose`, `approve`, `finish`, `deliver`.
+* **Gestão de Estoque:** Controle de peças e insumos, com funcionalidades de CRUD e verificação de disponibilidade para a execução de serviços.
+* **Cadastros Base:** Funcionalidades de CRUD para clientes e veículos, com validação de dados sensíveis como CPF e placa.
+* **Monitoramento:** Cálculo do tempo médio de execução dos serviços finalizados, com a possibilidade de aplicar filtros por data e serviços.
+
+###  Mapeamento de Rotas
+
+A seguir, um resumo das principais rotas da API e suas funcionalidades:
+
+| Verbo  | Rota                                      | Descrição                                                                 |
+|--------|-------------------------------------------|---------------------------------------------------------------------------|
+| POST   | `/api/employees`                          | Cadastra um novo funcionário.                                             |
+| POST   | `/api/auth/login`                         | Autentica um funcionário e retorna um token JWT.                          |
+| POST   | `/api/customers`                          | Cadastra um novo cliente.                                                 |
+| POST   | `/api/vehicles`                           | Cadastra um novo veículo.                                                 |
+| POST   | `/api/tool-categories`                    | Cria uma nova categoria de ferramenta.                                    |
+| POST   | `/api/stock`                              | Adiciona um novo item ao estoque.                                         |
+| POST   | `/api/vehicle-services`                   | Cria um novo tipo de serviço.                                             |
+| POST   | `/api/service-orders`                     | Cria uma nova Ordem de Serviço.                                           |
+| GET    | `/api/service-orders/consult`             | Consulta OS por CPF ou placa do veículo.                                  |
+| PATCH  | `/api/service-orders/{id}/diagnose`       | Altera o status da OS para "Em Diagnóstico".                              |
+| PATCH  | `/api/service-orders/{id}/wait-for-approval` | Altera o status da OS para "Aguardando Aprovação".                       |
+| PATCH  | `/api/service-orders/{id}/approve`        | Aprova o orçamento e altera o status da OS para "Aprovada".               |
+| PATCH  | `/api/service-orders/{id}/execute`        | Inicia a execução do serviço, alterando o status para "Em Execução".      |
+| PATCH  | `/api/service-orders/{id}/finish`         | Finaliza a OS.                                                            |
+| PATCH  | `/api/service-orders/{id}/deliver`        | Entrega o veículo ao cliente.                                             |
+| GET    | `/api/service-orders/average-execution-time` | Consulta o tempo médio de execução de serviços.                           |
+
+### Gestão de Segredos
+
+A gestão de segredos é crucial para a segurança da aplicação. Abaixo estão as instruções para configurar as variáveis de ambiente em diferentes cenários.
+
+#### Ambiente Local (Docker Compose)
+
+Para executar a aplicação localmente com o Docker Compose, é necessário criar um arquivo `.env` na raiz do projeto. Este arquivo não é versionado e contém as variáveis de ambiente necessárias para a aplicação.
+
+1.  Crie um arquivo chamado `.env` na raiz do projeto.
+2.  Copie o conteúdo do arquivo `.env.example` e cole no `.env`.
+3.  Substitua os valores das variáveis de ambiente no arquivo `.env` com suas credenciais.
+
+**Exemplo de arquivo `.env`:**
+
+```
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=password
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password
+SPRING_MAIL_USERNAME=seu-email@example.com
+SPRING_MAIL_PASSWORD=sua-senha-de-email
+```
+
+#### Ambiente Kubernetes
+
+Em um ambiente Kubernetes, os segredos são gerenciados através de objetos `Secret`. O arquivo `k8s/secret.yaml` define os segredos necessários para a aplicação.
+
+Os valores dos segredos devem ser codificados em **Base64**. Para criar o segredo no Kubernetes, siga os passos abaixo:
+
+1.  **Codifique seus segredos em Base64:**
+
+    Você pode usar o seguinte comando para codificar cada um dos seus segredos:
+
+    ```bash
+    echo -n 'seu-valor-secreto' | base64
+    ```
+
+2.  **Atualize o arquivo `k8s/secret.yaml`:**
+
+    Substitua os valores vazios no arquivo `k8s/secret.yaml` pelos valores codificados em Base64.
+
+    ```yaml
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: techchallenge-secrets
+      namespace: techchallenge
+    type: Opaque
+    stringData:
+      DB_PWD: "sua-senha-do-banco-em-base64"
+      SPRING_MAIL_USERNAME: "seu-email-em-base64"
+      SPRING_MAIL_PASSWORD: "sua-senha-de-email-em-base64"
+    ```
+
+3.  **Aplique o segredo no cluster:**
+
+    ```bash
+    kubectl apply -f k8s/secret.yaml
+    ```
+
 ### 🚀 Instruções de Uso
 
 Siga as instruções abaixo para subir a aplicação em seu ambiente local e interagir com suas funcionalidades.
@@ -54,14 +135,15 @@ Siga as instruções abaixo para subir a aplicação em seu ambiente local e int
 O projeto utiliza Docker e Docker Compose para orquestrar a aplicação e seu banco de dados, garantindo um ambiente de desenvolvimento consistente e de fácil configuração.
 
 1. Certifique-se de ter o [Docker](https://www.docker.com/get-started) e o [Docker Compose](https://docs.docker.com/compose/install/) instalados em sua máquina.
-2. Navegue até a pasta raiz do projeto, onde o arquivo `docker-compose.yml` está localizado.
-3. Execute o seguinte comando no terminal para construir a imagem da aplicação e subir todos os serviços:
+2. Crie um arquivo `.env` na raiz do projeto, conforme explicado na seção **Gestão de Segredos**.
+3. Navegue até a pasta raiz do projeto, onde o arquivo `docker-compose.yml` está localizado.
+4. Execute o seguinte comando no terminal para construir a imagem da aplicação e subir todos os serviços:
    ```bash
    docker-compose up -d
    ```
     * O serviço `soat12_db` (banco de dados PostgreSQL) será inicializado e aguardará as conexões.
     * O serviço `soat12_app` (a aplicação Spring Boot) será construído, iniciará, e o Liquibase executará as migrações de banco de dados definidas no projeto.
-4. Para parar e remover os contêineres, execute:
+5. Para parar e remover os contêineres, execute:
    ```bash
    docker-compose down
    ```
@@ -85,7 +167,8 @@ Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simuland
    ```bash
    minikube addons enable ingress
     ```
-5. Execute a aplicação no cluster.
+5. Crie o segredo no cluster, conforme explicado na seção **Gestão de Segredos**.
+6. Execute a aplicação no cluster.
     * Cria o namespace dedicado para a aplicação
    ```bash
    minikube kubectl -- create namespace techchallenge
@@ -94,25 +177,25 @@ Este projeto utiliza o Minikube para criar um cluster Kubernetes local, simuland
    ```bash
    minikube kubectl -- apply -f k8s/
     ```
-    * Este passo irá criar os Deployments, Services, e outros recursos. O controlador do Sealed Secrets irá descriptografar o segredo e disponibilizá-lo para a aplicação.
+    * Este passo irá criar os Deployments, Services, e outros recursos.
 
-6. Aguarde a inicialização dos Pods. Monitore o status até que todos os pods da aplicação estejam com o status Running e READY 1/1.
+7. Aguarde a inicialização dos Pods. Monitore o status até que todos os pods da aplicação estejam com o status Running e READY 1/1.
    ```bash
    minikube kubectl -- get pods -n techchallenge --watch
     ```
 
-7. Para testes locais, é necessário que seja feito um proxy para as portas do Banco de dados e da aplicação (em um novo terminal).
+8. Para testes locais, é necessário que seja feito um proxy para as portas do Banco de dados e da aplicação (em um novo terminal).
     ```bash
    kubectl port-forward svc/techchallenge-service 8080:8080 -n techchallenge
     ```
    #### OBS: Para estes comandos funcionarem, os terminais deverão permanecer abertos para manter o acesso à aplicação.
 
-8. Acesse a aplicação. Após o túnel estar ativo, a aplicação estará disponível em seu navegador no seguinte endereço:
+9. Acesse a aplicação. Após o túnel estar ativo, a aplicação estará disponível em seu navegador no seguinte endereço:
    http://127.0.0.1
 
-9. Para encerrar e finalizar o uso do cluster basta executar o seguinte comando:
+10. Para encerrar e finalizar o uso do cluster basta executar o seguinte comando:
     ```bash
-   minikube delete
+    minikube delete
     ```
 
 #### 3. Provisionando a Infraestrutura com Terraform

@@ -108,6 +108,8 @@ jobs:
     name: Build, Scan & Push Docker Image
     runs-on: ubuntu-latest
     needs: [code-analysis, validate-dockerfile]
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
     permissions:
       contents: read
       security-events: write
@@ -135,8 +137,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: false
-          load: true
+          push: true # Habilitado para enviar a imagem
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
@@ -154,5 +155,68 @@ jobs:
         with:
           sarif_file: 'trivy-image-results.sarif'
 
-      - name: Push Docker image to Docker Hub
-        run: docker push ${{ steps.meta.outputs.tags }}
+  deploy:
+    name: Deploy to EKS
+    runs-on: ubuntu-latest
+    needs: build-and-push-image
+    # Removido 'environment' para simplicidade, adicione se tiver ambientes do GitHub
+    permissions:
+      contents: read
+      id-token: write # Necessário para OIDC com AWS
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # ATENÇÃO: Crie este IAM Role na sua conta AWS!
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsEKSDeloyRole 
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init (to read remote state)
+        run: terraform init
+        working-directory: ./ops
+
+      - name: Get EKS Cluster Info from Terraform Output
+        id: get_cluster_info
+        run: |
+          CLUSTER_NAME=$(terraform output -raw cluster_name)
+          echo "CLUSTER_NAME=$CLUSTER_NAME" >> "$GITHUB_OUTPUT"
+        working-directory: ./ops
+
+      - name: Update Kubeconfig
+        run: aws eks update-kubeconfig --name ${{ steps.get_cluster_info.outputs.CLUSTER_NAME }} --region us-east-1
+
+      - name: Create/Update DB Secret
+        run: |
+          DB_ENDPOINT=$(terraform -chdir=./ops output -raw rds_endpoint)
+          DB_NAME=$(terraform -chdir=./ops output -raw rds_db_name)
+          DB_USER=$(terraform -chdir=./ops output -raw rds_username)
+          DB_PASSWORD=$(terraform -chdir=./ops output -raw rds_password)
+          
+          kubectl create secret generic techchallenge-secrets \
+            --from-literal=DB_URL="jdbc:postgresql://${DB_ENDPOINT}/${DB_NAME}" \
+            --from-literal=DB_USR="${DB_USER}" \
+            --from-literal=DB_PWD="${DB_PASSWORD}" \
+            --namespace=techchallenge --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy to Kubernetes
+        run: |
+          echo "Deploying image ${{ needs.build-and-push-image.outputs.image_tag }}"
+          
+          # Exemplo usando Kustomize para gerenciar a tag da imagem de forma mais robusta
+          # Primeiro, garanta que kustomize está instalado
+          sudo apt-get update && sudo apt-get install -y kustomize
+
+          # Use kustomize para definir a nova imagem
+          cd ks8/
+          kustomize edit set image techchallenge-app=${{ needs.build-and-push-image.outputs.image_tag }}
+          
+          # Aplique os manifestos via kustomize
+          kustomize build . | kubectl apply -f -
+

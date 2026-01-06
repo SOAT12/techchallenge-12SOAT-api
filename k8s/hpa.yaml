@@ -12,7 +12,7 @@ spec:
     kind: Deployment
     name: techchallenge-app-deployment
   minReplicas: 1
-  maxReplicas: 5 # Max num of pods
+  maxReplicas: 1 # Max num of pods
   metrics:
     - type: Resource
       resource:

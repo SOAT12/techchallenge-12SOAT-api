@@ -132,6 +132,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>3.5.7</version>
+        </dependency>
         <!--AWS-->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>

@@ -38,7 +38,6 @@ public class EmployeeFunctionUseCase {
     public Optional<EmployeeFunction> updateEmployeeFunction(Long id, EmployeeFunctionRequestDTO requestDTO) {
         return employeeFunctionGateway.findById(id).map(existing -> {
             existing.setDescription(requestDTO.getDescription());
-//            existing.setActive(requestDTO.getActive()); --- TODO: Ta deixando ativar ao atualizar, pode isso?
             return employeeFunctionGateway.save(existing);
         });
     }

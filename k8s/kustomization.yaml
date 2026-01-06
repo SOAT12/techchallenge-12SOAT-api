@@ -1,0 +1,13 @@
+# k8s/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - app-deployment.yaml
+  - app-service.yaml
+  # Adicione todos os outros arquivos .yaml que você aplica
+
+  # Esta seção permite que o `kustomize edit set image` funcione
+images:
+  - name: techchallenge-app # O nome da imagem no seu deployment.yaml
+    newName: techchallenge-app # O kustomize vai substituir isso
+    newTag: latest # O kustomize vai substituir isso
