@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: aws-load-balancer-controller
+  name: aws-load-balancer-controller
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/name: aws-load-balancer-controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: controller
+        app.kubernetes.io/name: aws-load-balancer-controller
+    spec:
+      containers:
+        - args:
+            - --cluster-name=techchallenge-cluster
+            - --aws-region=us-east-1
+            - --aws-vpc-id=vpc-03d2ce3f83187a3cd
+            - --enable-wafv2
+            - --enable-shield
+            - --enable-backend-security-group
+            - --enable-ingress-class-params
+            - --enable-service-account-tagging
+            - --enable-endpoint-slice
+            - --enable-traffic-management
+            - --ingress-class=alb
+            - --feature-gates=ALB.ingress.k8s.aws/target-group-binding=true
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: AWS_REGION
+              value: us-east-1
+            - name: AWS_VPC_ID
+              value: vpc-03d2ce3f83187a3cd
+          image: public.ecr.aws/eks/aws-load-balancer-controller:v2.7.1
+          name: controller
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 9443
+              name: https
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 61779
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 61779
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 65534
+            runAsNonRoot: true
+            runAsUser: 65534
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - mountPath: /tmp/k8s-webhook-server/serving-certs
+              name: webhook-certs
+              readOnly: true
+      serviceAccountName: aws-load-balancer-controller
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: aws-load-balancer-controller-webhook-tls

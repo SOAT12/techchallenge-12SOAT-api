@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/component: web
     app.kubernetes.io/part-of: techchallenge
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: techchallenge-app
@@ -26,7 +27,8 @@ spec:
         runAsGroup: 1000
       containers:
         - name: techchallenge-app
-          image: 747132/techchallenge-12soat:develop
+          image: public.ecr.aws/z0l6i1e3/techchallenge-12soat/api:latest
+          imagePullPolicy: Always # Ensures we always get the latest version
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -41,7 +43,7 @@ spec:
               httpHeaders:
                 - name: Accept
                   value: application/json
-            initialDelaySeconds: 60
+            initialDelaySeconds: 120
             periodSeconds: 10
           livenessProbe:
             httpGet:
@@ -50,15 +52,15 @@ spec:
               httpHeaders:
                 - name: Accept
                   value: application/json
-            initialDelaySeconds: 60
+            initialDelaySeconds: 120
             periodSeconds: 15
           env:
-            # Mapeia os secrets para variáveis de ambiente que o Spring Boot pode usar
-            - name: SPRING_DATASOURCE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: techchallenge-secrets
-                  key: DB_URL
+            - name: SERVER_PORT
+              value: "8080"
+            - name: SPRING_APPLICATION_NAME
+              value: "techchallenge-app"
+            - name: SPRING_LIQUIBASE_CHANGE-LOG
+              value: "classpath:liquibase/liquibase-changelog.yml"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -69,10 +71,15 @@ spec:
                 secretKeyRef:
                   name: techchallenge-secrets
                   key: DB_PWD
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: techchallenge-secrets
+                  key: DB_URL
           resources:
             requests:
-              cpu: "250m"
+              cpu: "500m"
               memory: "1Gi"
             limits:
-              cpu: "500m"
+              cpu: "1000m"
               memory: "1.5Gi"

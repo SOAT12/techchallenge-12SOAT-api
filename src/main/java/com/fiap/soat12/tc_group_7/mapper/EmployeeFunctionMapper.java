@@ -20,7 +20,6 @@ public class EmployeeFunctionMapper {
         if (dto == null) return null;
         return EmployeeFunction.builder()
                 .description(dto.getDescription())
-                .active(dto.getActive())
                 .build();
     }
 }
