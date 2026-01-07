@@ -7,12 +7,22 @@ terraform {
   }
 }
 
-# Configura o mesmo backend, mas apenas para LEITURA do estado
-data "terraform_remote_state" "infra" {
+# State for EKS Cluster
+data "terraform_remote_state" "eks" {
   backend = "s3"
   config = {
     bucket = "techchallenge-12soat-tfstate-bucket-us1"
     key    = "dev/eks-cluster/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
+# State for RDS Database
+data "terraform_remote_state" "rds" {
+  backend = "s3"
+  config = {
+    bucket = "techchallenge-soat12-db-state-db"
+    key    = "rds/terraform.tfstate"
     region = "us-east-1"
   }
 }

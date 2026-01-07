@@ -55,6 +55,18 @@ spec:
             initialDelaySeconds: 120
             periodSeconds: 15
           env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: techchallenge-secrets
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: techchallenge-secrets
+                  key: AWS_SECRET_ACCESS_KEY
             - name: SERVER_PORT
               value: "8080"
             - name: SPRING_APPLICATION_NAME
