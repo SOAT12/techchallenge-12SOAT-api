@@ -17,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity(debug = false)
 public class WebSecurityConfig {
@@ -29,18 +31,26 @@ public class WebSecurityConfig {
     private static final String TOOL_CATEGORIES_PATH = "/api/tool-categories";
     private static final String VEHICLE_ID_PATH = "/api/vehicle/{id}";
     private static final String TOOL_CATEGORIES_BASE_PATH = "/api/tool-categories";
+    protected static final List<String> routesProtectedByLambdaAuth = List.of(
+            "/api/service-orders/*/webhook/approval",
+            "/api/service-orders/status"
+    );
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final UserDetailsService jwtUserDetailsService;
     private final RequestFilter jwtRequestFilter;
+    private final LambdaRequestFilter lambdaRequestFilter;
 
     public WebSecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
                              UserDetailsService jwtUserDetailsService,
-                             RequestFilter jwtRequestFilter) {
+                             RequestFilter jwtRequestFilter,
+                             LambdaRequestFilter lambdaRequestFilter) {
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.jwtRequestFilter = jwtRequestFilter;
+        this.lambdaRequestFilter = lambdaRequestFilter;
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() { // Mark as public
         return new BCryptPasswordEncoder();
@@ -71,11 +81,12 @@ public class WebSecurityConfig {
                                 "/swagger-ui/**",
                                 "/api-docs/**",
                                 "/api/auth/login",
-                                "/api/auth/forgot-password",
-                                "/api/service-orders/1/webhook/approval"
+                                "/api/auth/forgot-password"
                         ).permitAll()
                         .requestMatchers("/actuator/health/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/employees").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/service-orders/1/webhook/approval").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/service-orders/status").authenticated()
 
                         // Endpoints do StockController
                         .requestMatchers(HttpMethod.POST, "/api/stock").hasAnyRole(AUTHORIZED_ROLES)
@@ -109,7 +120,6 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/service-orders/full").hasAnyRole(AUTHORIZED_ROLES)
                         .requestMatchers(HttpMethod.GET, SERVICE_ORDER_ID_PATH).hasAnyRole(AUTHORIZED_ROLES)
                         .requestMatchers(HttpMethod.GET, "/api/service-orders").hasAnyRole(AUTHORIZED_ROLES)
-                        .requestMatchers(HttpMethod.GET, "/api/service-orders/status").hasAnyRole(AUTHORIZED_ROLES)
                         .requestMatchers(HttpMethod.DELETE, SERVICE_ORDER_ID_PATH).hasAnyRole(AUTHORIZED_ROLES)
                         .requestMatchers(HttpMethod.PUT, SERVICE_ORDER_ID_PATH).hasAnyRole(AUTHORIZED_ROLES)
                         .requestMatchers(HttpMethod.PATCH, "/api/service-orders/{id}/diagnose").hasAnyRole(AUTHORIZED_ROLES)
@@ -154,6 +164,7 @@ public class WebSecurityConfig {
 
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(lambdaRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .build();
