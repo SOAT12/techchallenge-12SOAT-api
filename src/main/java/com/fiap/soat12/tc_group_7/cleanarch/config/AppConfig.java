@@ -19,6 +19,7 @@ import com.fiap.soat12.tc_group_7.cleanarch.infrastructure.web.presenter.*;
 import com.fiap.soat12.tc_group_7.cleanarch.util.JwtTokenUtil;
 import com.fiap.soat12.tc_group_7.config.SessionToken;
 import com.fiap.soat12.tc_group_7.service.MailClient;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.persistence.EntityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -291,8 +292,9 @@ public class AppConfig {
                                                    VehicleUseCase vehicleUseCase,
                                                    VehicleServiceUseCase vehicleServiceUseCase,
                                                    StockUseCase stockUseCase,
-                                                   MailClient mailClient) {
-        return new ServiceOrderUseCase(serviceOrderGateway, employeeUseCase, customerUseCase, notificationUseCase, vehicleUseCase, vehicleServiceUseCase, stockUseCase, mailClient);
+                                                   MailClient mailClient,
+                                                   MeterRegistry meterRegistry) {
+        return new ServiceOrderUseCase(serviceOrderGateway, employeeUseCase, customerUseCase, notificationUseCase, vehicleUseCase, vehicleServiceUseCase, stockUseCase, mailClient, meterRegistry);
     }
 
     @Bean
