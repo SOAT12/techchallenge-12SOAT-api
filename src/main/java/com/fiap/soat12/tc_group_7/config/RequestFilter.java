@@ -1,6 +1,5 @@
 package com.fiap.soat12.tc_group_7.config;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiap.soat12.tc_group_7.cleanarch.util.JwtTokenUtil;
 import jakarta.annotation.PostConstruct;
@@ -19,14 +18,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.*;
 
+import static com.fiap.soat12.tc_group_7.config.WebSecurityConfig.routesProtectedByLambdaAuth;
+
 @Component
 @RequiredArgsConstructor
 public class RequestFilter extends OncePerRequestFilter {
+
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Lazy
     private final SessionToken sessionToken;
@@ -45,18 +49,20 @@ public class RequestFilter extends OncePerRequestFilter {
 
     @PostConstruct
     public void init() {
-
         whiteList.addAll(Arrays.asList(whiteListValue.split(";")));
-
         pathWhiteList.addAll(Arrays.asList(pathWhiteListValue.split(";")));
-
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws IOException {
+            throws IOException, ServletException {
 
         String path = request.getServletPath();
+
+        if (routesProtectedByLambdaAuth.stream().anyMatch(pattern -> pathMatcher.match(pattern, path))) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         try {
 
