@@ -142,7 +142,6 @@ jobs:
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
           echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
   deploy:
     name: Deploy to EKS
     runs-on: ubuntu-latest
@@ -160,12 +159,16 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsAppDeployRole
           aws-region: us-east-1
-          
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init (to read remote state)
         run: terraform init
+        working-directory: ./ops
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
         working-directory: ./ops
 
       - name: Get EKS Cluster Info from Terraform Output
@@ -183,7 +186,6 @@ jobs:
           kubectl apply -f k8s/
           kubectl set image deployment/techchallenge-app techchallenge-app=${{ needs.build-and-push-image.outputs.image_uri }} -n techchallenge
           kubectl rollout status deployment/techchallenge-app -n techchallenge
-
       - name: Update SSM with ALB ARN
         shell: pwsh
         run: |
