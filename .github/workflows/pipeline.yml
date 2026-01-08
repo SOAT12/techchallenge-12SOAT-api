@@ -160,6 +160,20 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsAppDeployRole
           aws-region: us-east-1
+          
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init (to read remote state)
+        run: terraform init
+        working-directory: ./ops
+
+      - name: Get EKS Cluster Info from Terraform Output
+        id: get_cluster_info
+        run: |
+          CLUSTER_NAME=$(terraform output -raw cluster_name)
+          echo "CLUSTER_NAME=$CLUSTER_NAME" >> "$GITHUB_OUTPUT"
+        working-directory: ./ops
 
       - name: Update Kubeconfig
         run: aws eks update-kubeconfig --name ${{ steps.get_cluster_info.outputs.CLUSTER_NAME }} --region us-east-1
