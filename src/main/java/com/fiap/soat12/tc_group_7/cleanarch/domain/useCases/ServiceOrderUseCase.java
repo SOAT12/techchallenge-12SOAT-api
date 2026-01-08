@@ -9,6 +9,8 @@ import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderFullCreationReque
 import com.fiap.soat12.tc_group_7.dto.serviceorder.ServiceOrderRequestDTO;
 import com.fiap.soat12.tc_group_7.dto.stock.StockAvailabilityResponseDTO;
 import com.fiap.soat12.tc_group_7.service.MailClient;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -32,7 +34,7 @@ public class ServiceOrderUseCase {
     private final VehicleServiceUseCase vehicleServiceUseCase;
     private final StockUseCase stockUseCase;
     private final MailClient mailClient;
-
+    private final MeterRegistry meterRegistry;
 
     public ServiceOrder createServiceOrder(ServiceOrderRequestDTO requestDTO) {
         ServiceOrder serviceOrder = new ServiceOrder();
@@ -60,6 +62,7 @@ public class ServiceOrderUseCase {
 
         ServiceOrder savedOrder = serviceOrderGateway.save(serviceOrder);
         notificationUseCase.notifyMechanicAssignedToOS(savedOrder, employee);
+        meterRegistry.counter("techchallenge.orders.created", "type", "standard").increment();
         return savedOrder;
     }
 
@@ -105,6 +108,8 @@ public class ServiceOrderUseCase {
 
         ServiceOrder savedOrder = serviceOrderGateway.save(serviceOrder);
         notificationUseCase.notifyMechanicAssignedToOS(savedOrder, employee);
+
+        meterRegistry.counter("techchallenge.orders.created", "type", "full_creation").increment();
         return savedOrder;
     }
 
@@ -271,6 +276,16 @@ public class ServiceOrderUseCase {
         String subject = order.getCustomer().getName() + " Seus serviços solicitados foram finalizados";
 
         mailClient.sendMail(order.getCustomer().getEmail(), subject, "mailTemplateServiceFinish", variables);
+
+        if (order.getCreatedAt() != null) {
+            long durationSeconds = (new Date().getTime() - order.getCreatedAt().getTime()) / 1000;
+
+            Timer.builder("techchallenge.orders.execution_time")
+                    .description("Tempo total de execução da ordem de serviço")
+                    .tag("status", "finished")
+                    .register(meterRegistry)
+                    .record(Duration.ofSeconds(durationSeconds));
+        }
 
         return serviceOrder;
     }
