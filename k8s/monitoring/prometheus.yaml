@@ -11,7 +11,7 @@ data:
       - job_name: 'techchallenge-api'
         metrics_path: '/actuator/prometheus'
         static_configs:
-          - targets: ['techchallenge-app-service:8080'] # Nome do seu Service da API
+          - targets: ['techchallenge-service.techchallenge.svc.cluster.local:8080'] # Nome do seu Service da API
 ---
 apiVersion: apps/v1
 kind: Deployment

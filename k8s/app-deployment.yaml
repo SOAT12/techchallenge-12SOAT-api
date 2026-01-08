@@ -73,21 +73,6 @@ spec:
               value: "techchallenge-app"
             - name: SPRING_LIQUIBASE_CHANGE-LOG
               value: "classpath:liquibase/liquibase-changelog.yml"
-            - name: SPRING_DATASOURCE_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: techchallenge-secrets
-                  key: DB_USR
-            - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: techchallenge-secrets
-                  key: DB_PWD
-            - name: SPRING_DATASOURCE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: techchallenge-secrets
-                  key: DB_URL
           resources:
             requests:
               cpu: "500m"
