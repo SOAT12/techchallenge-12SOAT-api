@@ -187,4 +187,5 @@ jobs:
           kustomize edit set image public.ecr.aws/z0l6i1e3/techchallenge-12soat/api:monitoramento=public.ecr.aws/z0l6i1e3/techchallenge-12soat/api:latest
           cd ..
           kubectl apply -k k8s/ 
+          kubectl rollout restart deployment/techchallenge-app-deployment -n techchallenge
           kubectl rollout status deployment/techchallenge-app-deployment -n techchallenge
