@@ -25,7 +25,7 @@ spec:
             - name: GF_SECURITY_ADMIN_PASSWORD
               value: "admin123" # Senha de acesso
             - name: GF_SERVER_ROOT_URL
-              value: "/grafana/"
+              value: "https://fr4vk6f1r4.execute-api.us-east-1.amazonaws.com/Prod/grafana/"
             - name: GF_SERVER_SERVE_FROM_SUB_PATH
               value: "true"
 ---
