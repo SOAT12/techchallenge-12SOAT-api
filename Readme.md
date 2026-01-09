@@ -26,7 +26,7 @@ adendo: https://youtu.be/W4g-jS4cXxo
 Link do vídeo do Youtube:
 https://www.youtube.com/watch?v=dIdenFq2bOw
 adendo: https://youtu.be/W4g-jS4cXxo \
-Swagger da API: https://q1t11tjlxg.execute-api.us-east-1.amazonaws.com/Prod/swagger-ui/index.html#/
+Swagger da API: https://fr4vk6f1r4.execute-api.us-east-1.amazonaws.com/Prod/swagger-ui/index.html#/
 ---
 
 ### Arquitetura da Aplicação:
