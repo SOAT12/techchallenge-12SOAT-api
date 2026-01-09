@@ -15,24 +15,3 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: techchallenge-ingress
-  namespace: techchallenge
-  annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-spec:
-  rules:
-    - http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: techchallenge-service
-                port:
-                  number: 8080
