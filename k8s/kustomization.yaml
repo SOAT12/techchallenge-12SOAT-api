@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - configmap.yml
+  - nginx-strip.yaml
   - app-deployment.yaml
   - app-service.yaml
   - hpa.yaml
