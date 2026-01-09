@@ -182,7 +182,11 @@ jobs:
         run: aws eks update-kubeconfig --name ${{ steps.get_cluster_info.outputs.CLUSTER_NAME }} --region us-east-1
 
       - name: Deploy to Kubernetes
+        env:
+          AWS_ACCESS_KEY_ID_PLACEHOLDER: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY_PLACEHOLDER: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
+          envsubst < k8s/secret.yaml.template > k8s/secret.yaml
           cd k8s
           kustomize edit set image public.ecr.aws/z0l6i1e3/techchallenge-12soat/api:monitoramento=public.ecr.aws/z0l6i1e3/techchallenge-12soat/api:latest
           cd ..
