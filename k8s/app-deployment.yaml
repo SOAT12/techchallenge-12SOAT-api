@@ -27,7 +27,7 @@ spec:
         runAsGroup: 1000
       containers:
         - name: techchallenge-app
-          image: public.ecr.aws/z0l6i1e3/techchallenge-12soat/api:latest
+          image: public.ecr.aws/z0l6i1e3/techchallenge-12soat/api:monitoramento
           imagePullPolicy: Always # Ensures we always get the latest version
           securityContext:
             allowPrivilegeEscalation: false
@@ -73,21 +73,6 @@ spec:
               value: "techchallenge-app"
             - name: SPRING_LIQUIBASE_CHANGE-LOG
               value: "classpath:liquibase/liquibase-changelog.yml"
-            - name: SPRING_DATASOURCE_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: techchallenge-secrets
-                  key: DB_USR
-            - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: techchallenge-secrets
-                  key: DB_PWD
-            - name: SPRING_DATASOURCE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: techchallenge-secrets
-                  key: DB_URL
           resources:
             requests:
               cpu: "500m"
