@@ -6,5 +6,8 @@ resources:
   - app-deployment.yaml
   - app-service.yaml
   - hpa.yaml
+  - monitoring/grafana-provisioning.yaml
+  - monitoring/grafana-resources.yaml
   - monitoring/grafana.yaml
   - monitoring/prometheus.yaml
+  - monitoring/prometheus-rbac.yaml
