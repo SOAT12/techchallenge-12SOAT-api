@@ -22,10 +22,9 @@ https://www.youtube.com/watch?v=dIdenFq2bOw
 adendo: https://youtu.be/W4g-jS4cXxo
 ---
 
-### Entregáveis Fase 5:
+### Entregáveis Fase 3:
 Link do vídeo do Youtube:
-https://www.youtube.com/watch?v=dIdenFq2bOw
-adendo: https://youtu.be/W4g-jS4cXxo \
+{colocar video}
 Swagger da API: https://fr4vk6f1r4.execute-api.us-east-1.amazonaws.com/Prod/swagger-ui/index.html#/
 ---
 
