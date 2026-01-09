@@ -120,12 +120,6 @@ Os valores dos segredos devem ser codificados em **Base64**. Para criar o segred
       SPRING_MAIL_PASSWORD: "sua-senha-de-email-em-base64"
     ```
 
-3.  **Aplique o segredo no cluster:**
-
-    ```bash
-    kubectl apply -f k8s/secret.yaml
-    ```
-
 ### 🚀 Instruções de Uso
 
 Siga as instruções abaixo para subir a aplicação em seu ambiente local e interagir com suas funcionalidades.
