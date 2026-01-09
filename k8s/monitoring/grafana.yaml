@@ -23,11 +23,47 @@ spec:
             - containerPort: 3000
           env:
             - name: GF_SECURITY_ADMIN_PASSWORD
-              value: "admin123" # Senha de acesso
+              value: "admin123"
             - name: GF_SERVER_ROOT_URL
               value: "/grafana/"
             - name: GF_SERVER_SERVE_FROM_SUB_PATH
               value: "true"
+            - name: GF_SMTP_ENABLED
+              value: "true"
+            - name: GF_SMTP_HOST
+              value: smtp.gmail.com:587
+            - name: GF_SMTP_USER
+              value: piresalex161@gmail.com
+            - name: GF_SMTP_PASSWORD
+              value: jarbdqwyhfesaryn
+            - name: GF_SMTP_FROM_ADDRESS
+              value: piresalex161@gmail.com
+          volumeMounts:
+            - name: provisioning-datasources
+              mountPath: /etc/grafana/provisioning/datasources
+              readOnly: true
+            - name: provisioning-dashboards-config
+              mountPath: /etc/grafana/provisioning/dashboards
+              readOnly: true
+            - name: provisioning-alerting # ADICIONE ESTA LINHA
+              mountPath: /etc/grafana/provisioning/alerting
+              readOnly: true
+            - name: dashboard-json-files
+              mountPath: /var/lib/grafana/dashboards
+              readOnly: true
+      volumes:
+        - name: provisioning-datasources
+          configMap:
+            name: grafana-provisioning-datasources
+        - name: provisioning-dashboards-config
+          configMap:
+            name: grafana-provisioning-dashboards
+        - name: provisioning-alerting # ADICIONE ESTA LINHA
+          configMap:
+            name: grafana-alerting-provisioning
+        - name: dashboard-json-files
+          configMap:
+            name: grafana-dashboards-json-files
 ---
 apiVersion: v1
 kind: Service
@@ -40,4 +76,4 @@ spec:
   ports:
     - port: 3000
       targetPort: 3000
-  type: ClusterIP # Para você acessar externamente
+  type: ClusterIP
