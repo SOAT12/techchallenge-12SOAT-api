@@ -73,6 +73,10 @@ spec:
               value: "techchallenge-app"
             - name: SPRING_LIQUIBASE_CHANGE-LOG
               value: "classpath:liquibase/liquibase-changelog.yml"
+            - name: API_PUBLIC_URL
+              # AQUI sim você coloca a URL da AWS.
+              # Se mudar o Gateway, você muda SÓ AQUI, sem recompilar o Java.
+              value: "https://fr4vk6f1r4.execute-api.us-east-1.amazonaws.com/Prod"
           resources:
             requests:
               cpu: "500m"
