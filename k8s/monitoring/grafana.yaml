@@ -21,13 +21,12 @@ spec:
           image: grafana/grafana:latest
           ports:
             - containerPort: 3000
-              name: grafana-internal
           env:
             - name: GF_SECURITY_ADMIN_PASSWORD
               value: "admin123"
             - name: GF_SERVER_ROOT_URL
               # Ajuste do root URL para funcionar com API Gateway e subpath
-              value: "https://fr4vk6f1r4.execute-api.us-east-1.amazonaws.com/Prod/grafana/"
+              value: "/grafana/"
             - name: GF_SERVER_SERVE_FROM_SUB_PATH
               value: "true"
             - name: GF_SMTP_ENABLED
@@ -53,15 +52,6 @@ spec:
             - name: dashboard-json-files
               mountPath: /var/lib/grafana/dashboards
               readOnly: true
-        - name: nginx-sidecar
-          image: nginx:alpine
-          ports:
-            - containerPort: 8080 # O ALB vai bater aqui
-              name: http
-          volumeMounts:
-            - name: nginx-config
-              mountPath: /etc/nginx/conf.d/default.conf
-              subPath: default.conf
       volumes:
         - name: provisioning-datasources
           configMap:
@@ -75,9 +65,6 @@ spec:
         - name: dashboard-json-files
           configMap:
             name: grafana-dashboards-json-files
-        - name: nginx-config
-          configMap:
-            name: grafana-nginx-proxy
 ---
 apiVersion: v1
 kind: Service
@@ -89,5 +76,5 @@ spec:
     app: grafana
   ports:
     - port: 3000
-      targetPort: 8080 # Manda pro Nginx (Sidecar)
+      targetPort: 3000
   type: ClusterIP
