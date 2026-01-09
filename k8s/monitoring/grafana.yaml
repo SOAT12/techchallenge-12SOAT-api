@@ -25,6 +25,7 @@ spec:
             - name: GF_SECURITY_ADMIN_PASSWORD
               value: "admin123"
             - name: GF_SERVER_ROOT_URL
+              # Ajuste do root URL para funcionar com API Gateway e subpath
               value: "/grafana/"
             - name: GF_SERVER_SERVE_FROM_SUB_PATH
               value: "true"
