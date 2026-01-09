@@ -3,6 +3,9 @@ kind: ConfigMap
 metadata:
   name: prometheus-config
   namespace: techchallenge
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: /-/healthy
+    alb.ingress.kubernetes.io/healthcheck-port: '9090'
 data:
   prometheus.yml: |
     global:
@@ -33,6 +36,9 @@ spec:
           image: prom/prometheus:latest
           args:
             - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+            - "--web.external-url=/prometheus/"
+            - "--web.route-prefix=/prometheus/"
           ports:
             - containerPort: 9090
           volumeMounts:

@@ -27,7 +27,7 @@ spec:
         runAsGroup: 1000
       containers:
         - name: techchallenge-app
-          image: public.ecr.aws/z0l6i1e3/techchallenge-12soat/api:latest
+          image: public.ecr.aws/z0l6i1e3/techchallenge-12soat/api:monitoramento
           imagePullPolicy: Always # Ensures we always get the latest version
           securityContext:
             allowPrivilegeEscalation: false

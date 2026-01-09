@@ -3,6 +3,10 @@ kind: Service
 metadata:
   name: techchallenge-service
   namespace: techchallenge
+  annotations:
+    # Configura o Health Check apenas para este Target Group
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health/readiness
+    alb.ingress.kubernetes.io/healthcheck-port: '8080'
 spec:
   selector:
     app.kubernetes.io/name: techchallenge-app
