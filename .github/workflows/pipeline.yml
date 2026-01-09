@@ -188,9 +188,3 @@ jobs:
           cd ..
           kubectl apply -k k8s/ 
           kubectl rollout status deployment/techchallenge-app-deployment -n techchallenge
-      - name: Update SSM with ALB ARN
-        shell: pwsh
-        run: |
-          Write-Host "Aguardando cria��o do ALB..."
-          Start-Sleep -Seconds 30
-          ./update-ssm-alb.ps1 -Region us-east-1
