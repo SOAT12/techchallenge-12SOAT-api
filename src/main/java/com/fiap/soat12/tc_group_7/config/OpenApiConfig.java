@@ -1,5 +1,7 @@
 package com.fiap.soat12.tc_group_7.config;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,7 +12,16 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 
+//Lembrar de trocar a url la no deployment do kubernets sempre que mudar.
 @Configuration
+@OpenAPIDefinition(
+        servers = {
+                @Server(
+                        url = "${openapi.service.url:/}",
+                        description = "Servidor de Produção (API Gateway)"
+                )
+        }
+)
 public class OpenApiConfig {
 
     @Bean
