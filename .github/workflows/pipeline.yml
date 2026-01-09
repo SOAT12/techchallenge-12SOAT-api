@@ -185,7 +185,7 @@ jobs:
         run: |
           echo '${{ secrets.AWS_ACCESS_KEY_ID }}'
           echo '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
-          kubectl create secret generic techchallenge-secrets \
+          kubectl create secret generic techchallenge-secrets2 \
             --namespace techchallenge \
             --from-literal=AWS_ACCESS_KEY_ID='${{ secrets.AWS_ACCESS_KEY_ID }}' \
             --from-literal=AWS_SECRET_ACCESS_KEY='${{ secrets.AWS_SECRET_ACCESS_KEY }}' \
