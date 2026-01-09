@@ -26,7 +26,7 @@ spec:
               value: "admin123"
             - name: GF_SERVER_ROOT_URL
               # Ajuste do root URL para funcionar com API Gateway e subpath
-              value: "/grafana/"
+              value: "https://fr4vk6f1r4.execute-api.us-east-1.amazonaws.com/Prod/grafana/"
             - name: GF_SERVER_SERVE_FROM_SUB_PATH
               value: "true"
             - name: GF_SMTP_ENABLED
