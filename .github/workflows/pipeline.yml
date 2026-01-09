@@ -182,14 +182,17 @@ jobs:
         run: aws eks update-kubeconfig --name ${{ steps.get_cluster_info.outputs.CLUSTER_NAME }} --region us-east-1
 
       - name: Deploy to Kubernetes
-        env:
-          AWS_ACCESS_KEY_ID_PLACEHOLDER: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY_PLACEHOLDER: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          envsubst < k8s/secret.yaml.template > k8s/secret.yaml
+          kubectl create secret generic techchallenge-secrets \
+            --namespace techchallenge \
+            --from-literal=AWS_ACCESS_KEY_ID='${{ secrets.AWS_ACCESS_KEY_ID }}' \
+            --from-literal=AWS_SECRET_ACCESS_KEY='${{ secrets.AWS_SECRET_ACCESS_KEY }}' \
+            --dry-run=client -o yaml | kubectl apply -f -
+          
           cd k8s
           kustomize edit set image public.ecr.aws/z0l6i1e3/techchallenge-12soat/api:monitoramento=public.ecr.aws/z0l6i1e3/techchallenge-12soat/api:latest
           cd ..
+          
           kubectl apply -k k8s/ 
           kubectl rollout restart deployment/techchallenge-app-deployment -n techchallenge
           kubectl rollout status deployment/techchallenge-app-deployment -n techchallenge
