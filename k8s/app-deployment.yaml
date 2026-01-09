@@ -43,7 +43,7 @@ spec:
               httpHeaders:
                 - name: Accept
                   value: application/json
-            initialDelaySeconds: 120
+            initialDelaySeconds: 30
             periodSeconds: 10
           livenessProbe:
             httpGet:
@@ -52,7 +52,7 @@ spec:
               httpHeaders:
                 - name: Accept
                   value: application/json
-            initialDelaySeconds: 120
+            initialDelaySeconds: 30
             periodSeconds: 15
           env:
             - name: SPRING_PROFILES_ACTIVE
@@ -76,7 +76,7 @@ spec:
           resources:
             requests:
               cpu: "500m"
-              memory: "1Gi"
+              memory: "512Mi"
             limits:
               cpu: "1000m"
-              memory: "1.5Gi"
+              memory: "1Gi"
